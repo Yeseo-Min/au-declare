@@ -667,7 +667,10 @@ const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
 const UNITS=[['개','piece','pieces'],['봉','pack','packs'],['컵','cup','cups'],['캔','can','cans'],['박스','box','boxes'],['병','bottle','bottles'],['통','jar','jars'],['파우치','pouch','pouches'],['포','sachet','sachets'],['장','sheet','sheets'],['튜브','tube','tubes'],['정','tablet','tablets'],['봉지','bag','bags']];
 const ICON_UNIT={tray:'개',bowl:'개',cup:'컵',soupcup:'컵',packet:'봉',can:'캔',tincan:'캔',jar:'통',tub:'통',seaweed:'봉',bottle:'병',snack:'봉지',pouch:'파우치',fish:'봉',meat:'봉',nut:'봉',fruit:'개',egg:'개',honey:'병',ginseng:'박스',tteok:'봉',coffee:'박스',teabag:'박스',box:'박스',blister:'박스',capsule:'박스',softgel:'통',pillbottle:'병',ampoule:'개',drops:'병',tube:'튜브',sachet:'포',patch:'박스',shot:'병',syrup:'병',herbpill:'박스',pack:'봉',bandage:'박스',syringe:'개'};
 const unitOf=k=>UNITS.find(u=>u[0]===k)||UNITS[0];
-const qtyEn=it=>{const n=+it.n||0;if(!n)return '—';const u=unitOf(it.u);return `${n} ${n===1?u[1]:u[2]}`};
+/* the same Korean unit reads differently for food and medicine: 약 1통 = 1 bottle, 고추장 1통 = 1 tub */
+const UNIT_KIND={food:{'통':['tub','tubs']},med:{'통':['bottle','bottles'],'개':['unit','units'],'봉':['packet','packets'],'봉지':['packet','packets']}};
+const unitEnOf=(kind,k)=>{const o=(UNIT_KIND[kind]||{})[k];const u=unitOf(k);return o?[u[0],o[0],o[1]]:u};
+const qtyEn=it=>{const n=+it.n||0;if(!n)return '—';const u=unitEnOf(it.kind,it.u);return `${n} ${n===1?u[1]:u[2]}`};
 function parseQty(s,icon){const m=String(s||'').match(/(\d+)/);const n=m?+m[1]:1;const w=String(s||'').toLowerCase();
   const u=UNITS.find(u=>w.includes(u[1])||w.includes(u[0]))?.[0]||ICON_UNIT[icon]||'개';return {n,u}}
 function normItem(it){if(it.n==null){const p=parseQty(it.qty,it.icon);it.n=p.n;it.u=p.u}if(!it.u)it.u=ICON_UNIT[it.icon]||'개';return it}
@@ -1162,7 +1165,7 @@ function openEdit(id){
       <label class="f"><span>제품명</span><input id="e-ko" value="${esc(it.ko)}"></label>
      </div>
      <div>
-      <div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${UNITS.map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]} · ${u[2]}</option>`).join('')}</select></div></div>
+      <div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${UNITS.map(u0=>{const u=unitEnOf(it.kind,u0[0]);return `<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]} · ${u[2]}</option>`}).join('')}</select></div></div>
      </div>
      <label class="f"><span>영문 이름 <i>ITEM</i></span><input id="e-en" value="${esc(it.en)}"></label>
      <label class="f"><span>분류 <i>CATEGORY</i></span><input id="e-cat" value="${esc(it.cat)}"></label>
