@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#E2621B">
 <meta name="description" content="호주 입국 시 신고할 음식·약품을 사진 한 장으로 영문 리스트로 만들어 주는 앱">
 <link rel="manifest" href="manifest.webmanifest">
@@ -306,6 +306,46 @@ main{padding-block:18px}
 .pes input{width:100%;accent-color:var(--accent)}
 .sheetfit{overflow:hidden;margin-bottom:16px}
 .sheetfit .sheet{transform-origin:top left;margin:0}
+.tab .ts{display:none}
+.splitbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 10px;font-size:13px;color:var(--muted)}
+.seg.gsel{margin-top:4px}.seg.gsel button{padding:4px 9px;font-size:12px}
+.ov{inset:auto;left:0;right:0;top:var(--vvt,0px);height:var(--vvh,100vh)}
+.modal{max-height:calc(var(--vvh,100vh) - 16px)}
+.sugg{max-height:min(380px,calc(var(--vvh,100vh) - 150px))}
+@media (max-width:720px){
+  body{font-size:14px}
+  header.top{padding-block:10px 6px;gap:8px}
+  .brand .mark{width:32px;height:32px;font-size:11px;border-radius:8px}
+  .brand h1{font-size:17px}.brand p{display:none}
+  .tripbtn{padding:5px 11px}.tripbtn b{font-size:13px}
+  nav.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;overflow:visible;padding-block:6px}
+  .tab{justify-content:center;gap:4px;padding:7px 2px;font-size:13px;min-width:0}
+  .tab .tl{display:none}.tab .ts{display:inline}.tab .n{font-size:10px}
+  main{padding-block:10px}
+  .ipc{padding:9px 12px;margin-bottom:10px;gap:10px}.ipc p{display:none}.ipc b{font-size:13px}
+  .adder{padding:10px;gap:8px;margin-bottom:10px}
+  .ways{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .way{flex-direction:column;align-items:center;text-align:center;padding:9px 4px;gap:5px;border-radius:10px}
+  .way .ico{width:30px;height:30px}.way b{font-size:12px;line-height:1.3}.way > span:last-child > span{display:none}
+  .chips{gap:5px}.chip{font-size:12px;padding:3px 9px}
+  .shoot{font-size:11.5px}
+  .notice{padding:8px 10px;font-size:12px;margin-bottom:8px}
+  .list{gap:8px}
+  .row{grid-template-columns:64px minmax(0,1fr);gap:6px 10px;padding:9px 10px}
+  .phw,.row .ph{width:64px;height:64px}
+  .phw .cam{width:26px;height:26px;right:-5px;bottom:-5px}.phw .cam svg{width:13px;height:13px}
+  .nm .ko{font-size:15px}.nm .en{font-size:13px;line-height:1.35}.nm .cat{margin-top:2px;font-size:10px}
+  .pen{width:24px;height:24px}
+  .dt{font-size:12px;gap:2px}
+  .dt > div:not(.tip){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .dt .tip{font-size:12px}
+  .side{gap:6px}.pill{font-size:11px;padding:2px 8px}
+  .step button{width:30px;height:28px}.unit{padding:4px 6px;font-size:12px}
+  .lgrp{margin:10px 0 0}
+  .card{border-radius:10px}
+}
+@media (max-width:720px){.tab .n.nx{display:none}}
+@media (max-width:340px){nav.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .legal{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.6}
 .legal a{color:inherit}
 </style>
@@ -971,8 +1011,8 @@ let BULK=false, BUSY=null, BUSYCTL=null, MORE={q:'',kind:'',list:[],loading:fals
 const AI_PHOTO=()=>!!SAMPLE;
 function render(){
   renderTripSlot();
-  const tabs=[['food','음식',S.food.length],['med','약품 · 영양제',S.med.length],['sheet','제출용 영문 시트','EN'],['card','입국카드 작성 예시','IPC']];
-  document.getElementById('tabs').innerHTML=tabs.map(([k,l,n])=>`<button class="tab" role="tab" id="tab-${k}" aria-selected="${TAB===k}" data-tab="${k}">${l}<span class="n">${n}</span></button>`).join('');
+  const tabs=[['food','음식',S.food.length,'음식'],['med','약품 · 영양제',S.med.length,'약품'],['sheet','제출용 영문 시트','EN','영문 시트'],['card','입국카드 작성 예시','IPC','입국카드']];
+  document.getElementById('tabs').innerHTML=tabs.map(([k,l,n,sh])=>`<button class="tab" role="tab" id="tab-${k}" aria-selected="${TAB===k}" data-tab="${k}"><span class="tl">${l}</span><span class="ts">${sh}</span><span class="n ${typeof n==='number'?'':'nx'}">${n}</span></button>`).join('');
   const M=document.getElementById('main');
   if(TAB==='sheet'){M.innerHTML=sheetView();return}
   if(TAB==='card'){M.innerHTML=cardView();return}
@@ -998,14 +1038,14 @@ function render(){
     ${BULK?`<div class="bulk"><label class="lbl" for="bulkText">한 줄에 하나씩, 또는 쉼표로 구분해서 적어 주세요. 숫자는 수량이에요.</label>
       <textarea id="bulkText" placeholder="신라면 5봉&#10;햇반 흑미밥 3개&#10;동원 고추참치 4캔&#10;타이레놀 500mg 1박스&#10;종합비타민 2병">${esc(S.bulkDraft||'')}</textarea>
       <div class="camrow"><button class="btn primary" data-bulkgo>목록에 추가</button><button class="btn ghost" data-bulk>닫기</button></div></div>`:''}
-    ${!LASTERR&&!DIAG?`<div class="shoot">사진 인식이 안 되면 <button class="btn sm ghost" data-diag style="padding:2px 6px">연결 테스트</button>를 눌러 원인을 확인하세요.</div>`:''}
+    ${!LASTERR&&!DIAG&&SAMPLE?`<div class="shoot">사진 인식이 안 되면 <button class="btn sm ghost" data-diag style="padding:2px 6px">연결 테스트</button>를 눌러 원인을 확인하세요.</div>`:''}
     <label class="lbl" for="q">하나씩 검색해서 추가</label>
     <div class="search"><input id="q" autocomplete="off" placeholder="${kind==='food'?'제조사·제품명 (예: 오뚜기 진비빔면, 햇반 흑미)':'제품명·성분 (예: 판콜에이, 타이레놀, 루테인)'}"><div class="sugg" id="sugg" hidden></div></div>
     <div class="chips">${pop.map(k=>{const e=[...D[kind]].find(x=>x.k===k);return e?`<button class="chip" data-add="${e.uid}">+ ${esc(e.b&&!e.k.includes(e.b)?e.b+' ':'')}${esc(e.k)}</button>`:''}).join('')}</div>
   </section>
   ${hasSample?`<div class="notice"><span>지금 보이는 항목은 한국 여행자들이 흔히 챙기는 <b>예시</b>예요. 그대로 고치거나 지우고 시작하세요.</span><button class="btn sm" data-clear-sample>예시 모두 지우기</button></div>`:''}
   ${list.length?`<div class="shoot" style="margin:0 0 8px">글자를 <b>두 번 누르면</b> 바로 고칠 수 있어요. 연필은 전체 수정, 카메라는 사진 다시 찍기예요.</div>`:''}
-  <div class="list">${list.length?(kind==='med'?MGRP.map(([g,ko,en])=>{const l=list.filter(it=>medGroup(it)===g);return l.length?`<div class="lgrp"><b>${ko}</b><span>${en} · ${l.length}</span></div>`+l.map(rowHTML).join(''):''}).join(''):list.map(rowHTML).join('')):`<div class="empty">아직 항목이 없어요. 위에서 한 번에 찍거나, 목록을 붙여넣거나, 검색해서 추가하세요.</div>`}</div>`;
+  <div class="list">${kind==='med'?`<div class="splitbar"><span>약품 정리 방식</span><span class="seg" data-split><button data-v="0" aria-pressed="${!S.medSplit}">한 목록</button><button data-v="1" aria-pressed="${!!S.medSplit}">상비약·영양제·처방약</button></span></div>`:''}${list.length?(kind==='med'&&S.medSplit?MGRP.map(([g,ko,en])=>{const l=list.filter(it=>medGroup(it)===g);return l.length?`<div class="lgrp"><b>${ko}</b><span>${en} · ${l.length}</span></div>`+l.map(rowHTML).join(''):''}).join(''):list.map(rowHTML).join('')):`<div class="empty">아직 항목이 없어요. 위에서 한 번에 찍거나, 목록을 붙여넣거나, 검색해서 추가하세요.</div>`}</div>`;
   bindAdder(kind);
 }
 function rowHTML(it){
@@ -1016,7 +1056,7 @@ function rowHTML(it){
      ${it.b?`<div class="br">${ie('b',esc(it.b))}</div>`:''}<div class="ko">${!it.ko?`<button class="btn sm primary" data-name="${it.id}">이름 정하기</button>`:ie('ko',esc(it.ko),'제품명')}${it.sample?'<span class="tag">예시</span>':''}${it.photo?'':'<span class="tag">그림</span>'}</div>
      <div class="en">${it.pending?'<span class="spin"></span> 영문 작성 중…':ie('en',esc(it.en),'영문명 없음')}</div>
      <div class="cat">${ie('cat',esc(it.cat),'CATEGORY')}</div></div></div></div>
-   <div class="dt"><div><b>${it.kind==='med'?'Active':'Ingred.'}</b>${ie('ing',esc(it.ing),'—')}</div><div><b>Note</b>${ie('desc',esc(it.desc),'—')}</div>${it.tip?`<div class="tip">${esc(it.tip)}</div>`:''}${it.kind==='med'&&(it.st==='rx'||it.st==='ctrl'||it.rx)?`<label class="check" style="font-size:13px;margin-top:2px"><input type="checkbox" data-rxt="${it.id}" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 <span style="color:var(--muted)">(체크하면 시트에 표시)</span></label>`:''}</div>
+   <div class="dt"><div><b>${it.kind==='med'?'Active':'Ingred.'}</b>${ie('ing',esc(it.ing),'—')}</div><div><b>Note</b>${ie('desc',esc(it.desc),'—')}</div>${it.tip?`<div class="tip">${esc(it.tip)}</div>`:''}${it.kind==='med'&&S.medSplit?`<span class="seg gsel" data-gsel="${it.id}">${MGRP.map(([g,ko])=>`<button data-g="${g}" aria-pressed="${medGroup(it)===g}">${ko}</button>`).join('')}</span>`:''}${it.kind==='med'&&(it.st==='rx'||it.st==='ctrl'||it.rx)?`<label class="check" style="font-size:13px;margin-top:2px"><input type="checkbox" data-rxt="${it.id}" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 <span style="color:var(--muted)">(체크하면 시트에 표시)</span></label>`:''}</div>
    <div class="side"><span class="pill ${cls}">${lab}</span>
      <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
      <select class="unit" data-unit="${it.id}" aria-label="단위">${UNITS.map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]}</option>`).join('')}</select></div>
@@ -1348,7 +1388,7 @@ function openEdit(id){
      <label class="f"><span>설명 <i>NOTE FOR OFFICER</i></span><textarea id="e-desc">${esc(it.desc)}</textarea></label>
      <div class="f2">
       <label class="f"><span>예상 판정</span><select id="e-st">${Object.entries(ST[it.kind]).map(([k,[l]])=>`<option value="${k}" ${it.st===k?'selected':''}>${l}</option>`).join('')}</select></label>
-      ${it.kind==='med'?`<label class="f"><span>시트 묶음</span><select id="e-grp"><option value="auto" ${!it.grp||it.grp==='auto'?'selected':''}>자동 (지금: ${MGRP.find(g=>g[0]===medGroup({...it,grp:'auto'}))[1]})</option>${MGRP.map(([g,ko])=>`<option value="${g}" ${it.grp===g?'selected':''}>${ko}</option>`).join('')}</select></label>`:''}${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 (체크하면 시트에 표시)</label>`:'<span></span>'}
+      ${it.kind==='med'&&S.medSplit?`<label class="f"><span>시트 묶음</span><select id="e-grp"><option value="auto" ${!it.grp||it.grp==='auto'?'selected':''}>자동 (지금: ${MGRP.find(g=>g[0]===medGroup({...it,grp:'auto'}))[1]})</option>${MGRP.map(([g,ko])=>`<option value="${g}" ${it.grp===g?'selected':''}>${ko}</option>`).join('')}</select></label>`:''}${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 (체크하면 시트에 표시)</label>`:'<span></span>'}
      </div>
      <label class="f"><span>메모 (나만 보기)</span><input id="e-tip" value="${esc(it.tip)}"></label>
      <div class="aibar">${SAMPLE?`<button class="btn sm" data-ai>${it.pending?'<span class="spin"></span> 작성 중…':'한글 이름으로 영문 자동 작성'}</button>${it.photo?`<button class="btn sm" data-aiimg>사진 라벨 읽어서 채우기</button>`:''}`:`<span class="aimsg">API 키를 설정하면 Claude 자동 작성을 쓸 수 있어요. 지금은 위 '사전에서 찾아 채우기'를 써 주세요.</span>`}</div>
@@ -1408,7 +1448,7 @@ function sheetTable(kind){
    <td class="num">${qtyEn(it)}</td></tr>`).join('');
   const head=`<table><colgroup><col style="width:34px"><col style="width:112px"><col style="width:32%"><col><col style="width:78px"></colgroup><thead><tr><th>#</th><th>Photo</th><th>Item</th><th>Details</th><th>Qty</th></tr></thead><tbody>`;
   let body;
-  if(kind==='med'){let off=0;body=MGRP.map(([g,ko,en],gi)=>{const list=L.filter(it=>medGroup(it)===g);if(!list.length)return '';const h=`<div class="grp"><span class="gn">${gi+1}</span><b>${en}</b><span>${ko} · ${list.length}</span></div>${head}${rowsOf(list,off)}</tbody></table>`;off+=list.length;return h}).join('')}
+  if(kind==='med'&&S.medSplit){let off=0;body=MGRP.map(([g,ko,en],gi)=>{const list=L.filter(it=>medGroup(it)===g);if(!list.length)return '';const h=`<div class="grp"><span class="gn">${gi+1}</span><b>${en}</b><span>${ko} · ${list.length}</span></div>${head}${rowsOf(list,off)}</tbody></table>`;off+=list.length;return h}).join('')}
   else body=head+rowsOf(L,0)+'</tbody></table>';
   return `<div class="sheet" id="sheet-${kind}">
    <h3>${title}</h3>
@@ -1640,6 +1680,8 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-tab]');if(t){TAB=t.dataset.tab;try{localStorage.setItem(KEY+'-tab',TAB)}catch(_){}render();window.scrollTo({top:0});return}
   const pb=e.target.closest('[data-pedit]');if(pb){const it=getIt(pb.dataset.pedit);if(it&&(it.photo||ORIG.has(it.id)))openPhotoEditor(it.id);else openEdit(pb.dataset.pedit);return}
   if(e.target.closest('[data-trips]')){openTrips();return}
+  const spb=e.target.closest('[data-split] button');if(spb){S.medSplit=spb.dataset.v==='1';save();render();return}
+  const gsb=e.target.closest('[data-gsel] button');if(gsb){const it=getIt(gsb.closest('[data-gsel]').dataset.gsel);it.grp=gsb.dataset.g;it.sample=false;save();render();return}
   const nb=e.target.closest('[data-name]');if(nb){openEdit(nb.dataset.name);return}
   const ed=e.target.closest('[data-edit]');if(ed){openEdit(ed.dataset.edit);return}
   const ad=e.target.closest('[data-add]');if(ad){addDict(ad.dataset.add);return}
@@ -1679,6 +1721,13 @@ document.getElementById('rowcam').addEventListener('change',async e=>{const f=e.
   const o=await downscale(await fileToURL(f));ORIG.set(it.id,o);it.photo=await whiten(o,TOL0,true);it.sample=false;save();render();
   toast('흰 배경 사진으로 바꿨어요. 사진을 누르면 크기·각도를 조절할 수 있어요')});
 try{const t=localStorage.getItem(KEY+'-tab');if(['food','med','sheet','card'].includes(t))TAB=t}catch(e){}
+(function(){const vv=window.visualViewport;const R=document.documentElement;
+  const set=()=>{R.style.setProperty('--vvh',(vv?vv.height:innerHeight)+'px');R.style.setProperty('--vvt',(vv?vv.offsetTop:0)+'px')};
+  if(vv){vv.addEventListener('resize',set);vv.addEventListener('scroll',set)}addEventListener('resize',set);set();
+  document.addEventListener('focusin',e=>{const el=e.target;if(!el.matches||!el.matches('input:not([type=checkbox]):not([type=range]):not([type=file]),textarea,[contenteditable="true"]'))return;
+    const go=()=>{if(el.id==='q'){const r=el.getBoundingClientRect();window.scrollBy({top:r.top-64,behavior:'smooth'})}else el.scrollIntoView({block:'center',behavior:'smooth'})};
+    setTimeout(go,120);setTimeout(go,450)});
+})();
 boot();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
