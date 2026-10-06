@@ -424,7 +424,7 @@ const D={food:[
 {k:'소화제',a:['오타이산','훼스탈','베아제','까스활명수','활명수'],en:'Digestive Medicine',cat:'Digestive Aid',ing:'See label (digestive enzymes or antacid / herbal powder)',desc:'Over-the-counter digestive aid for personal use.',st:'ok',tip:'',ic:['sachet','blister','shot']},
 {k:'인공눈물',a:['일회용 인공눈물','히알루론산 점안액','점안액','안약'],en:'Preservative-free Artificial Tears (single-use vials)',cat:'Eye Drops',ing:'Sodium hyaluronate 0.1% (check label)',desc:'Eye drops for dry eyes, for personal use.',st:'ok',tip:'',ic:['ampoule','drops']},
 {k:'타이레놀',a:['해열진통제','진통제','두통약','아세트아미노펜'],en:'Paracetamol (Tylenol) 500 mg',cat:'Pain Relief',ing:'Acetaminophen (paracetamol) 500 mg',desc:'Over-the-counter pain and fever relief.',st:'ok',tip:'',ic:['blister','box']},
-{k:'이부프로펜',a:['애드빌','부루펜','이지엔6','생리통약'],en:'Ibuprofen',cat:'Pain Relief',ing:'Ibuprofen 200 mg',desc:'Over-the-counter pain relief.',st:'ok',tip:'',ic:['softgel','blister']},
+{k:'이부프로펜',a:['애드빌','부루펜','이지엔6','생리통약','덱시부펜','소염진통제'],en:'Ibuprofen',cat:'Pain Relief',ing:'Ibuprofen 200 mg',desc:'Over-the-counter pain relief.',st:'ok',tip:'',ic:['softgel','blister']},
 {k:'종합감기약',a:['감기약','판콜','판피린','화이투벤','테라플루','콘택'],en:'Cold & Flu Medicine',cat:'Cold Medicine',ing:'Check label: may contain acetaminophen, chlorpheniramine, pseudoephedrine or methylephedrine, dextromethorphan',desc:'Cold medicine for personal use.',st:'rx',tip:'슈도에페드린·코데인 성분이 있으면 호주에선 처방약이에요. 성분을 꼭 확인하세요.',ic:['box','syrup','shot']},
 {k:'코데인 기침약',a:['코대원','기침약','기침시럽'],en:'Cough Syrup containing Codeine',cat:'Controlled Medicine',ing:'Dihydrocodeine or codeine (check label)',desc:'Cough medicine prescribed for personal use.',st:'ctrl',tip:'코데인은 호주에서 처방 전용이에요. 영문 처방전 없이는 가져가지 마세요.',ic:['syrup','box']},
 {k:'멀미약',a:['키미테','멀미 패치','보나링'],en:'Motion Sickness Patch / Tablet',cat:'Motion Sickness',ing:'Scopolamine (patch) or dimenhydrinate (tablet)',desc:'Motion sickness medicine for personal use.',st:'rx',tip:'스코폴라민 패치는 처방이 필요한 성분이라 영문 소견서가 있으면 좋아요.',ic:['patch','blister']},
@@ -635,6 +635,11 @@ PM.push(
 ['종근당건강','루테인 지아잔틴','루테인','Chong Kun Dang Lutein Zeaxanthin'],
 ['동국제약','인사돌','소화제','Insadol (gum health tablets)',{cat:'Herbal Medicine',ing:'Corn unsaponifiable extract, magnolia bark extract (check label)',desc:'Gum health medicine for personal use.'}],
 ['','스멕타','지사제','Smecta (Diosmectite powder)',{ing:'Diosmectite 3 g per sachet'}],
+['제일헬스사이언스','씬 덱시부펜 연질캡슐 300mg','이부프로펜','Ssin Dexibuprofen 300 mg (pain & fever relief soft capsules)',{ing:'Dexibuprofen 300 mg',desc:'Over-the-counter pain and fever relief for personal use.'}],
+['','덱시부펜 300mg','이부프로펜','Dexibuprofen 300 mg (pain & fever relief)',{ing:'Dexibuprofen 300 mg'}],
+['부광약품','씬지로이드정 0.1mg','혈압약','Synthroid 0.1 mg (Levothyroxine sodium 100 mcg, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium 0.1 mg (100 mcg)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 원래 병 그대로, 영문 처방전이나 소견서를 함께 챙기고 3개월분 이내로 가져가세요.',ic:['pillbottle','box']}],
+['','씬지로이드 (레보티록신)','혈압약','Synthroid (Levothyroxine sodium, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium (check strength)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 영문 처방전이나 소견서를 함께 챙기세요.',ic:['pillbottle','box']}],
+['Trader Joe\'s','트레이더조 멜라토닌 3mg 츄어블','멜라토닌',"Trader Joe's Chewable Melatonin 3 mg (dietary supplement, peppermint)",{ing:'Melatonin 3 mg',desc:'Sleep supplement for personal use.',tip:'호주에선 멜라토닌이 대부분 처방 성분이에요. 원래 병 그대로 3개월분 이내로 가져가고, 가능하면 소견서를 챙기세요.',ic:['pillbottle']}],
 );
 function mkProd(kind,[b,n,t,en,o={}]){const base=D[kind].find(e=>e.k===t);return {...base,...o,kind,b,k:n,en,a:[t,...(base.a||[])],ic:o.ic||base.ic,brand:true}}
 D.food.push(...PF.map(p=>mkProd('food',p)));D.med.push(...PM.map(p=>mkProd('med',p)));
