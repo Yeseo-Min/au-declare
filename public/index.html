@@ -344,9 +344,19 @@ main{padding-block:18px}
   .lgrp{margin:10px 0 0}
   .card{border-radius:10px}
 }
-@media (max-width:720px){.tab .n.nx{display:none}}
+@media (max-width:720px){.tab .n.nx{display:none}.medx{justify-content:flex-start}.side{min-width:0}}
 @media (max-width:340px){nav.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.cnt{font-size:12px;color:var(--muted);white-space:nowrap}.cnt [data-ie]{color:var(--ink);font-weight:500}
+.side{flex-wrap:wrap}
+.medx{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;justify-content:flex-end;font-size:12px;color:var(--muted)}
+.medx [data-ie]{color:var(--ink);font-weight:600}.medx .btn{padding:3px 8px;font-size:12px}.dsel{display:flex;align-items:center;gap:4px}.dsel .unit{padding:3px 6px}
+.parts{display:grid;gap:6px}
+.part{display:grid;grid-template-columns:minmax(0,1fr) 92px auto;gap:6px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2)}
+.part .pt{min-width:0;display:grid}.part .pt b{font-size:14px}.part .pt span{font-size:12px;color:var(--muted)}
+.part .pq{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);width:100%}
+#partQ{width:100%;padding:9px 11px;border:1px dashed var(--accent);border-radius:8px;background:var(--surface)}
+.parts-r{font-size:12px;color:var(--ink)}.parts-r b{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;margin-right:4px;color:var(--ink)}
+.sheet .qx2{font-size:11.5px;line-height:1.4;margin-top:1px}
+.sheet .qx{font-size:10.5px;color:var(--sheet-muted);margin-top:2px;line-height:1.3}
 .legal{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.6}
 .legal a{color:inherit}
 </style>
@@ -705,13 +715,15 @@ PM.push(
 ['종근당건강','루테인 지아잔틴','루테인','Chong Kun Dang Lutein Zeaxanthin'],
 ['동국제약','인사돌','소화제','Insadol (gum health tablets)',{cat:'Herbal Medicine',ing:'Corn unsaponifiable extract, magnolia bark extract (check label)',desc:'Gum health medicine for personal use.'}],
 ['','스멕타','지사제','Smecta (Diosmectite powder)',{ing:'Diosmectite 3 g per sachet'}],
+['','처방 감기약 (약국 조제약)','종합감기약','Prescribed Cold Medicine (pharmacy-dispensed packets)',{cat:'Prescription Medicine',ing:'See components below (as on the prescription)',desc:'Cold medicine prescribed by a doctor in Korea, for personal use.',st:'rx',tip:'약국에서 주는 복약안내문(약 설명서)이나 처방전을 꼭 챙기세요. 아래 \'구성 약품\'에 약을 하나씩 추가하면 시트에 성분이 나와요.',ic:['sachet','box']}],
+['','처방약 (병원 처방)','혈압약','Prescribed Medicine (pharmacy-dispensed)',{cat:'Prescription Medicine',ing:'See components below (as on the prescription)',desc:'Medicine prescribed by a doctor in Korea, for personal use.',st:'rx',tip:'처방전이나 복약안내문을 챙기고, 아래 \'구성 약품\'에 약을 추가하세요.',ic:['sachet','box']}],
 ['','노바손 크림','후시딘','Novason Cream (Betamethasone + Gentamicin, steroid & antibiotic cream)',{cat:'Prescription Medicine',ing:'Betamethasone valerate 0.61 mg/g, Gentamicin sulfate 1 mg/g',desc:'Topical corticosteroid and antibiotic cream for skin inflammation and infection, for personal use.',st:'rx',tip:'바르는 스테로이드라 입국카드 1번(의약품·스테로이드)에 해당해요. 원래 튜브 그대로 신고하세요.',ic:['tube']}],
 ['','리도멕스 크림','후시딘','Ridomex Cream (Prednisolone valerate acetate, topical corticosteroid)',{cat:'Topical Medicine',ing:'Prednisolone valerate acetate 0.3% (check label)',desc:'Topical steroid cream for skin itching and rash, for personal use.',st:'rx',tip:'바르는 스테로이드라 신고 대상이에요. 원래 튜브 그대로 가져가세요.',ic:['tube']}],
 ['','더마톱 연고','후시딘','Dermatop Ointment (Prednicarbate 0.25%, topical corticosteroid)',{cat:'Topical Medicine',ing:'Prednicarbate 0.25% (check label)',desc:'Topical steroid ointment for eczema, for personal use.',st:'rx',tip:'바르는 스테로이드라 신고 대상이에요. 원래 튜브 그대로 가져가세요.',ic:['tube']}],
 ['유한양행','엘레나 UREX 프로바이오틱스','유산균',"Yuhan Elena UREX Probiotics (women's probiotic capsules, 170 mg x 30)",{cat:'Dietary Supplement',ing:'UREX probiotics: Limosilactobacillus reuteri RC-14, Lacticaseibacillus rhamnosus GR-1 (live cultures); maltodextrin, microcrystalline cellulose, magnesium stearate; capsule: HPMC',desc:"Women's health probiotic supplement, 1 capsule daily, for personal use.",tip:'건강기능식품(유산균)이라 보통 그대로 통과해요. 원래 통 그대로 가져가세요.',ic:['pillbottle','capsule']}],
 ['제일헬스사이언스','씬 덱시부펜 연질캡슐 300mg','이부프로펜','Ssin Dexibuprofen 300 mg (pain & fever relief soft capsules)',{ing:'Dexibuprofen 300 mg',desc:'Over-the-counter pain and fever relief for personal use.'}],
 ['','덱시부펜 300mg','이부프로펜','Dexibuprofen 300 mg (pain & fever relief)',{ing:'Dexibuprofen 300 mg'}],
-['부광약품','씬지로이드정 0.1mg','혈압약','Synthroid 0.1 mg (Levothyroxine sodium 100 mcg, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium 0.1 mg (100 mcg)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 원래 병에 여행 일수만큼만 담고 \'내용물\'에 실제 개수(예: 10정)를 적으세요. 영문 처방전이나 소견서도 함께 챙기세요.',ic:['pillbottle','box']}],
+['부광약품','씬지로이드정 0.1mg','혈압약','Synthroid 0.1 mg (Levothyroxine sodium 100 mcg, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium 0.1 mg (100 mcg)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 원래 병에 필요한 만큼만 담고 \'복용 ○일분\'과 \'내용물\'(예: 10정)을 적으세요. 영문 처방전이나 소견서도 함께 챙기세요.',ic:['pillbottle','box']}],
 ['','씬지로이드 (레보티록신)','혈압약','Synthroid (Levothyroxine sodium, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium (check strength)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 영문 처방전이나 소견서를 함께 챙기세요.',ic:['pillbottle','box']}],
 ['Trader Joe\'s','트레이더조 멜라토닌 3mg 츄어블','멜라토닌',"Trader Joe's Chewable Melatonin 3 mg (dietary supplement, peppermint)",{ing:'Melatonin 3 mg',desc:'Sleep supplement for personal use.',tip:'호주에선 멜라토닌이 대부분 처방 성분이에요. 원래 병 그대로 3개월분 이내로 가져가고, 가능하면 소견서를 챙기세요.',ic:['pillbottle']}],
 );
@@ -842,14 +854,28 @@ const ICON_UNIT={tray:'개',bowl:'개',cup:'컵',soupcup:'컵',packet:'봉',can:
 const unitOf=k=>UNITS.find(u=>u[0]===k)||UNITS[0];
 /* the same Korean unit reads differently for food and medicine: 약 1통 = 1 bottle, 고추장 1통 = 1 tub */
 const UNIT_KIND={food:{'통':['tub','tubs']},med:{'통':['bottle','bottles'],'개':['unit','units'],'봉':['packet','packets'],'봉지':['packet','packets']}};
-const unitEnOf=(kind,k)=>{const o=(UNIT_KIND[kind]||{})[k];const u=unitOf(k);return o?[u[0],o[0],o[1]]:u};
+const unitEnOf=(kind,k)=>{const l=unitList(kind==='med'?'med':'food').find(u=>u[0]===k);if(l)return l;const o=(UNIT_KIND[kind]||{})[k];const u=unitOf(k);return o?[u[0],o[0],o[1]]:u};
+const DAY_OPTS=[...Array(14)].map((_,i)=>i+1).concat([21,28,30,45,60,90]);
+function dayOpts(v){const d=parseInt(v)||0;const list=d&&!DAY_OPTS.includes(d)?[...DAY_OPTS,d].sort((a,b)=>a-b):DAY_OPTS;
+  return `<option value="" ${d?'':'selected'}>선택 안 함</option>`+list.map(n=>`<option value="${n}" ${n===d?'selected':''}>${n}일분</option>`).join('')}
+function tripDays(){const d=parseInt(S.card&&S.card.sd)||parseInt(S.trav&&S.trav.days)||7;return d}
 /* what is actually inside, e.g. "10정" -> "10 tablets" */
-const CNT_EN=[[/(정|알|tab(let)?s?)/i,'tablet','tablets'],[/(캡슐|연질캡슐|cap(sule)?s?)/i,'capsule','capsules'],[/(포|스틱|sachets?)/i,'sachet','sachets'],[/(매|장|패치|patch(es)?)/i,'patch','patches'],[/(개|vials?)/i,'unit','units'],[/(ml|mL|밀리리터)/,'mL','mL'],[/(g|그램)$/i,'g','g']];
+const CNT_EN=[[/(병|통|bottles?)/i,'bottle','bottles'],[/(박스|상자|box(es)?)/i,'box','boxes'],[/(봉|packets?)/i,'packet','packets'],[/(튜브|tubes?)/i,'tube','tubes'],[/(정|알|tab(let)?s?)/i,'tablet','tablets'],[/(캡슐|연질캡슐|cap(sule)?s?)/i,'capsule','capsules'],[/(포|스틱|sachets?)/i,'sachet','sachets'],[/(매|장|패치|patch(es)?)/i,'patch','patches'],[/(개|vials?)/i,'unit','units'],[/(ml|mL|밀리리터)/,'mL','mL'],[/(g|그램)$/i,'g','g']];
 function cntEn(t){t=String(t||'').trim();if(!t)return '';return t.replace(/(\d+(?:\.\d+)?)\s*([가-힣a-zA-Z]+)/g,(m,num,w)=>{const r=CNT_EN.find(([re])=>re.test(w));if(!r)return m;return `${num} ${(+num===1?r[1]:r[2])}`})}
+const qtyHtml=it=>{const n=+it.n||0;if(!n)return '—';const u=unitEnOf(it.kind,it.u);const c=cntEn(it.cnt);const d=parseInt(it.days);
+  return `${n} ${n===1?u[1]:u[2]}${c?`<div class="qx">${esc(c)}</div>`:''}${d?`<div class="qx">${d}-day supply</div>`:''}`};
 const qtyEn=it=>{const n=+it.n||0;if(!n)return '—';const u=unitEnOf(it.kind,it.u);const c=cntEn(it.cnt);return `${n} ${n===1?u[1]:u[2]}${c?` (${c})`:''}`};
 function parseQty(s,icon){const m=String(s||'').match(/(\d+)/);const n=m?+m[1]:1;const w=String(s||'').toLowerCase();
   const u=UNITS.find(u=>w.includes(u[1])||w.includes(u[0]))?.[0]||ICON_UNIT[icon]||'개';return {n,u}}
-function normItem(it){if(it.n==null){const p=parseQty(it.qty,it.icon);it.n=p.n;it.u=p.u}if(!it.u)it.u=ICON_UNIT[it.icon]||'개';return it}
+/* units shown per kind — no overlaps (약 '병'과 '통'은 하나로) */
+const UNITS_BY={
+  food:[['개','piece','pieces'],['봉','pack','packs'],['컵','cup','cups'],['캔','can','cans'],['박스','box','boxes'],['병','bottle','bottles'],['통','tub','tubs'],['파우치','pouch','pouches'],['포','sachet','sachets']],
+  med:[['박스','box','boxes'],['통','bottle','bottles'],['튜브','tube','tubes'],['포','sachet','sachets'],['봉','packet','packets'],['장','blister sheet','blister sheets'],['개','unit','units']]};
+const UNIT_LABEL={med:{'통':'통·병'}};
+const unitList=kind=>UNITS_BY[kind]||UNITS_BY.food;
+const UNIT_MAP={food:{'봉지':'봉','장':'봉','튜브':'개','정':'개'},med:{'병':'통','봉지':'봉','정':'박스','컵':'개','캔':'개','파우치':'포'}};
+function normItem(it){if(it.n==null){const p=parseQty(it.qty,it.icon);it.n=p.n;it.u=p.u}if(!it.u)it.u=ICON_UNIT[it.icon]||'개';
+  const k=it.kind==='med'?'med':'food';const m=UNIT_MAP[k][it.u];if(m)it.u=m;if(!unitList(k).some(u=>u[0]===it.u))it.u=k==='med'?'박스':'개';return it}
 S.food.forEach(normItem);S.med.forEach(normItem);
 
 /* ---------- Claude ---------- */
@@ -1053,7 +1079,7 @@ function render(){
   <div class="list">${kind==='med'?`<div class="splitbar"><span>약품 정리 방식</span><span class="seg" data-split><button data-v="0" aria-pressed="${!S.medSplit}">한 목록</button><button data-v="1" aria-pressed="${!!S.medSplit}">상비약·영양제·처방약</button></span></div>`:''}${list.length?(kind==='med'&&S.medSplit?MGRP.map(([g,ko,en])=>{const l=list.filter(it=>medGroup(it)===g);return l.length?`<div class="lgrp"><b>${ko}</b><span>${en} · ${l.length}</span></div>`+l.map(rowHTML).join(''):''}).join(''):list.map(rowHTML).join('')):`<div class="empty">아직 항목이 없어요. 위에서 한 번에 찍거나, 목록을 붙여넣거나, 검색해서 추가하세요.</div>`}</div>`;
   bindAdder(kind);
 }
-function rowHTML(it){
+function rowHTML(it){normItem(it);
   const [lab,cls]=ST[it.kind][it.st]||['확인 필요','warn'];const ie=(f,html,ph)=>`<span data-ie="${f}" data-id="${it.id}">${html||`<span style="color:var(--muted)">${ph}</span>`}</span>`;
   return `<article class="row" data-id="${it.id}">
    <div class="phw"><button class="ph" data-pedit="${it.id}" aria-label="${esc(it.ko)} 사진 편집"><img alt="" src="${pic(it)}"></button><button class="cam" data-shoot="${it.id}" aria-label="사진 찍어 바꾸기">${SVG_CAM}</button></div>
@@ -1061,11 +1087,11 @@ function rowHTML(it){
      ${it.b?`<div class="br">${ie('b',esc(it.b))}</div>`:''}<div class="ko">${!it.ko?`<button class="btn sm primary" data-name="${it.id}">이름 정하기</button>`:ie('ko',esc(it.ko),'제품명')}${it.sample?'<span class="tag">예시</span>':''}${it.photo?'':'<span class="tag">그림</span>'}</div>
      <div class="en">${it.pending?'<span class="spin"></span> 영문 작성 중…':ie('en',esc(it.en),'영문명 없음')}</div>
      <div class="cat">${ie('cat',esc(it.cat),'CATEGORY')}</div></div></div></div>
-   <div class="dt"><div><b>${it.kind==='med'?'Active':'Ingred.'}</b>${ie('ing',esc(it.ing),'—')}</div><div><b>Note</b>${ie('desc',esc(it.desc),'—')}</div>${it.tip?`<div class="tip">${esc(it.tip)}</div>`:''}${it.kind==='med'&&S.medSplit?`<span class="seg gsel" data-gsel="${it.id}">${MGRP.map(([g,ko])=>`<button data-g="${g}" aria-pressed="${medGroup(it)===g}">${ko}</button>`).join('')}</span>`:''}${it.kind==='med'&&(it.st==='rx'||it.st==='ctrl'||it.rx)?`<label class="check" style="font-size:13px;margin-top:2px"><input type="checkbox" data-rxt="${it.id}" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 <span style="color:var(--muted)">(체크하면 시트에 표시)</span></label>`:''}</div>
+   <div class="dt"><div><b>${it.kind==='med'?'Active':'Ingred.'}</b>${ie('ing',esc(it.ing),'—')}</div><div><b>Note</b>${ie('desc',esc(it.desc),'—')}</div>${(it.parts||[]).length?`<div class="parts-r"><b>구성</b>${it.parts.map(p=>esc(p.ko)+(p.qty?' '+esc(p.qty):'')).join(', ')} <button class="btn sm ghost" data-edit="${it.id}" style="padding:0 6px">수정</button></div>`:(it.kind==='med'&&/Prescription/.test(it.cat||'')&&/component/i.test(it.ing||'')?`<div class="parts-r"><button class="btn sm" data-edit="${it.id}">구성 약품 추가</button></div>`:'')}${it.tip?`<div class="tip">${esc(it.tip)}</div>`:''}${it.kind==='med'&&S.medSplit?`<span class="seg gsel" data-gsel="${it.id}">${MGRP.map(([g,ko])=>`<button data-g="${g}" aria-pressed="${medGroup(it)===g}">${ko}</button>`).join('')}</span>`:''}${it.kind==='med'&&(it.st==='rx'||it.st==='ctrl'||it.rx)?`<label class="check" style="font-size:13px;margin-top:2px"><input type="checkbox" data-rxt="${it.id}" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 <span style="color:var(--muted)">(체크하면 시트에 표시)</span></label>`:''}</div>
    <div class="side"><span class="pill ${cls}">${lab}</span>
      <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
-     <select class="unit" data-unit="${it.id}" aria-label="단위">${UNITS.map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]}</option>`).join('')}</select></div>
-     ${it.kind==='med'?`<span class="cnt">내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span>`:''}<button class="xdel" data-del="${it.id}">삭제</button></div>
+     <select class="unit" data-unit="${it.id}" aria-label="단위">${unitList(it.kind).map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${(UNIT_LABEL[it.kind]||{})[u[0]]||u[0]}</option>`).join('')}</select></div>
+     <button class="xdel" data-del="${it.id}">삭제</button>${it.kind==='med'?`<div class="medx"><span>내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span><label class="dsel">복용 <select class="unit" data-dsel="${it.id}" aria-label="복용 일수">${dayOpts(it.days)}</select></label></div>`:''}</div>
   </article>`;
 }
 function search(q,kind){
@@ -1360,6 +1386,37 @@ async function openPhotoEditor(id){
   refresh();
 }
 
+/* ---------- components inside a prescription pack (조제약·처방약 구성) ---------- */
+const INGR=[['아세트아미노펜','Acetaminophen (paracetamol)','pain / fever'],['이부프로펜','Ibuprofen','pain / fever'],['덱시부프로펜','Dexibuprofen','pain / fever'],['록소프로펜','Loxoprofen','pain / inflammation'],['나프록센','Naproxen','pain / inflammation'],['아세클로페낙','Aceclofenac','pain / inflammation'],
+ ['슈도에페드린','Pseudoephedrine','nasal decongestant'],['메틸에페드린','Methylephedrine','cough / decongestant'],['클로르페니라민','Chlorpheniramine','antihistamine'],['레보세티리진','Levocetirizine','antihistamine'],['세티리진','Cetirizine','antihistamine'],['펙소페나딘','Fexofenadine','antihistamine'],['에바스틴','Ebastine','antihistamine'],['로라타딘','Loratadine','antihistamine'],['베포타스틴','Bepotastine','antihistamine'],
+ ['덱스트로메토르판','Dextromethorphan','cough suppressant'],['디히드로코데인','Dihydrocodeine','cough suppressant (controlled)'],['코데인','Codeine','cough suppressant (controlled)'],['레보드로프로피진','Levodropropizine','cough suppressant'],
+ ['암브록솔','Ambroxol','mucolytic'],['아세틸시스테인','Acetylcysteine','mucolytic'],['브롬헥신','Bromhexine','mucolytic'],['구아이페네신','Guaifenesin','expectorant'],['에르도스테인','Erdosteine','mucolytic'],['카르보시스테인','Carbocisteine','mucolytic'],
+ ['아목시실린','Amoxicillin','antibiotic'],['아목시실린 클라불란산','Amoxicillin / clavulanic acid','antibiotic'],['세파클러','Cefaclor','antibiotic'],['세프디니르','Cefdinir','antibiotic'],['세푸록심','Cefuroxime','antibiotic'],['아지트로마이신','Azithromycin','antibiotic'],['클래리스로마이신','Clarithromycin','antibiotic'],['레보플록사신','Levofloxacin','antibiotic'],
+ ['레바미피드','Rebamipide','stomach protection'],['알마게이트','Almagate','antacid'],['판토프라졸','Pantoprazole','stomach acid reducer'],['에소메프라졸','Esomeprazole','stomach acid reducer'],['파모티딘','Famotidine','stomach acid reducer'],['트리메부틴','Trimebutine','digestive'],['돔페리돈','Domperidone','anti-nausea'],['모사프리드','Mosapride','digestive'],
+ ['프레드니솔론','Prednisolone','steroid (anti-inflammatory)'],['메틸프레드니솔론','Methylprednisolone','steroid (anti-inflammatory)'],['몬테루카스트','Montelukast','asthma / allergy'],['오셀타미비르','Oseltamivir (Tamiflu)','antiviral (flu)']];
+function partSearch(q){const n=norm(q);if(!n)return[];
+  const a=INGR.filter(r=>norm(r[0]).includes(n)||norm(r[1]).includes(n)).slice(0,6).map(r=>({ko:r[0],en:r[1],ing:r[2],src:'ingr'}));
+  const b=search(q,'med').filter(e=>e.brand||e.k.length>2).slice(0,6).map(e=>({ko:(e.b&&!e.k.includes(e.b)?e.b+' ':'')+e.k,en:e.en,ing:e.ing,src:'dict'}));
+  return [...a,...b].slice(0,9)}
+const partsHtml=it=>(it.parts||[]).map(p=>`<div class="qx2">• ${esc(p.en||p.ko)}${p.ing&&p.ing!==p.en?` — ${esc(p.ing)}`:''}${p.qty?` (${esc(cntEn(p.qty))})`:''}</div>`).join('');
+function partsEditor(it){
+  return `<div class="f"><span>구성 약품 <i>COMPONENTS</i></span>
+   <div class="parts" id="partsList">${(it.parts||[]).map((p,i)=>`<div class="part"><div class="pt"><b>${esc(p.ko)}</b><span>${esc(p.en||'영문명 없음 — 이름을 사전에서 골라 주세요')}${p.ing&&p.ing!==p.en?' · '+esc(p.ing):''}</span></div>
+     <input class="pq nu" data-pq="${i}" value="${esc(p.qty||'')}" placeholder="양 (예: 6포)"><button type="button" class="xdel" data-pdel="${i}">삭제</button></div>`).join('')||'<div class="shoot">처방전·약국 복약안내문에 적힌 약을 하나씩 추가하세요. 성분명(예: 아세트아미노펜)이나 제품명(예: 콜대원)으로 찾을 수 있어요.</div>'}</div>
+   <div style="position:relative"><input id="partQ" autocomplete="off" placeholder="약 이름·성분 검색 (예: 콜대원, 슈도에페드린)"><div class="sugg" id="partS" hidden></div></div></div>`}
+function bindParts(it,reopen){
+  const q=document.getElementById('partQ'),sg=document.getElementById('partS');if(!q)return;
+  const draw=()=>{const v=q.value.trim();if(!v){sg.hidden=true;return}const r=partSearch(v);
+    sg.innerHTML=r.map((p,i)=>`<button type="button" class="sg" data-padd="${i}"><span class="t"><b>${esc(p.ko)}</b><span>${esc(p.ing||p.en)}</span></span></button>`).join('')+`<button type="button" class="sg new" data-padd="new"><span class="t"><b>"${esc(v)}" 그대로 추가</b><span>영문명은 직접 입력해야 해요</span></span></button>`;sg.hidden=false;sg._r=r};
+  q.addEventListener('input',draw);q.addEventListener('blur',()=>setTimeout(()=>sg.hidden=true,200));
+  sg.addEventListener('mousedown',e=>e.preventDefault());
+  sg.addEventListener('click',e=>{const b=e.target.closest('[data-padd]');if(!b)return;const v=q.value.trim();
+    const p=b.dataset.padd==='new'?{ko:v,en:'',ing:''}:{...sg._r[+b.dataset.padd]};delete p.src;
+    it.parts=[...(it.parts||[]),p];it.sample=false;save();reopen()});
+  document.querySelectorAll('[data-pq]').forEach(inp=>inp.addEventListener('input',()=>{it.parts[+inp.dataset.pq].qty=inp.value;save()}));
+  document.querySelectorAll('[data-pdel]').forEach(b=>b.addEventListener('click',()=>{it.parts.splice(+b.dataset.pdel,1);save();reopen()}));
+}
+
 function openEdit(id){
   const it=getIt(id);if(!it)return;EDIT=id;
   const base=it.kind==='food'?FOOD_ICONS:MED_ICONS;
@@ -1385,12 +1442,13 @@ function openEdit(id){
       <label class="f"><span>제품명</span><input id="e-ko" value="${esc(it.ko)}"></label>
      </div>
      <div>
-      ${it.kind==='med'?`<label class="f"><span>실제 들어 있는 양 <i>CONTENTS</i></span><input id="e-cnt" value="${esc(it.cnt||'')}" placeholder="예: 10정, 2포, 15ml"></label>`:''}<div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${UNITS.map(u0=>{const u=unitEnOf(it.kind,u0[0]);return `<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]} · ${u[2]}</option>`}).join('')}</select></div></div>
+      ${it.kind==='med'?`<div class="f2"><label class="f"><span>실제 들어 있는 양 <i>CONTENTS</i></span><input id="e-cnt" value="${esc(it.cnt||'')}" placeholder="예: 10정, 2포, 15ml"></label><label class="f"><span>복용 일수 <i>DAYS</i></span><select id="e-days">${dayOpts(it.days)}</select></label></div>`:''}<div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${unitList(it.kind).map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${(UNIT_LABEL[it.kind]||{})[u[0]]||u[0]} · ${u[2]}</option>`).join('')}</select></div></div>
      </div>
      <label class="f"><span>영문 이름 <i>ITEM</i></span><input id="e-en" value="${esc(it.en)}"></label>
      <label class="f"><span>분류 <i>CATEGORY</i></span><input id="e-cat" value="${esc(it.cat)}"></label>
      <label class="f"><span>${it.kind==='med'?'주요 성분 · 함량':'원재료'} <i>${it.kind==='med'?'ACTIVE INGREDIENTS':'INGREDIENTS'}</i></span><textarea id="e-ing">${esc(it.ing)}</textarea></label>
      <label class="f"><span>설명 <i>NOTE FOR OFFICER</i></span><textarea id="e-desc">${esc(it.desc)}</textarea></label>
+     ${it.kind==='med'?partsEditor(it):''}
      <div class="f2">
       <label class="f"><span>예상 판정</span><select id="e-st">${Object.entries(ST[it.kind]).map(([k,[l]])=>`<option value="${k}" ${it.st===k?'selected':''}>${l}</option>`).join('')}</select></label>
       ${it.kind==='med'&&S.medSplit?`<label class="f"><span>시트 묶음</span><select id="e-grp"><option value="auto" ${!it.grp||it.grp==='auto'?'selected':''}>자동 (지금: ${MGRP.find(g=>g[0]===medGroup({...it,grp:'auto'}))[1]})</option>${MGRP.map(([g,ko])=>`<option value="${g}" ${it.grp===g?'selected':''}>${ko}</option>`).join('')}</select></label>`:''}${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 (체크하면 시트에 표시)</label>`:'<span></span>'}
@@ -1402,7 +1460,7 @@ function openEdit(id){
    <div class="mfoot"><button class="btn danger" data-del>삭제</button><button class="btn primary" data-close>완료</button></div>
   </div></div>`;
   const ov=document.getElementById('ov');
-  const sync=()=>{const g=k=>document.getElementById('e-'+k);if(!g('ko'))return;['b','ko','en','cat','ing','desc','tip'].forEach(k=>it[k]=g(k).value);if(g('cnt'))it.cnt=g('cnt').value.trim();it.u=g('u').value;it.st=g('st').value;if(g('grp'))it.grp=g('grp').value;if(g('rx'))it.rx=g('rx').checked;if(it.sample)it.sample=false;save()};
+  const sync=()=>{const g=k=>document.getElementById('e-'+k);if(!g('ko'))return;['b','ko','en','cat','ing','desc','tip'].forEach(k=>it[k]=g(k).value);if(g('cnt'))it.cnt=g('cnt').value.trim();if(g('days'))it.days=g('days').value;it.u=g('u').value;it.st=g('st').value;if(g('grp'))it.grp=g('grp').value;if(g('rx'))it.rx=g('rx').checked;if(it.sample)it.sample=false;save()};
   ov.addEventListener('input',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
   ov.addEventListener('change',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
   ov.addEventListener('click',async e=>{
@@ -1415,6 +1473,7 @@ function openEdit(id){
     if(e.target.closest('[data-ai]')){sync();await aiFill(it);return}
     if(e.target.closest('[data-aiimg]')){sync();await aiFill(it,{image:dataURLtoBlob(ORIG.get(id)||it.photo)});return}
   });
+  bindParts(it,()=>{sync();openEdit(id);setTimeout(()=>document.getElementById('partQ')?.focus(),30)});
   const fi=document.getElementById('x-find'),fs=document.getElementById('x-sugg');
   fi.addEventListener('input',()=>{const v=fi.value.trim();if(!v){fs.hidden=true;return}const res=[...search(v,it.kind),...search(v,it.kind==='food'?'med':'food')].slice(0,10);
     fs.innerHTML=res.length?res.map(e=>`<button class="sg" data-fill="${e.uid}"><img alt="" src="${svgURL(e.ic[0])}"><span class="t"><b>${e.b&&!e.k.includes(e.b)?`<small>${esc(e.b)}</small>`:''}${esc(e.k)}</b><span>${esc(e.en)}</span></span></button>`).join(''):`<div class="sg"><span class="t"><span>사전에 없어요. 아래 칸에 이름을 적고 '영문 자동 작성'을 눌러 주세요</span></span></div>`;fs.hidden=false});
@@ -1449,9 +1508,9 @@ function sheetTable(kind){
   const title=kind==='food'?'Food Items to Declare':'Medicines & Supplements to Declare';
   const rowsOf=(list,off)=>list.map((it,i)=>`<tr><td class="num">${off+i+1}</td><td class="p"><img alt="" src="${pic(it)}"></td>
    <td><div class="ien">${esc(it.en||it.ko)}</div><div class="ico">${esc(it.cat)}</div><div class="iko">${esc(it.ko)}</div></td>
-   <td><div class="lb">${kind==='med'?'Active ingredients':'Ingredients'}</div>${esc(it.ing)||'—'}<div class="lb" style="margin-top:6px">Note</div>${esc(it.desc)||'—'}${kind==='med'&&it.rx?`<div class="lb" style="margin-top:6px">Prescription</div>English prescription / doctor's letter attached`:''}</td>
-   <td class="num">${qtyEn(it)}</td></tr>`).join('');
-  const head=`<table><colgroup><col style="width:34px"><col style="width:112px"><col style="width:32%"><col><col style="width:78px"></colgroup><thead><tr><th>#</th><th>Photo</th><th>Item</th><th>Details</th><th>Qty</th></tr></thead><tbody>`;
+   <td><div class="lb">${kind==='med'?'Active ingredients':'Ingredients'}</div>${esc(it.ing)||'—'}<div class="lb" style="margin-top:6px">Note</div>${esc(it.desc)||'—'}${(it.parts||[]).length?`<div class="lb" style="margin-top:6px">Components</div>${partsHtml(it)}`:''}${kind==='med'&&it.rx?`<div class="lb" style="margin-top:6px">Prescription</div>English prescription / doctor's letter attached`:''}</td>
+   <td class="num">${qtyHtml(it)}</td></tr>`).join('');
+  const head=`<table><colgroup><col style="width:34px"><col style="width:112px"><col style="width:32%"><col><col style="width:96px"></colgroup><thead><tr><th>#</th><th>Photo</th><th>Item</th><th>Details</th><th>Qty</th></tr></thead><tbody>`;
   let body;
   if(kind==='med'&&S.medSplit){let off=0;body=MGRP.map(([g,ko,en],gi)=>{const list=L.filter(it=>medGroup(it)===g);if(!list.length)return '';const h=`<div class="grp"><span class="gn">${gi+1}</span><b>${en}</b><span>${ko} · ${list.length}</span></div>${head}${rowsOf(list,off)}</tbody></table>`;off+=list.length;return h}).join('')}
   else body=head+rowsOf(L,0)+'</tbody></table>';
@@ -1697,6 +1756,7 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-tab]');if(t){TAB=t.dataset.tab;try{localStorage.setItem(KEY+'-tab',TAB)}catch(_){}render();window.scrollTo({top:0});return}
   const pb=e.target.closest('[data-pedit]');if(pb){const it=getIt(pb.dataset.pedit);if(it&&(it.photo||ORIG.has(it.id)))openPhotoEditor(it.id);else openEdit(pb.dataset.pedit);return}
   if(e.target.closest('[data-trips]')){openTrips();return}
+  const dyb=e.target.closest('[data-days]');if(dyb){const it=getIt(dyb.dataset.days);it.days=String(tripDays());it.sample=false;save();render();toast(`${tripDays()}일분으로 적었어요. 내용물 개수도 맞춰 주세요`);return}
   const spb=e.target.closest('[data-split] button');if(spb){S.medSplit=spb.dataset.v==='1';save();render();return}
   const gsb=e.target.closest('[data-gsel] button');if(gsb){const it=getIt(gsb.closest('[data-gsel]').dataset.gsel);it.grp=gsb.dataset.g;it.sample=false;save();render();return}
   const nb=e.target.closest('[data-name]');if(nb){openEdit(nb.dataset.name);return}
@@ -1721,10 +1781,10 @@ document.addEventListener('click',e=>{
   const cp=e.target.closest('[data-copy]');if(cp){const txt=PHR[+cp.dataset.copy][0];
     try{navigator.clipboard.writeText(txt).then(()=>toast('복사했어요'),()=>selectText(cp))}catch(_){selectText(cp)}return}
 });
-document.addEventListener('change',e=>{const rx=e.target.closest('[data-rxt]');if(rx){const it=getIt(rx.dataset.rxt);it.rx=rx.checked;it.sample=false;save();return}const u=e.target.closest('[data-unit]');if(u){const it=getIt(u.dataset.unit);it.u=u.value;it.sample=false;save()}});
+document.addEventListener('change',e=>{const ds=e.target.closest('[data-dsel]');if(ds){const it=getIt(ds.dataset.dsel);it.days=ds.value;it.sample=false;save();return}const rx=e.target.closest('[data-rxt]');if(rx){const it=getIt(rx.dataset.rxt);it.rx=rx.checked;it.sample=false;save();return}const u=e.target.closest('[data-unit]');if(u){const it=getIt(u.dataset.unit);it.u=u.value;it.sample=false;save()}});
 document.addEventListener('dblclick',e=>{const el=e.target.closest('[data-ie]');if(!el||el.isContentEditable)return;const it=getIt(el.dataset.id);if(!it)return;const f=el.dataset.ie;
   el.textContent=it[f]||'';el.contentEditable='true';el.focus();const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);let done=false;
-  const fin=keep=>{if(done)return;done=true;el.contentEditable='false';if(keep){it[f]=el.textContent.replace(/\s+/g,' ').trim();it.sample=false;save()}render()};
+  const fin=keep=>{if(done)return;done=true;el.contentEditable='false';if(keep){it[f]=el.textContent.replace(/\s+/g,' ').trim();if(f==='days')it.days=(it.days.match(/\d+/)||[''])[0];it.sample=false;save()}render()};
   el.addEventListener('blur',()=>fin(true),{once:true});
   el.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();el.blur()}else if(ev.key==='Escape'){ev.preventDefault();done=false;fin(false)}});
 });
