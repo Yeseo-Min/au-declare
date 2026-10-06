@@ -1,0 +1,16 @@
+{
+  "name": "호주 입국 신고 리스트",
+  "short_name": "호주신고",
+  "description": "호주 입국 시 신고할 음식·약품을 영문 리스트로",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2F4F6",
+  "theme_color": "#E2621B",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

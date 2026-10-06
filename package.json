@@ -1,0 +1,8 @@
+{
+  "name": "au-declare",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "호주 입국 신고 리스트 — 음식·약품 영문 신고 리스트 앱",
+  "engines": { "node": ">=18" }
+}

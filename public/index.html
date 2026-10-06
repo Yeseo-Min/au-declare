@@ -1,0 +1,1491 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#E2621B">
+<meta name="description" content="호주 입국 시 신고할 음식·약품을 사진 한 장으로 영문 리스트로 만들어 주는 앱">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>호주 입국 신고 리스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&family=Nanum+Pen+Script&display=swap">
+<style>
+/* Layout: form-sheet app — orange Incoming Passenger Card accent, item rows like the paper list travellers print, a white A4 sheet for the officer */
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --surface-2:#F7F8FA; --ink:#16202C; --muted:#5C6776; --line:#DCE1E7;
+  --accent:#E2621B; --accent-ink:#FFFFFF; --accent-soft:#FDEBDD;
+  --ok:#1E7A4C; --ok-soft:#E3F3EA; --warn:#9A6200; --warn-soft:#FBF0D9; --bad:#B8322A; --bad-soft:#FBE4E2;
+  --shadow:0 1px 2px rgba(22,32,44,.06),0 8px 24px rgba(22,32,44,.06);
+  --sheet-bg:#FFFFFF; --sheet-ink:#111418; --sheet-line:#2B3138; --sheet-muted:#59616B;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151B; --surface:#1A2029; --surface-2:#151A22; --ink:#E7EBF0; --muted:#9AA5B2; --line:#2B333E;
+  --accent:#F07F3C; --accent-ink:#1A1007; --accent-soft:#3A2416;
+  --ok:#5BC08A; --ok-soft:#173326; --warn:#E3B04F; --warn-soft:#3A2D12; --bad:#F07A70; --bad-soft:#3D1D1B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151B; --surface:#1A2029; --surface-2:#151A22; --ink:#E7EBF0; --muted:#9AA5B2; --line:#2B333E;
+  --accent:#F07F3C; --accent-ink:#1A1007; --accent-soft:#3A2416;
+  --ok:#5BC08A; --ok-soft:#173326; --warn:#E3B04F; --warn-soft:#3A2D12; --bad:#F07A70; --bad-soft:#3D1D1B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 64px}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1040px;margin:0 auto}
+.mono{font-family:var(--f-mono);letter-spacing:.04em}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:22px 14px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .mark{width:40px;height:40px;border-radius:9px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;font-size:13px;flex:none}
+.brand h1{font-size:20px;line-height:1.2;margin:0;text-wrap:balance}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;padding-block:8px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.tab .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab[aria-selected="true"] .n{color:inherit;opacity:.7}
+.tab:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.ipc{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:12px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);margin-bottom:16px}
+.ipc .q{font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.ipc b{display:block;font-size:14px}
+.ipc p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.yes{flex:none;display:flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:12px;font-weight:600}
+.yes i{width:18px;height:18px;border:2px solid var(--accent);border-radius:3px;display:grid;place-items:center;font-style:normal;color:var(--accent);font-size:13px;line-height:1}
+.adder{padding:16px;display:grid;gap:12px;margin-bottom:16px}
+.adder label.lbl{font-size:13px;color:var(--muted)}
+.searchrow{display:flex;gap:8px;flex-wrap:wrap}
+.search{position:relative;flex:1 1 260px;min-width:0}
+.search input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:16px}
+.search input:focus{border-color:var(--accent);outline:none}
+.sugg{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;max-height:380px;overflow-y:auto}
+.sg{display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;border:0;background:none;width:100%;text-align:left}
+.sg:hover,.sg.on{background:var(--surface-2)}
+.sg img{width:40px;height:40px;border-radius:6px;border:1px solid var(--line);flex:none;background:#fff}
+.sg .t{min-width:0;flex:1}
+.sg .t b{display:block;font-weight:500}
+.sg .t span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sg.new .t b{color:var(--accent)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:500}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px dashed var(--line);background:transparent;border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer;color:var(--muted)}
+.chip:hover{border-color:var(--accent);color:var(--ink)}
+.notice{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:13px;color:var(--muted);margin-bottom:12px}
+.list{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:96px minmax(0,1.2fr) minmax(0,1.5fr) auto;gap:14px;align-items:start;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.row .ph{width:96px;height:96px;border-radius:8px;border:1px solid var(--line);background:#fff;overflow:hidden;cursor:pointer;padding:0;display:block}
+.row .ph img{width:100%;height:100%;object-fit:contain;display:block}
+.nm{min-width:0}
+.nm .ko{font-size:16px;font-weight:700;line-height:1.3}
+.nm .en{font-size:14px;margin-top:2px}
+.nm .cat{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+.dt{min-width:0;font-size:13px;color:var(--muted);display:grid;gap:4px}
+.dt b{color:var(--ink);font-weight:500;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-right:4px}
+.dt .tip{color:var(--ink);font-size:13px}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.pill{font-size:12px;font-weight:500;border-radius:999px;padding:3px 10px;white-space:nowrap;border:1px solid transparent}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.tag{font-family:var(--f-mono);font-size:10px;border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--muted);margin-left:6px;vertical-align:2px}
+.qty{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp 0.8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:12px}
+@media (max-width:720px){
+  .row{grid-template-columns:76px minmax(0,1fr);gap:10px}
+  .row .ph{width:76px;height:76px}
+  .row .dt{grid-column:1 / -1}
+  .row .side{grid-column:1 / -1;flex-direction:row;justify-content:space-between;align-items:center}
+}
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(10,14,20,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding:16px}
+@media (min-width:720px){.ov{align-items:center}}
+.modal{background:var(--surface);border-radius:14px;width:min(760px,100%);max-height:calc(100% - 8px);overflow:auto;box-shadow:var(--shadow);border:1px solid var(--line)}
+.mhead{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2}
+.mhead h2{font-size:16px;margin:0}
+.mbody{padding:16px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:18px}
+@media (max-width:720px){.mbody{grid-template-columns:1fr}}
+.photo{display:grid;gap:10px;align-content:start}
+.bigph{width:100%;max-width:240px;aspect-ratio:1;border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;justify-self:center}
+.bigph img{width:100%;height:100%;object-fit:contain;display:block}
+.opts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.opt{aspect-ratio:1;border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:0;cursor:pointer;overflow:hidden}
+.opt img{width:100%;height:100%;object-fit:contain;display:block}
+.opt.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.upl{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.upl label{justify-content:center}
+.upl input{position:absolute;width:1px;height:1px;opacity:0}
+.proc{display:grid;gap:6px;font-size:12px;color:var(--muted);padding:10px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line)}
+.proc .r{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.proc input[type=range]{width:100%;accent-color:var(--accent)}
+.fields{display:grid;gap:10px;min-width:0}
+.f{display:grid;gap:4px}
+.f > span{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.f > span i{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em}
+.f input,.f textarea,.f select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2)}
+.f textarea{resize:vertical;min-height:58px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:440px){.f2{grid-template-columns:1fr}}
+.aibar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.aimsg{font-size:12px;color:var(--muted)}
+.mfoot{display:flex;justify-content:space-between;gap:8px;padding:12px 16px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--surface)}
+.check{display:flex;gap:8px;align-items:center;font-size:14px}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+/* sheet tab */
+.sheettools{display:grid;gap:12px;padding:16px;margin-bottom:16px}
+.sheettools .f3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.sheettools .f3{grid-template-columns:1fr 1fr}}
+.exp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sheetscroll{overflow-x:auto;padding-bottom:6px}
+.sheet{background:var(--sheet-bg);color:var(--sheet-ink);width:794px;max-width:none;margin:0 auto 18px;padding:40px 40px 34px;border-radius:4px;box-shadow:var(--shadow);font-family:var(--f-body)}
+.sheet h3{margin:0;font-size:22px;letter-spacing:.01em;font-family:var(--f-body)}
+.sheet .sub{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--sheet-muted);margin:6px 0 4px}
+.sheet .sub b{color:var(--sheet-ink);font-weight:500}
+.sheet .stmt{font-size:12.5px;margin:10px 0 14px;padding:8px 10px;border:1.5px solid var(--sheet-ink);border-radius:2px}
+.sheet .stmt span{display:block;color:var(--sheet-muted);font-size:11.5px;margin-top:2px}
+.sheet table{width:100%;border-collapse:collapse;table-layout:fixed}
+.sheet th{font-size:11px;font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:6px 8px;border:1px solid var(--sheet-line);background:#EEF0F2;color:var(--sheet-ink)}
+.sheet td{border:1px solid var(--sheet-line);padding:8px;vertical-align:middle;font-size:12.5px;line-height:1.4;color:var(--sheet-ink)}
+.sheet td.p{width:112px;text-align:center}
+.sheet td.p img{width:96px;height:96px;object-fit:contain;display:block;margin:0 auto}
+.sheet .ien{font-size:15px;font-weight:700;line-height:1.25}
+.sheet .ico{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--sheet-muted);margin-top:3px}
+.sheet .iko{font-size:11.5px;color:var(--sheet-muted);margin-top:3px}
+.sheet .lb{font-family:var(--f-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--sheet-muted)}
+.sheet .num{text-align:center;font-family:var(--f-mono);font-size:12px}
+.sheet .foot{margin-top:12px;font-size:10.5px;color:var(--sheet-muted);display:flex;justify-content:space-between;gap:10px}
+.sheet .none{padding:22px;text-align:center;color:var(--sheet-muted);border:1px dashed var(--sheet-line)}
+.phr{padding:16px;display:grid;gap:8px}
+.phr h4{margin:0 0 4px;font-size:15px}
+.ph-i{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.ph-i .t{min-width:0}
+.ph-i .t b{display:block;font-weight:500}
+.ph-i .t span{font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:80;max-width:calc(100% - 32px);text-align:center}
+.nm .br{font-size:12px;color:var(--muted);font-weight:500}
+.phw{position:relative;width:96px;height:96px}
+.phw .cam{position:absolute;right:-6px;bottom:-6px;width:32px;height:32px;border-radius:50%;border:2px solid var(--surface);background:var(--ink);color:var(--bg);display:grid;place-items:center;cursor:pointer;padding:0;box-shadow:var(--shadow)}
+.phw .cam svg{width:16px;height:16px}
+@media (max-width:720px){.phw{width:76px;height:76px}}
+.nmh{display:flex;gap:6px;align-items:flex-start}
+.pen{flex:none;width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;cursor:pointer;padding:0;color:var(--muted);margin-top:1px}
+.pen:hover{color:var(--ink);border-color:var(--muted)}
+.pen svg{width:14px;height:14px}
+[data-ie]{border-radius:4px;cursor:text;touch-action:manipulation}
+[data-ie]:hover{background:var(--surface-2)}
+[data-ie][contenteditable="true"]{outline:2px solid var(--accent);background:var(--surface);padding:0 3px}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--surface);overflow:hidden}
+.step button{width:34px;height:32px;border:0;background:transparent;cursor:pointer;font-size:18px;line-height:1;color:var(--ink)}
+.step button:hover{background:var(--surface-2)}
+.step b{min-width:28px;text-align:center;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums}
+.unit{border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:6px 8px;font-size:13px}
+.qtyrow{display:flex;gap:6px;align-items:center}
+.xdel{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 6px;border-radius:6px;white-space:nowrap}
+.xdel:hover{color:var(--bad);background:var(--bad-soft)}
+.bulk{display:grid;gap:10px;padding:14px;border:1.5px dashed var(--line);border-radius:12px;background:var(--surface-2)}
+.bulk textarea{width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);resize:vertical;font-size:15px}
+.ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:720px){.ways{grid-template-columns:1fr}}
+.way{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;cursor:pointer;min-width:0}
+.way:hover{border-color:var(--accent)}
+.way.main{border-color:var(--accent);background:var(--accent-soft)}
+.way .ico{flex:none;width:34px;height:34px;border-radius:9px;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+.way.main .ico{background:var(--accent);color:var(--accent-ink)}
+.way .ico svg{width:18px;height:18px}
+.way b{display:block;font-size:14px}
+.way span{display:block;font-size:12px;color:var(--muted);line-height:1.45}
+.busy{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:var(--accent-soft);font-size:14px}
+.toast button{border:0;background:transparent;color:inherit;text-decoration:underline;font-weight:700;margin-left:10px;cursor:pointer}
+.camrow{display:flex;gap:6px}
+.sg .t b small{font-weight:400;color:var(--muted);margin-right:4px}
+.shoot{font-size:12px;color:var(--muted);line-height:1.5}
+/* incoming passenger card sample */
+.cardform{padding:16px;display:grid;gap:14px;margin-bottom:16px}
+.cardform h3{margin:0;font-size:15px}
+.cardform .g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.cardform .g{grid-template-columns:1fr 1fr}}
+@media (max-width:440px){.cardform .g{grid-template-columns:1fr}}
+.cardform .f input{text-transform:uppercase}
+.cardform .f input.nu{text-transform:none}
+.qlist{display:grid;gap:0;border-top:1px solid var(--line)}
+.qi{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.qi .no{font-family:var(--f-mono);font-weight:600;color:var(--muted)}
+.qi .why{display:block;font-size:12px;color:var(--accent);margin-top:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:6px 12px;cursor:pointer;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button.yes[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.cardhint{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted)}
+.cardhint b{color:var(--ink)}
+.ipfit{position:relative;overflow:hidden;margin-bottom:18px}
+.ipcard{--c-bg:#FBF0D6;--c-ln:#E5BD78;--c-tx:#3B2A12;--c-hd:#F3D9A6;--c-red:#C8462C;--ink:#1C3FA8;
+  width:960px;background:var(--c-bg);color:var(--c-tx);border:1px solid var(--c-ln);padding:22px 26px 20px;position:relative;font-family:var(--f-body);font-size:11.5px;line-height:1.35;transform-origin:top left;overflow:hidden}
+.ipcard .wm{position:absolute;inset:0;display:grid;place-items:center;font-size:190px;font-weight:700;color:rgba(229,160,60,.26);transform:rotate(-12deg);pointer-events:none;letter-spacing:.06em;font-family:var(--f-body)}
+.ipcard .sq{position:absolute;width:14px;height:14px;background:#111}
+.ipcard .ink{font-family:"Nanum Pen Script","Comic Sans MS",cursive;color:var(--ink);font-size:21px;line-height:1}
+.ipcard .ghost{opacity:.33}
+.ipcard .cols{display:grid;grid-template-columns:44% 1fr;gap:18px}
+.ipcard .ttl{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--c-hd);border:1px solid var(--c-ln);border-radius:4px;padding:5px;font-size:16px;font-weight:700;letter-spacing:.06em}
+.ipcard .note{font-weight:700;font-size:10.5px;margin:6px 0 8px}
+.ipcard .fl{margin-bottom:7px}
+.ipcard .fl > .lb{display:flex;gap:5px;align-items:center;margin-bottom:2px}
+.ipcard .fl > .lb::before{content:"\25B6";font-size:8px}
+.ipcard .fl.dia > .lb::before{content:"\25C6"}
+.ipcard .bxs{display:flex;gap:2px}
+.ipcard .bx{width:18px;height:22px;background:#fff;border:1px solid var(--c-ln);display:grid;place-items:center;overflow:hidden}
+.ipcard .ln{background:#fff;border:1px solid var(--c-ln);min-height:23px;padding:2px 6px;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
+.ipcard .yn{display:flex;gap:12px;align-items:center;justify-content:flex-end;color:var(--c-red);font-size:11px;white-space:nowrap}
+.ipcard .yn span{display:flex;gap:4px;align-items:center}
+.ipcard .cb{width:17px;height:17px;background:#fff;border:1px solid var(--c-ln);display:grid;place-items:center;overflow:visible}
+.ipcard .cb .ink{font-size:26px;margin-top:-3px}
+.ipcard .row2{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ipcard .qh{font-weight:700;margin:4px 0 6px}
+.ipcard .qh::before{content:"\25B6  ";font-size:8px}
+.ipcard .q{display:grid;grid-template-columns:18px 1fr 110px;gap:6px;align-items:start;padding:3px 0;border-bottom:1px solid rgba(229,189,120,.6)}
+.ipcard .q .n{font-weight:700}
+.ipcard .q .t small{display:block;font-weight:700;font-size:10px}
+.ipcard .q .yn{padding-top:1px}
+.ipcard .foot{display:grid;grid-template-columns:44% 1fr 130px;gap:18px;align-items:end;margin-top:12px;padding-top:8px;border-top:1px solid var(--c-ln)}
+.ipcard .oath b{display:block;font-size:12px}
+.ipcard .oath p{margin:2px 0 0;font-size:10px;font-style:italic}
+.ipcard .sig{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+.ipcard .sig .lbx{font-size:10px;color:var(--c-red)}
+.ipcard .flip{color:var(--c-red);font-weight:700;font-size:12px;text-align:right;line-height:1.3}
+.ipcard .flip::after{content:" \25B6"}
+.ipcard .hdr{font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.ipcard .hdr::before{content:"";width:12px;height:12px;background:#111;display:inline-block}
+.ipcard .bcols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:4px}
+.ipcard .kv{display:grid;grid-template-columns:62px 1fr;gap:4px 6px;align-items:center;margin-bottom:4px}
+.ipcard .lower{display:grid;grid-template-columns:30% 1fr;gap:16px;margin-top:14px;border:1px solid var(--c-ln);border-radius:8px;padding:10px}
+.ipcard .abc{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ipcard .abcb{border:1.5px solid var(--c-ln);border-radius:10px;padding:8px;min-height:120px;background:rgba(255,255,255,.35)}
+.ipcard .abcb .h{display:flex;gap:6px;align-items:center;font-weight:700;margin-bottom:6px}
+.ipcard .abcb .h i{width:22px;height:22px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-style:normal;font-size:13px;flex:none}
+.ipcard .rs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px 10px;margin-top:10px}
+.ipcard .rs span{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.ipcard .serial{font-family:var(--f-mono);font-size:20px;letter-spacing:.12em;background:#fff;border:1px solid var(--c-ln);padding:4px 10px;justify-self:end}
+.legal{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.6}
+.legal a{color:inherit}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark">AU</div>
+      <div>
+        <h1>호주 입국 신고 리스트</h1>
+        <p>한글로 적으면 검사관에게 보여줄 영문 리스트가 만들어져요</p>
+      </div>
+    </div>
+  </header>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <main id="main"></main>
+  <p class="legal">판정은 참고용이에요. 최종 판단은 호주 생물보안 검사관이 합니다. 애매하면 무조건 입국카드(또는 디지털 입국신고)에 <b>신고(YES)</b>하세요. 신고한 물건은 반입이 안 되더라도 벌금을 받지 않아요. 공식 기준: <a href="https://www.agriculture.gov.au/biosecurity-trade/travelling/to-australia" target="_blank" rel="noopener">DAFF 여행자 안내</a> · <a href="https://www.tga.gov.au/products/unapproved-therapeutic-goods/travelling-medicines-and-medical-devices/entering-australia" target="_blank" rel="noopener">TGA 의약품 반입</a></p>
+</div>
+<div id="modalRoot"></div>
+<input type="file" id="rowcam" accept="image/*" capture="environment" hidden>
+<div id="toastRoot"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="ort.wasm.min.js"></script>
+<script>
+/* ---------- illustrations (white "product photo" tiles) ---------- */
+const G='#9aa3ad';
+const IC={
+bowl:`<path d="M14 46h72c0 20-16 34-36 34S14 66 14 46z" fill="#3c5a8a"/><path d="M18 46c2-12 16-20 32-20s30 8 32 20z" fill="#fff" stroke="#d9dde3" stroke-width="2"/><rect x="38" y="78" width="24" height="6" rx="2" fill="#2e4670"/><path d="M22 60h56" stroke="#fff" stroke-width="3" opacity=".4"/>`,
+tray:`<path d="M18 40h64l-6 34H24z" fill="#fff" stroke="#c9ced6" stroke-width="2"/><rect x="14" y="32" width="72" height="10" rx="3" fill="#e23b3b"/><rect x="30" y="50" width="40" height="14" rx="3" fill="#f2f2f2"/><circle cx="50" cy="57" r="5" fill="#e23b3b"/>`,
+cup:`<path d="M24 30h52l-7 52H31z" fill="#e8a33d"/><rect x="20" y="24" width="60" height="9" rx="3" fill="#fff" stroke="#c9ced6" stroke-width="2"/><path d="M27 48h46l-2 16H29z" fill="#c4372d"/><circle cx="50" cy="56" r="5" fill="#fff"/>`,
+soupcup:`<path d="M22 34h56l-6 46H28z" fill="#f4f1e8" stroke="#c9ced6" stroke-width="2"/><rect x="18" y="26" width="64" height="10" rx="3" fill="#e8a33d"/><path d="M26 50h48l-1.5 14h-45z" fill="#2c4a34"/><ellipse cx="50" cy="57" rx="9" ry="4" fill="#f4f1e8"/>`,
+packet:`<rect x="16" y="26" width="68" height="50" rx="6" fill="#c4372d"/><path d="M16 30h68M16 72h68" stroke="#8f241d" stroke-width="3" stroke-dasharray="3 3"/><ellipse cx="50" cy="52" rx="20" ry="12" fill="#f3d27a"/><path d="M36 50q7-6 14 0t14 0" stroke="#d8a93c" stroke-width="2" fill="none"/>`,
+can:`<ellipse cx="50" cy="78" rx="22" ry="6" fill="#7d8690"/><rect x="28" y="26" width="44" height="52" fill="#a7afb8"/><rect x="28" y="38" width="44" height="28" fill="#2f7fbf"/><ellipse cx="50" cy="26" rx="22" ry="6" fill="#d3d8de" stroke="${G}" stroke-width="2"/><rect x="38" y="46" width="24" height="10" rx="2" fill="#fff"/>`,
+tincan:`<rect x="16" y="30" width="68" height="44" rx="10" fill="#d5a33a"/><rect x="22" y="36" width="56" height="32" rx="7" fill="#3f7d3a"/><circle cx="33" cy="45" r="6" fill="none" stroke="#e9edf1" stroke-width="3"/><path d="M39 45h24" stroke="#e9edf1" stroke-width="3"/><rect x="44" y="54" width="26" height="8" rx="2" fill="#f3d27a"/>`,
+jar:`<rect x="30" y="20" width="40" height="11" rx="3" fill="#c4372d"/><rect x="26" y="31" width="48" height="50" rx="8" fill="#e9eef3" stroke="#b9c2cc" stroke-width="2"/><rect x="30" y="44" width="40" height="33" rx="5" fill="#d2452f"/><rect x="36" y="50" width="28" height="12" rx="2" fill="#fff"/>`,
+tub:`<rect x="20" y="30" width="60" height="46" rx="6" fill="#b8322a"/><rect x="17" y="24" width="66" height="10" rx="4" fill="#7d1f1a"/><rect x="30" y="42" width="40" height="22" rx="3" fill="#f6d36b"/>`,
+seaweed:`<rect x="18" y="28" width="64" height="46" rx="4" fill="#cfd5dc"/><rect x="23" y="33" width="54" height="36" rx="3" fill="#1f3326"/><path d="M28 42h44M28 50h44M28 58h44" stroke="#3d6347" stroke-width="2"/><rect x="18" y="68" width="64" height="8" rx="2" fill="#c4372d"/>`,
+bottle:`<rect x="44" y="14" width="12" height="10" rx="2" fill="#7d1f1a"/><path d="M42 24h16v8l6 8v40a4 4 0 0 1-4 4H40a4 4 0 0 1-4-4V40l6-8z" fill="#3b2a20"/><rect x="38" y="50" width="24" height="18" rx="2" fill="#f2e3c6"/>`,
+snack:`<path d="M24 20h52l-4 8 4 8-2 36 2 8H24l2-8-2-36 4-8z" fill="#f0b429"/><circle cx="50" cy="52" r="12" fill="#c4372d"/><path d="M24 20h52M24 80h52" stroke="#b77f12" stroke-width="3"/>`,
+pouch:`<path d="M28 20h44v54q0 6-6 6H34q-6 0-6-6z" fill="#e8a33d"/><rect x="28" y="20" width="44" height="9" fill="#c4372d"/><ellipse cx="50" cy="54" rx="14" ry="10" fill="#7a4a1a"/>`,
+fish:`<path d="M16 50q20-20 46-6l14-10v32l-14-10q-26 14-46-6z" fill="#c8b07a"/><circle cx="28" cy="48" r="3" fill="#3b2a20"/><path d="M40 43v14M48 41v18M56 43v14" stroke="#a88f58" stroke-width="2"/>`,
+meat:`<path d="M28 30c14-10 40-4 42 14 2 16-14 30-30 26S18 40 28 30z" fill="#c6513f"/><path d="M34 36c8-6 24-2 26 8" stroke="#f1c7b8" stroke-width="4" fill="none"/><rect x="60" y="64" width="22" height="7" rx="3.5" transform="rotate(40 71 67)" fill="#f2efe9" stroke="#c9ced6"/>`,
+nut:`<ellipse cx="40" cy="50" rx="13" ry="18" transform="rotate(-25 40 50)" fill="#c89257"/><ellipse cx="60" cy="54" rx="13" ry="18" transform="rotate(20 60 54)" fill="#b37a40"/><path d="M36 42q4 6 0 14M62 46q-4 6 0 14" stroke="#8f5e2c" stroke-width="2" fill="none"/>`,
+fruit:`<circle cx="50" cy="56" r="24" fill="#d63b3b"/><path d="M50 32q2-10 10-12" stroke="#5b3a1e" stroke-width="3" fill="none"/><ellipse cx="62" cy="25" rx="8" ry="4" fill="#3aa36b"/>`,
+egg:`<ellipse cx="40" cy="54" rx="14" ry="18" fill="#f3e6cf" stroke="#d8c29c" stroke-width="1.5"/><ellipse cx="62" cy="58" rx="12" ry="15" fill="#e9d6b0" stroke="#cdb487" stroke-width="1.5"/><circle cx="59" cy="54" r="2" fill="#8a6a3a"/><circle cx="65" cy="61" r="1.6" fill="#8a6a3a"/>`,
+honey:`<rect x="32" y="20" width="36" height="10" rx="3" fill="#7a4a1a"/><path d="M28 30h44v44a8 8 0 0 1-8 8H36a8 8 0 0 1-8-8z" fill="#e8a317"/><path d="M28 40h44" stroke="#c4840c" stroke-width="3"/><rect x="36" y="50" width="28" height="14" rx="2" fill="#fff6dc"/>`,
+ginseng:`<path d="M50 24c-6 10-4 20 0 28-4 10-12 18-18 28M50 52c4 10 10 18 16 28M50 52c-2 12-2 20 0 28" stroke="#d8b46a" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M50 24c-4-6-12-6-14-1M50 24c4-7 12-7 14-2" stroke="#3aa36b" stroke-width="3" fill="none"/>`,
+tteok:`<rect x="18" y="40" width="28" height="20" rx="7" fill="#fbe3ea" stroke="#e8b7c4" stroke-width="1.5"/><rect x="50" y="36" width="32" height="20" rx="7" fill="#f6f6f2" stroke="#d6d6cc" stroke-width="1.5"/><rect x="32" y="58" width="32" height="20" rx="7" fill="#d9ead0" stroke="#b5cfa7" stroke-width="1.5"/>`,
+coffee:`<rect x="26" y="16" width="14" height="68" rx="3" fill="#d4a017"/><rect x="26" y="34" width="14" height="14" fill="#7a3e12"/><rect x="44" y="16" width="14" height="68" rx="3" fill="#d4a017"/><rect x="44" y="34" width="14" height="14" fill="#7a3e12"/><rect x="62" y="16" width="14" height="68" rx="3" fill="#d4a017"/><rect x="62" y="34" width="14" height="14" fill="#7a3e12"/>`,
+teabag:`<path d="M50 12v20" stroke="${G}" stroke-width="1.5"/><rect x="42" y="8" width="16" height="10" fill="#c4372d"/><path d="M33 32h34l4 44H29z" fill="#e6d3b3"/><path d="M33 32l17-6 17 6" fill="#d8c29c"/>`,
+box:`<path d="M22 34l10-8h46l-10 8z" fill="#9db3d6"/><rect x="22" y="34" width="46" height="44" fill="#fff" stroke="#9db3d6" stroke-width="2"/><path d="M68 34l10-8v44l-10 8z" fill="#c9d6ea"/><rect x="28" y="44" width="34" height="8" fill="#2f5fb3"/><path d="M45 59v13M38.5 65.5h13" stroke="#d64545" stroke-width="4"/>`,
+blister:`<rect x="16" y="24" width="68" height="52" rx="6" fill="#dfe5ec" stroke="#b9c2cc" stroke-width="2"/>`+[29,43,57,71].map(x=>[40,60].map(y=>`<ellipse cx="${x}" cy="${y}" rx="5.5" ry="7.5" fill="#f8fafc" stroke="${G}"/><ellipse cx="${x}" cy="${y}" rx="3.5" ry="5.5" fill="#e48a2a"/>`).join('')).join(''),
+capsule:`<rect x="16" y="24" width="68" height="52" rx="6" fill="#dfe5ec" stroke="#b9c2cc" stroke-width="2"/>`+[30,50,70].map(x=>[39,61].map(y=>`<rect x="${x-9}" y="${y-5}" width="18" height="10" rx="5" fill="#3aa36b"/><rect x="${x}" y="${y-5}" width="9" height="10" rx="0" fill="#f2c94c"/>`).join('')).join(''),
+softgel:`<rect x="16" y="24" width="68" height="52" rx="6" fill="#dfe5ec" stroke="#b9c2cc" stroke-width="2"/>`+[30,50,70].map(x=>[39,61].map(y=>`<ellipse cx="${x}" cy="${y}" rx="8" ry="5.5" fill="#d79a1d" stroke="#a8730c"/>`).join('')).join(''),
+ampoule:[0,1,2,3,4].map(i=>{const x=20+i*13;return `<rect x="${x+2}" y="22" width="6" height="10" rx="2" fill="#cfe0ef"/><rect x="${x}" y="30" width="10" height="46" rx="3" fill="#eef4fa" stroke="#9fb6cc" stroke-width="1.5"/><rect x="${x+1}" y="52" width="8" height="23" rx="2" fill="#cfe4f7"/>`}).join(''),
+drops:`<path d="M44 14h12l2 14H42z" fill="#2f5fb3"/><path d="M38 28h24v8l4 6v36a4 4 0 0 1-4 4H38a4 4 0 0 1-4-4V42l4-6z" fill="#eef4fa" stroke="#9fb6cc" stroke-width="2"/><rect x="38" y="50" width="24" height="16" fill="#2f5fb3"/>`,
+tube:`<path d="M26 40h40l14 6v8l-14 6H26z" fill="#fff" stroke="${G}" stroke-width="2"/><rect x="14" y="42" width="13" height="16" rx="2" fill="#2f5fb3"/><rect x="36" y="44" width="22" height="12" fill="#3aa36b"/>`,
+sachet:`<rect x="28" y="18" width="44" height="64" rx="3" fill="#fff" stroke="${G}" stroke-width="2"/><path d="M28 25h44M28 75h44" stroke="#c9ced6" stroke-width="2" stroke-dasharray="2 2"/><rect x="34" y="34" width="32" height="10" fill="#2f5fb3"/><rect x="34" y="49" width="20" height="4" fill="${G}"/><rect x="34" y="57" width="26" height="4" fill="#c9ced6"/>`,
+pillbottle:`<rect x="32" y="18" width="36" height="13" rx="3" fill="#f2f4f7" stroke="${G}" stroke-width="2"/><rect x="28" y="31" width="44" height="50" rx="6" fill="#e48a2a"/><rect x="32" y="42" width="36" height="26" rx="2" fill="#fff"/><rect x="36" y="48" width="28" height="5" fill="#2f5fb3"/><rect x="36" y="57" width="18" height="4" fill="${G}"/>`,
+patch:`<rect x="20" y="28" width="60" height="44" rx="8" fill="#f1e2cf" stroke="#d2b896" stroke-width="2"/><rect x="33" y="38" width="34" height="24" rx="4" fill="#fff" opacity=".7"/>`,
+shot:`<rect x="40" y="16" width="20" height="10" rx="2" fill="#d4a017"/><path d="M40 26h20v6c6 3 8 7 8 12v32a4 4 0 0 1-4 4H36a4 4 0 0 1-4-4V44c0-5 2-9 8-12z" fill="#7a3e12"/><rect x="32" y="50" width="36" height="16" fill="#f2c94c"/>`,
+syrup:`<rect x="36" y="14" width="20" height="10" rx="2" fill="#fff" stroke="${G}" stroke-width="2"/><path d="M36 24h20v8c6 2 8 6 8 10v34a4 4 0 0 1-4 4H32a4 4 0 0 1-4-4V42c0-4 2-8 8-10z" fill="#8b3a2b"/><rect x="30" y="48" width="32" height="16" fill="#fff"/><path d="M68 60h14l-2 20h-10z" fill="#eef4fa" stroke="#9fb6cc" stroke-width="1.5"/>`,
+herbpill:`<rect x="18" y="42" width="64" height="36" rx="4" fill="#7a1f1f"/><circle cx="34" cy="44" r="9" fill="#d4a017"/><circle cx="52" cy="41" r="9" fill="#e0b63a"/><circle cx="68" cy="45" r="8" fill="#c8961a"/><rect x="18" y="56" width="64" height="6" fill="#d4a017"/>`,
+pack:`<rect x="18" y="22" width="64" height="58" rx="5" fill="#fff" stroke="${G}" stroke-width="2"/><rect x="18" y="22" width="64" height="16" rx="5" fill="#3aa36b"/><rect x="28" y="46" width="44" height="6" fill="#2f5fb3"/><rect x="28" y="58" width="30" height="4" fill="${G}"/><rect x="28" y="66" width="36" height="4" fill="#c9ced6"/>`,
+bandage:`<rect x="14" y="40" width="72" height="22" rx="11" transform="rotate(-20 50 51)" fill="#e9c8a5"/><rect x="38" y="42" width="24" height="18" rx="3" transform="rotate(-20 50 51)" fill="#f6e8d8"/>`,
+syringe:`<rect x="20" y="44" width="46" height="14" rx="2" fill="#eef4fa" stroke="#9fb6cc" stroke-width="2"/><rect x="24" y="47" width="22" height="8" fill="#cfe4f7"/><path d="M66 51h18" stroke="${G}" stroke-width="2"/><rect x="10" y="46" width="10" height="10" fill="#2f5fb3"/>`,
+};
+const svgURL=k=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/>${IC[k]||IC.pack}</svg>`);
+const FOOD_ICONS=['bowl','tray','cup','soupcup','packet','can','tincan','jar','tub','seaweed','bottle','snack','pouch','fish','meat','nut','fruit','egg','honey','ginseng','tteok','coffee','teabag'];
+const MED_ICONS=['box','blister','capsule','softgel','pillbottle','ampoule','drops','tube','sachet','patch','shot','syrup','herbpill','pack','bandage','syringe','ginseng'];
+
+/* ---------- statuses ---------- */
+const ST={
+ food:{ok:['신고 · 대부분 통과','ok'],check:['신고 · 검사 대상','warn'],ban:['반입 금지 가능성 높음','bad']},
+ med:{ok:['개인용 · 신고 권장','ok'],rx:['영문 처방전·소견서 지참','warn'],ctrl:['규제 성분 · 사전 확인','bad'],ban:['반입 어려움','bad']}
+};
+
+/* ---------- built-in dictionary ---------- */
+const D={food:[
+{k:'햇반',a:['즉석밥','즉석 밥','오뚜기밥','햇반'],en:'Instant Cooked Rice (microwavable)',cat:'Instant Rice',ing:'Rice, water',desc:'Commercially packaged, shelf-stable cooked rice.',st:'ok',tip:'포장된 즉석밥은 보통 통과해요.',ic:['tray','bowl']},
+{k:'컵라면',a:['컵 라면','육개장 사발면','사발면'],en:'Instant Cup Noodles',cat:'Instant Noodle',ing:'Wheat noodles, seasoning powder (may contain beef or seafood extract), dried vegetables',desc:'Commercially packaged instant noodles.',st:'ok',tip:'고기 건더기가 들어 있으면 검사 대상이 될 수 있어요.',ic:['cup','packet']},
+{k:'라면',a:['봉지라면','신라면','진라면','안성탕면','삼양라면'],en:'Instant Noodles (packet)',cat:'Instant Noodle',ing:'Wheat noodles, seasoning powder (may contain beef extract), dried vegetables',desc:'Commercially packaged instant noodles.',st:'ok',tip:'수프에 고기 건더기가 있으면 검사 대상이 될 수 있어요.',ic:['packet','cup']},
+{k:'비빔면',a:['팔도비빔면','비빔라면'],en:'Instant Spicy Cold Noodles (Bibim-myeon)',cat:'Instant Noodle',ing:'Wheat noodles, chili paste sauce (red pepper, sugar, vinegar)',desc:'Commercially packaged instant noodles with sauce.',st:'ok',tip:'',ic:['cup','packet']},
+{k:'너구리',a:['너구리라면'],en:'Instant Noodles (Seafood Udon flavour)',cat:'Instant Noodle',ing:'Wheat noodles, seasoning powder, dried kelp, dried vegetables',desc:'Commercially packaged instant noodles.',st:'ok',tip:'',ic:['cup','packet']},
+{k:'짜파게티',a:['짜장라면','짜파구리'],en:'Instant Black Bean Sauce Noodles',cat:'Instant Noodle',ing:'Wheat noodles, black bean (chunjang) powder, vegetable oil',desc:'Commercially packaged instant noodles.',st:'ok',tip:'',ic:['packet','cup']},
+{k:'미역국밥',a:['컵밥 미역국밥','미역국'],en:'Instant Seaweed Soup with Rice',cat:'Instant Soup',ing:'Cooked rice, dried seaweed, soup base (may contain beef extract)',desc:'Commercially packaged instant rice soup.',st:'check',tip:'소고기 육수가 들어간 제품은 검사 대상이에요.',ic:['soupcup','pouch']},
+{k:'황태국밥',a:['황태해장국','황태콩나물해장국밥','해장국밥'],en:'Instant Dried Pollock Soup with Rice',cat:'Instant Soup',ing:'Cooked rice, dried pollock, bean sprouts, soup base',desc:'Commercially packaged instant rice soup.',st:'check',tip:'생선·육수 성분이 있어 신고 후 검사받아요.',ic:['soupcup','pouch']},
+{k:'즉석국',a:['블록국','동결건조국','된장국','북엇국'],en:'Freeze-dried Instant Soup Block',cat:'Instant Soup',ing:'Dried vegetables, soybean paste or soup base',desc:'Commercially packaged freeze-dried soup.',st:'check',tip:'',ic:['sachet','soupcup']},
+{k:'김치 통조림',a:['캔김치','양반김치','김치캔','볶음김치'],en:'Canned Kimchi',cat:'Canned Kimchi',ing:'Napa cabbage, red pepper powder, garlic, salt (may contain fish sauce)',desc:'Commercially canned, shelf-stable kimchi.',st:'check',tip:'캔/진공포장 제품은 보통 괜찮지만 신고해요.',ic:['can','tincan','pouch']},
+{k:'김치',a:['배추김치','깍두기','총각김치','포기김치'],en:'Kimchi (fermented cabbage)',cat:'Kimchi',ing:'Napa cabbage, red pepper powder, garlic, salt, fish sauce',desc:'Fermented vegetable side dish.',st:'check',tip:'집에서 만든 김치는 압수될 가능성이 커요. 시판 밀봉 제품을 추천해요.',ic:['jar','pouch','can']},
+{k:'깻잎 통조림',a:['깻잎','깻잎조림','깻잎장아찌'],en:'Canned Pickled Perilla Leaves in Soy Sauce',cat:'Canned Vegetable',ing:'Perilla leaves, soy sauce, sugar, garlic, red pepper',desc:'Commercially canned, cooked vegetable side dish.',st:'ok',tip:'',ic:['tincan','can']},
+{k:'도라지 통조림',a:['도라지','도라지무침','도라지장아찌'],en:'Canned Bellflower Root in Spicy Sauce',cat:'Canned Vegetable',ing:'Bellflower root, red pepper paste, sugar, garlic',desc:'Commercially canned, cooked vegetable side dish.',st:'ok',tip:'',ic:['tincan','can']},
+{k:'명이나물 통조림',a:['명이나물','명이절임','산마늘'],en:'Canned Garlic Leaves (Myeongi) in Soy Sauce',cat:'Canned Vegetable',ing:'Wild garlic leaves, soy sauce, sugar, vinegar',desc:'Commercially canned, pickled vegetable.',st:'ok',tip:'',ic:['tincan','can']},
+{k:'김',a:['조미김','도시락김','김밥김','재래김','쌈김'],en:'Dried Seasoned Seaweed (Laver)',cat:'Dried Seaweed',ing:'Seaweed (laver), vegetable oil, salt',desc:'Commercially packaged dried seaweed.',st:'ok',tip:'',ic:['seaweed']},
+{k:'미역',a:['건미역','다시마'],en:'Dried Seaweed (Miyeok / Kelp)',cat:'Dried Seaweed',ing:'Dried seaweed',desc:'Dried seaweed for soup.',st:'ok',tip:'',ic:['seaweed','pack']},
+{k:'참치캔',a:['참치','동원참치','사조참치','참치통조림'],en:'Canned Tuna',cat:'Canned Fish',ing:'Tuna, vegetable oil, salt',desc:'Commercially canned tuna.',st:'ok',tip:'',ic:['can']},
+{k:'스팸',a:['햄 통조림','런천미트','리챔'],en:'Canned Pork Luncheon Meat',cat:'Canned Meat',ing:'Pork, ham, salt, starch',desc:'Commercially canned, shelf-stable meat.',st:'check',tip:'육류는 캔이라도 압수될 수 있어요. 가능하면 두고 가세요.',ic:['tincan','can']},
+{k:'고추장',a:['초고추장','튜브 고추장'],en:'Red Chili Pepper Paste (Gochujang)',cat:'Sauce / Paste',ing:'Rice, red pepper powder, fermented soybean, salt, sugar',desc:'Commercially packaged fermented sauce.',st:'ok',tip:'',ic:['tub','tube']},
+{k:'된장',a:['쌈장','청국장'],en:'Fermented Soybean Paste (Doenjang)',cat:'Sauce / Paste',ing:'Soybean, salt, wheat flour',desc:'Commercially packaged fermented sauce.',st:'ok',tip:'',ic:['tub','tube']},
+{k:'간장',a:['진간장','양조간장','국간장'],en:'Soy Sauce',cat:'Sauce',ing:'Soybean, wheat, salt, water',desc:'Commercially bottled sauce.',st:'ok',tip:'',ic:['bottle']},
+{k:'참기름',a:['들기름'],en:'Sesame Oil',cat:'Cooking Oil',ing:'Roasted sesame seed oil',desc:'Commercially bottled oil.',st:'ok',tip:'',ic:['bottle']},
+{k:'고춧가루',a:['고추가루'],en:'Korean Red Chili Powder',cat:'Spice',ing:'Dried red chili pepper (ground)',desc:'Commercially packaged ground spice.',st:'check',tip:'시판 포장 제품만 가져가세요. 씨가 섞인 건 압수될 수 있어요.',ic:['pack','pouch']},
+{k:'건멸치',a:['멸치','멸치볶음','국물멸치'],en:'Dried Anchovies',cat:'Dried Seafood',ing:'Anchovies, salt',desc:'Dried small fish.',st:'check',tip:'',ic:['fish','pack']},
+{k:'오징어채',a:['진미채','건오징어','쥐포','오징어'],en:'Dried Shredded Squid',cat:'Dried Seafood',ing:'Squid, sugar, salt',desc:'Seasoned dried seafood snack.',st:'check',tip:'',ic:['fish','pack']},
+{k:'젓갈',a:['새우젓','명란젓','오징어젓'],en:'Salted Fermented Seafood (Jeotgal)',cat:'Seafood',ing:'Shrimp or fish roe, salt',desc:'Fermented salted seafood.',st:'check',tip:'',ic:['jar']},
+{k:'어묵',a:['오뎅'],en:'Fish Cake',cat:'Seafood',ing:'Fish paste, wheat flour, starch',desc:'Processed fish product.',st:'check',tip:'',ic:['pouch','pack']},
+{k:'육포',a:['소고기육포','돼지육포','beef jerky'],en:'Beef Jerky',cat:'Meat',ing:'Beef, soy sauce, sugar',desc:'Dried meat snack.',st:'ban',tip:'육포·소시지 등 육류 가공품은 대부분 반입 금지예요.',ic:['meat','pack']},
+{k:'소시지',a:['햄','소세지','비엔나','돼지고기','소고기','닭고기'],en:'Sausage / Ham',cat:'Meat',ing:'Pork or beef, salt, starch',desc:'Processed meat product.',st:'ban',tip:'가져가지 않는 걸 추천해요.',ic:['meat']},
+{k:'3분카레',a:['레토르트 카레','즉석카레','3분짜장','즉석짜장'],en:'Ready-to-eat Curry (retort pouch)',cat:'Ready Meal',ing:'Potato, carrot, curry sauce (may contain beef or pork)',desc:'Commercially packaged ready meal.',st:'check',tip:'고기가 들어 있으면 압수될 수 있어요.',ic:['pouch','box']},
+{k:'즉석떡볶이',a:['떡볶이','컵떡볶이','떡볶이 밀키트'],en:'Instant Tteokbokki (rice cake in spicy sauce)',cat:'Ready Meal',ing:'Rice cake, red pepper paste sauce (may contain fish cake)',desc:'Commercially packaged ready meal.',st:'check',tip:'',ic:['cup','pouch']},
+{k:'떡',a:['인절미','가래떡','송편','찹쌀떡'],en:'Rice Cake (Tteok)',cat:'Rice Product',ing:'Glutinous rice, may contain beans or seeds',desc:'Rice cake.',st:'check',tip:'',ic:['tteok']},
+{k:'누룽지',a:['누룽지칩'],en:'Scorched Rice Crisps (Nurungji)',cat:'Rice Product',ing:'Cooked rice (dried)',desc:'Commercially packaged dried rice.',st:'ok',tip:'',ic:['pack','snack']},
+{k:'쌀',a:['생쌀','현미','찹쌀','잡곡'],en:'Uncooked Rice / Grains',cat:'Grain',ing:'Raw rice or grains',desc:'Uncooked grains.',st:'check',tip:'생곡물·잡곡은 씨앗으로 취급돼 압수될 수 있어요.',ic:['pack']},
+{k:'과자',a:['스낵','새우깡','허니버터칩','감자칩','꼬북칩'],en:'Snacks (chips / crackers)',cat:'Snack',ing:'Wheat flour or potato, vegetable oil, seasoning',desc:'Commercially packaged snacks.',st:'ok',tip:'',ic:['snack']},
+{k:'초코파이',a:['몽쉘','쿠키','비스킷','빵'],en:'Chocolate Pie / Biscuits',cat:'Confectionery',ing:'Wheat flour, sugar, chocolate, marshmallow (may contain egg, milk)',desc:'Commercially packaged confectionery.',st:'ok',tip:'',ic:['box','snack']},
+{k:'사탕',a:['젤리','캔디','홍삼캔디','껌'],en:'Candy / Jelly',cat:'Confectionery',ing:'Sugar, glucose syrup, flavouring',desc:'Commercially packaged sweets.',st:'ok',tip:'',ic:['snack','pack']},
+{k:'믹스커피',a:['커피믹스','맥심','인스턴트커피'],en:'Instant Coffee Mix (3-in-1)',cat:'Beverage',ing:'Instant coffee, sugar, creamer (milk derivative)',desc:'Commercially packaged coffee sticks.',st:'ok',tip:'',ic:['coffee','box']},
+{k:'녹차',a:['티백','보리차','옥수수차','둥굴레차','유자차'],en:'Tea (tea bags)',cat:'Beverage',ing:'Tea leaves or roasted grain',desc:'Commercially packaged tea.',st:'check',tip:'곡물차(보리·옥수수)는 검사 대상이 될 수 있어요.',ic:['teabag','box']},
+{k:'미숫가루',a:['선식'],en:'Roasted Multigrain Powder',cat:'Grain Powder',ing:'Roasted barley, rice, beans, sesame',desc:'Commercially packaged grain powder drink.',st:'check',tip:'',ic:['pack','pouch']},
+{k:'홍삼',a:['홍삼정','홍삼스틱','정관장','홍삼진액'],en:'Korean Red Ginseng Extract',cat:'Health Food',ing:'Red ginseng extract',desc:'Commercially packaged ginseng product for personal use.',st:'check',tip:'',ic:['ginseng','box','shot']},
+{k:'인삼',a:['수삼','건삼','말린 인삼'],en:'Ginseng Root',cat:'Dried Herb',ing:'Ginseng root',desc:'Ginseng root.',st:'check',tip:'생 인삼(수삼)은 압수될 수 있어요.',ic:['ginseng']},
+{k:'견과류',a:['아몬드','호두','잣','땅콩','하루견과'],en:'Roasted Nuts',cat:'Nuts',ing:'Almonds, walnuts, peanuts (roasted)',desc:'Commercially packaged roasted nuts.',st:'check',tip:'볶지 않은 생견과·씨앗은 압수될 수 있어요.',ic:['nut','pack']},
+{k:'꿀',a:['벌꿀','꿀스틱','프로폴리스','로열젤리'],en:'Honey / Bee Products',cat:'Bee Product',ing:'Honey',desc:'Honey or bee product.',st:'ban',tip:'꿀·벌 제품은 대부분 반입 금지예요.',ic:['honey']},
+{k:'계란',a:['메추리알','장조림','구운계란','달걀'],en:'Eggs / Egg Products',cat:'Egg Product',ing:'Eggs',desc:'Egg or egg-based food.',st:'ban',tip:'계란 및 계란 가공품은 반입 금지예요.',ic:['egg']},
+{k:'과일',a:['사과','귤','배','생과일','바나나'],en:'Fresh Fruit',cat:'Fresh Produce',ing:'Fresh fruit',desc:'Fresh fruit.',st:'ban',tip:'기내식 과일도 착륙 전에 버리세요.',ic:['fruit']},
+{k:'채소',a:['생야채','마늘','고추','생강'],en:'Fresh Vegetables',cat:'Fresh Produce',ing:'Fresh vegetables',desc:'Fresh vegetables.',st:'ban',tip:'생채소·생마늘은 반입 금지예요.',ic:['fruit','pack']},
+{k:'분유',a:['아기분유','이유식'],en:'Infant Formula / Baby Food',cat:'Baby Food',ing:'Milk powder, vitamins, minerals',desc:'Commercially packaged infant food for my baby.',st:'check',tip:'',ic:['tub','box']},
+{k:'집반찬',a:['밑반찬','장아찌','멸치볶음','홈메이드'],en:'Homemade Side Dishes',cat:'Homemade Food',ing:'List each ingredient',desc:'Homemade food for personal use.',st:'check',tip:'고기·계란이 들어간 집반찬은 압수될 가능성이 커요.',ic:['jar','pouch']},
+],med:[
+{k:'종합비타민',a:['멀티비타민','비타민','멀티비타'],en:'Multivitamin',cat:'Dietary Supplement',ing:'Vitamins A, B, C, D, E and minerals',desc:'Daily vitamin supplement for personal use.',st:'ok',tip:'',ic:['shot','pillbottle','blister']},
+{k:'남성 비타민',a:['남성용 비타민','맨 프로그램'],en:"Men's Multivitamin",cat:'Dietary Supplement',ing:'Vitamins, minerals, plant extracts',desc:'Daily vitamin supplement for personal use.',st:'ok',tip:'',ic:['capsule','blister','pillbottle']},
+{k:'여성 비타민',a:['여성용 비타민','우먼 프로그램'],en:"Women's Multivitamin",cat:'Dietary Supplement',ing:'Vitamins, iron, folic acid, minerals',desc:'Daily vitamin supplement for personal use.',st:'ok',tip:'',ic:['capsule','blister','pillbottle']},
+{k:'루테인',a:['눈 영양제','루테인지아잔틴'],en:'Lutein (eye supplement)',cat:'Dietary Supplement',ing:'Lutein, zeaxanthin (marigold extract)',desc:'Eye health supplement for personal use.',st:'ok',tip:'',ic:['softgel','pillbottle']},
+{k:'오메가3',a:['오메가 3','피쉬오일','크릴오일'],en:'Omega-3 Fish Oil',cat:'Dietary Supplement',ing:'Fish oil (EPA, DHA)',desc:'Supplement for personal use.',st:'ok',tip:'',ic:['softgel','pillbottle']},
+{k:'유산균',a:['프로바이오틱스','락토핏'],en:'Probiotics',cat:'Dietary Supplement',ing:'Lactic acid bacteria (probiotics)',desc:'Digestive supplement for personal use.',st:'ok',tip:'',ic:['sachet','pillbottle']},
+{k:'비타민C',a:['비타민 C','비타민D','비타민 D','마그네슘','칼슘','아연','철분'],en:'Vitamin / Mineral Supplement',cat:'Dietary Supplement',ing:'See label (e.g. Vitamin C 1000 mg)',desc:'Supplement for personal use.',st:'ok',tip:'',ic:['pillbottle','blister']},
+{k:'밀크씨슬',a:['간영양제','실리마린'],en:'Milk Thistle (liver supplement)',cat:'Dietary Supplement',ing:'Milk thistle extract (silymarin)',desc:'Supplement for personal use.',st:'ok',tip:'',ic:['capsule','pillbottle']},
+{k:'콜라겐',a:['콜라겐 스틱','히알루론산'],en:'Collagen Supplement',cat:'Dietary Supplement',ing:'Fish collagen peptide, vitamin C',desc:'Supplement for personal use.',st:'ok',tip:'',ic:['sachet','shot']},
+{k:'피임약',a:['경구피임약','머시론','야즈'],en:'Oral Contraceptive Pill',cat:'Prescription Medicine',ing:'See label (e.g. desogestrel / ethinylestradiol)',desc:'Contraceptive pill for personal use.',st:'rx',tip:'호주에선 처방약이에요. 원래 포장 그대로, 가능하면 영문 처방전을 챙기세요.',ic:['blister','box']},
+{k:'소화제',a:['오타이산','훼스탈','베아제','까스활명수','활명수'],en:'Digestive Medicine',cat:'Digestive Aid',ing:'See label (digestive enzymes or antacid / herbal powder)',desc:'Over-the-counter digestive aid for personal use.',st:'ok',tip:'',ic:['sachet','blister','shot']},
+{k:'인공눈물',a:['일회용 인공눈물','히알루론산 점안액','점안액','안약'],en:'Preservative-free Artificial Tears (single-use vials)',cat:'Eye Drops',ing:'Sodium hyaluronate 0.1% (check label)',desc:'Eye drops for dry eyes, for personal use.',st:'ok',tip:'',ic:['ampoule','drops']},
+{k:'타이레놀',a:['해열진통제','진통제','두통약','아세트아미노펜'],en:'Paracetamol (Tylenol) 500 mg',cat:'Pain Relief',ing:'Acetaminophen (paracetamol) 500 mg',desc:'Over-the-counter pain and fever relief.',st:'ok',tip:'',ic:['blister','box']},
+{k:'이부프로펜',a:['애드빌','부루펜','이지엔6','생리통약'],en:'Ibuprofen',cat:'Pain Relief',ing:'Ibuprofen 200 mg',desc:'Over-the-counter pain relief.',st:'ok',tip:'',ic:['softgel','blister']},
+{k:'종합감기약',a:['감기약','판콜','판피린','화이투벤','테라플루','콘택'],en:'Cold & Flu Medicine',cat:'Cold Medicine',ing:'Check label: may contain acetaminophen, chlorpheniramine, pseudoephedrine or methylephedrine, dextromethorphan',desc:'Cold medicine for personal use.',st:'rx',tip:'슈도에페드린·코데인 성분이 있으면 호주에선 처방약이에요. 성분을 꼭 확인하세요.',ic:['box','syrup','shot']},
+{k:'코데인 기침약',a:['코대원','기침약','기침시럽'],en:'Cough Syrup containing Codeine',cat:'Controlled Medicine',ing:'Dihydrocodeine or codeine (check label)',desc:'Cough medicine prescribed for personal use.',st:'ctrl',tip:'코데인은 호주에서 처방 전용이에요. 영문 처방전 없이는 가져가지 마세요.',ic:['syrup','box']},
+{k:'멀미약',a:['키미테','멀미 패치','보나링'],en:'Motion Sickness Patch / Tablet',cat:'Motion Sickness',ing:'Scopolamine (patch) or dimenhydrinate (tablet)',desc:'Motion sickness medicine for personal use.',st:'rx',tip:'스코폴라민 패치는 처방이 필요한 성분이라 영문 소견서가 있으면 좋아요.',ic:['patch','blister']},
+{k:'지사제',a:['설사약','로페라미드','스멕타','정로환'],en:'Anti-diarrhoea Medicine',cat:'Digestive Aid',ing:'Loperamide or diosmectite (check label)',desc:'Over-the-counter medicine for personal use.',st:'ok',tip:'',ic:['sachet','blister']},
+{k:'변비약',a:['둘코락스','변비'],en:'Laxative',cat:'Digestive Aid',ing:'Bisacodyl (check label)',desc:'Over-the-counter medicine for personal use.',st:'ok',tip:'',ic:['blister','box']},
+{k:'위장약',a:['겔포스','개비스콘','제산제'],en:'Antacid',cat:'Digestive Aid',ing:'Aluminium phosphate or sodium alginate (check label)',desc:'Over-the-counter antacid for personal use.',st:'ok',tip:'',ic:['sachet','syrup']},
+{k:'후시딘',a:['항생제 연고','연고'],en:'Antibiotic Ointment (Fusidic acid)',cat:'Topical Medicine',ing:'Fusidic acid 2%',desc:'Topical ointment for personal use.',st:'rx',tip:'호주에선 처방 성분이에요. 소량 원포장으로 가져가세요.',ic:['tube']},
+{k:'마데카솔',a:['상처연고','흉터연고','센텔라'],en:'Wound Healing Ointment (Centella asiatica)',cat:'Topical Medicine',ing:'Centella asiatica extract',desc:'Topical ointment for personal use.',st:'ok',tip:'',ic:['tube']},
+{k:'파스',a:['신신파스','붙이는 파스','쿨파스','근육통'],en:'Pain Relief Patch',cat:'Topical Medicine',ing:'Methyl salicylate, menthol (check label)',desc:'Pain relief patches for personal use.',st:'ok',tip:'',ic:['patch','box']},
+{k:'알레르기약',a:['지르텍','항히스타민','세티리진','알레그라'],en:'Antihistamine (allergy tablets)',cat:'Allergy Medicine',ing:'Cetirizine 10 mg or fexofenadine (check label)',desc:'Over-the-counter allergy medicine.',st:'ok',tip:'',ic:['blister','box']},
+{k:'수면유도제',a:['슬리펠','쿨드림','독시라민'],en:'Sleep Aid (antihistamine)',cat:'Sleep Aid',ing:'Doxylamine or diphenhydramine (check label)',desc:'Over-the-counter sleep aid for personal use.',st:'ok',tip:'',ic:['blister','box']},
+{k:'수면제',a:['졸피뎀','스틸녹스','신경안정제','항불안제','자낙스'],en:'Prescription Sleeping Pill / Sedative',cat:'Controlled Medicine',ing:'e.g. Zolpidem (check label)',desc:'Prescribed medicine for personal use.',st:'ctrl',tip:'향정신성 약은 영문 처방전 필수, 3개월분 이하로만 가져가세요.',ic:['blister','pillbottle']},
+{k:'멜라토닌',a:['서카딘'],en:'Melatonin',cat:'Sleep Aid',ing:'Melatonin',desc:'Sleep supplement for personal use.',st:'rx',tip:'호주에선 대부분 처방 성분이에요.',ic:['pillbottle','blister']},
+{k:'ADHD약',a:['콘서타','메틸페니데이트','ADHD'],en:'ADHD Medication (prescribed)',cat:'Controlled Medicine',ing:'Methylphenidate (check label)',desc:'Prescribed medicine for personal use.',st:'ctrl',tip:'사전 확인이 필요한 규제 약물이에요. 영문 처방전 필수.',ic:['pillbottle','blister']},
+{k:'혈압약',a:['고혈압약','고지혈증약','갑상선약','처방약'],en:'Prescription Medication',cat:'Prescription Medicine',ing:'See prescription / label',desc:'Prescribed medicine for personal use.',st:'rx',tip:'원래 포장 그대로, 영문 처방전이나 소견서를 함께 가져가세요.',ic:['blister','pillbottle','box']},
+{k:'인슐린',a:['당뇨약','주사기','펜니들','자가주사'],en:'Insulin / Diabetes Medication',cat:'Prescription Medicine',ing:'Insulin (see label)',desc:'Prescribed medicine and needles for personal use.',st:'rx',tip:'주사기·바늘은 반드시 신고하고 영문 소견서를 챙기세요.',ic:['syringe','box']},
+{k:'한약',a:['탕약','한약 파우치','환','한약재'],en:'Traditional Korean Herbal Medicine',cat:'Herbal Medicine',ing:'List the herbs (check label / prescription)',desc:'Herbal medicine for personal use.',st:'rx',tip:'성분표(영문)를 꼭 준비하세요. 동물성 원료는 반입이 어려워요.',ic:['pouch','herbpill','sachet']},
+{k:'우황청심원',a:['청심환','공진단','경옥고','사향','녹용'],en:'Herbal Pill containing animal ingredients',cat:'Herbal Medicine',ing:'May contain bezoar, musk or deer antler',desc:'Traditional herbal medicine.',st:'ban',tip:'사향·녹용 등 동물성 성분은 반입이 어렵거나 금지예요.',ic:['herbpill']},
+{k:'반창고',a:['밴드','대일밴드','습윤밴드','붕대'],en:'Adhesive Bandages / Plasters',cat:'First Aid',ing:'—',desc:'First aid supplies.',st:'ok',tip:'',ic:['bandage','box']},
+]};
+D.food.forEach(e=>e.kind='food');D.med.forEach(e=>e.kind='med');
+/* brand products: [manufacturer, product name, generic template, English name, overrides] */
+const PF=[
+['팔도','팔도비빔면','비빔면','Paldo Bibim-myeon (Instant Spicy Cold Noodles)'],
+['오뚜기','진비빔면','비빔면','Ottogi Jin Bibim-myeon (Instant Spicy Cold Noodles)'],
+['농심','배홍동 비빔면','비빔면','Nongshim Bae Hong Dong Bibim-myeon (Instant Spicy Cold Noodles)'],
+['농심','신라면','라면','Nongshim Shin Ramyun (Spicy Instant Noodles)'],
+['농심','신라면 컵','컵라면','Nongshim Shin Ramyun Cup Noodles'],
+['농심','신라면 블랙','라면','Nongshim Shin Ramyun Black (Instant Noodles with beef bone broth)',{st:'check',tip:'사골 육수 성분이 있어 검사 대상이 될 수 있어요.'}],
+['농심','너구리','너구리','Nongshim Neoguri (Seafood Udon Instant Noodles)'],
+['농심','짜파게티','짜파게티','Nongshim Chapagetti (Black Bean Sauce Instant Noodles)'],
+['농심','안성탕면','라면','Nongshim Ansungtangmyun (Instant Noodles)'],
+['농심','육개장 사발면','컵라면','Nongshim Yukgaejang Sabalmyun (Spicy Beef flavour Cup Noodles)',{st:'check',tip:'고기맛 건더기가 있으면 검사받을 수 있어요.'}],
+['농심','새우탕 큰사발','컵라면','Nongshim Shrimp Noodle Soup Big Bowl'],
+['오뚜기','진라면 매운맛','라면','Ottogi Jin Ramen Spicy (Instant Noodles)'],
+['오뚜기','진라면 순한맛','라면','Ottogi Jin Ramen Mild (Instant Noodles)'],
+['오뚜기','진짬뽕','라면','Ottogi Jin Jjambbong (Spicy Seafood Instant Noodles)'],
+['오뚜기','참깨라면','라면','Ottogi Sesame Ramen (Instant Noodles with egg flake block)',{st:'check',tip:'계란 블록이 들어 있어 압수될 수 있어요.'}],
+['오뚜기','컵누들','컵라면','Ottogi Cup Noodle (Glass Noodle Soup)'],
+['삼양','불닭볶음면','라면','Samyang Buldak Hot Chicken Flavour Stir-fried Noodles'],
+['삼양','불닭볶음면 큰컵','컵라면','Samyang Buldak Hot Chicken Flavour Cup Noodles'],
+['삼양','삼양라면','라면','Samyang Ramen (Instant Noodles)'],
+['팔도','도시락','컵라면','Paldo Dosirak (Cup Noodles)'],
+['팔도','왕뚜껑','컵라면','Paldo King Lid (Cup Noodles)'],
+['CJ','햇반','햇반','CJ Hetbahn (Instant Cooked Rice, microwavable)'],
+['오뚜기','오뚜기밥','햇반','Ottogi Instant Cooked Rice (microwavable)'],
+['CJ','햇반 컵반 미역국밥','미역국밥','CJ Hetbahn Cupbahn Seaweed Soup with Rice'],
+['CJ','햇반 컵반 황태국밥','황태국밥','CJ Hetbahn Cupbahn Dried Pollock Soup with Rice'],
+['오뚜기','컵밥 미역국밥','미역국밥','Ottogi Cupbap Seaweed Soup with Rice'],
+['오뚜기','컵밥 황태콩나물해장국밥','황태국밥','Ottogi Cupbap Dried Pollock & Bean Sprout Soup with Rice'],
+['오뚜기','3분 카레','3분카레','Ottogi 3-Minute Curry (retort pouch)'],
+['오뚜기','3분 짜장','3분카레','Ottogi 3-Minute Black Bean Sauce (retort pouch)'],
+['동원','양반 김치','김치 통조림','Dongwon Yangban Canned Kimchi'],
+['대상','종가 김치','김치','Jongga Kimchi (commercially sealed pack)'],
+['CJ','비비고 김치','김치','CJ Bibigo Kimchi (commercially sealed pack)'],
+['샘표','우리엄마 깻잎','깻잎 통조림','Sempio Canned Perilla Leaves in Soy Sauce'],
+['샘표','우리엄마 도라지','도라지 통조림','Sempio Canned Bellflower Root in Spicy Sauce'],
+['샘표','우리엄마 명이절임','명이나물 통조림','Sempio Canned Garlic Leaves (Myeongi) in Soy Sauce'],
+['동원','동원참치 라이트스탠다드','참치캔','Dongwon Canned Tuna (Light Standard)'],
+['사조','사조참치 살코기','참치캔','Sajo Canned Tuna'],
+['동원','양반김','김','Dongwon Yangban Seasoned Seaweed (Laver)'],
+['CJ','비비고 김','김','CJ Bibigo Seasoned Seaweed (Laver)'],
+['광천김','광천 도시락김','김','Kwangcheon Seasoned Seaweed (Laver)'],
+['CJ','해찬들 고추장','고추장','CJ Haechandle Gochujang (Red Chili Pepper Paste)'],
+['대상','청정원 순창 고추장','고추장','Chungjungone Sunchang Gochujang (Red Chili Pepper Paste)'],
+['CJ','해찬들 쌈장','된장','CJ Haechandle Ssamjang (Soybean Dipping Paste)'],
+['샘표','진간장','간장','Sempio Soy Sauce'],
+['오뚜기','참기름','참기름','Ottogi Sesame Oil'],
+['오뚜기','옛날 미역','미역','Ottogi Dried Seaweed (Miyeok)'],
+['오리온','초코파이','초코파이','Orion Choco Pie (marshmallow chocolate snack)'],
+['롯데','몽쉘','초코파이','Lotte Mongshell (cream cake snack)'],
+['농심','새우깡','과자','Nongshim Shrimp Crackers (Saeukkang)'],
+['오리온','꼬북칩','과자','Orion Turtle Chips (corn snack)'],
+['해태','허니버터칩','과자','Haitai Honey Butter Chips (potato snack)'],
+['동서','맥심 모카골드','믹스커피','Maxim Mocha Gold Coffee Mix (3-in-1 sticks)'],
+['정관장','홍삼정 에브리타임','홍삼','CheongKwanJang Korean Red Ginseng Extract Everytime (sticks)'],
+['정관장','홍삼정','홍삼','CheongKwanJang Korean Red Ginseng Extract (jar)'],
+['오뚜기','옛날 누룽지','누룽지','Ottogi Nurungji (Scorched Rice Crisps)'],
+['풀무원','즉석 떡볶이','즉석떡볶이','Pulmuone Instant Tteokbokki (rice cake in spicy sauce)'],
+['CJ','스팸 클래식','스팸','CJ Spam Classic (canned pork luncheon meat)'],
+['동원','리챔','스팸','Dongwon Richam (canned pork luncheon meat)'],
+['CJ','비비고 왕교자','소시지','CJ Bibigo Dumplings (pork, frozen)',{cat:'Meat Product',ing:'Pork, cabbage, wheat flour wrapper',st:'ban',tip:'고기 만두는 반입이 거의 불가능해요.'}],
+['삼진어묵','어묵','어묵','Samjin Fish Cake'],
+];
+const PM=[
+['한국얀센','타이레놀 500mg','타이레놀','Tylenol (Paracetamol 500 mg)'],
+['한국얀센','타이레놀 8시간 이알서방정','타이레놀','Tylenol 8 Hour ER (Paracetamol 650 mg, extended release)',{ing:'Acetaminophen (paracetamol) 650 mg'}],
+['삼진제약','게보린','타이레놀','Geborin (pain reliever tablets)',{ing:'Acetaminophen, isopropylantipyrine, caffeine (check label)',tip:'호주에 없는 성분이 섞여 있어요. 원래 포장과 영문 성분표를 챙기세요.'}],
+['대웅제약','이지엔6 이브','이부프로펜','EZN6 Eve (Ibuprofen soft capsules)',{ing:'Ibuprofen (check strength on label)'}],
+['녹십자','탁센','이부프로펜','Tacsen (Naproxen soft capsules)',{ing:'Naproxen 250 mg'}],
+['삼일제약','부루펜','이부프로펜','Brufen (Ibuprofen)'],
+['동화약품','판콜에이','종합감기약','Pancold A (cold & flu syrup)'],
+['동아제약','판피린큐','종합감기약','Panpyrin Q (cold & flu syrup)'],
+['대원제약','코대원 포르테','코데인 기침약','Codaewon Forte (cough syrup containing dihydrocodeine)'],
+['동화약품','까스활명수','소화제','Gas Hwalmyeongsu (herbal digestive liquid)',{ing:'Herbal extracts (cinnamon, clove, etc. — check label)',ic:['shot','box']}],
+['오타이산','오타이산','소화제',"Ohta's Isan (antacid powder)",{ing:'Sodium bicarbonate, herbal powders (cinnamon, fennel, etc.)',ic:['sachet','box']}],
+['한독','훼스탈 플러스','소화제','Festal Plus (digestive enzyme tablets)',{ing:'Digestive enzymes (pancreatin), simethicone — check label',ic:['blister','box']}],
+['대웅제약','베아제','소화제','Bearse (digestive enzyme tablets)',{ing:'Digestive enzymes, simethicone — check label',ic:['blister','box']}],
+['대웅제약','우루사','소화제','Urusa (Ursodeoxycholic acid tablets)',{cat:'Liver / Digestive',ing:'Ursodeoxycholic acid (check strength)',ic:['blister','box']}],
+['보령','겔포스 엠','위장약','Gelfos M (antacid gel sachets)'],
+['동국제약','마데카솔 케어','마데카솔','Madecassol Care (wound healing ointment)',{ing:'Centella asiatica extract, neomycin sulfate (check label)'}],
+['동화약품','후시딘','후시딘','Fucidin (Fusidic acid 2% ointment)'],
+['신신제약','신신파스 아렉스','파스','Sinsin Pas Arex (pain relief patch)'],
+['명문제약','키미테','멀미약','Kimite (Scopolamine motion sickness patch)',{ing:'Scopolamine 1.5 mg per patch',ic:['patch','box']}],
+['','지르텍','알레르기약','Zyrtec (Cetirizine 10 mg)',{ing:'Cetirizine hydrochloride 10 mg'}],
+['국제약품','히알유니 점안액','인공눈물','Hyaluni Eye Drops (sodium hyaluronate, single-use vials)'],
+['','리프레쉬 플러스','인공눈물','Refresh Plus Lubricant Eye Drops (single-use vials)',{ing:'Carboxymethylcellulose sodium 0.5%'}],
+['','센트룸','종합비타민','Centrum Multivitamin',{ic:['pillbottle','blister']}],
+['고려은단','비타민C 1000','비타민C','Korea Eundan Vitamin C 1000 mg',{ing:'Vitamin C (ascorbic acid) 1000 mg'}],
+['대웅제약','임팩타민','종합비타민','Impactamin (high-dose vitamin B complex)',{ing:'Vitamin B complex, vitamin C, zinc (check label)',ic:['blister','pillbottle']}],
+['종근당건강','락토핏','유산균','Lactofit Probiotics (powder sticks)'],
+['바이엘','야즈','피임약','Yaz (oral contraceptive pill)',{ing:'Drospirenone 3 mg / Ethinylestradiol 0.02 mg'}],
+['오가논','머시론','피임약','Mercilon (oral contraceptive pill)',{ing:'Desogestrel 0.15 mg / Ethinylestradiol 0.02 mg'}],
+['광동제약','우황청심원','우황청심원','Kwangdong Woohwang Cheongsimwon (herbal pill)'],
+['동성제약','정로환','지사제','Jeongrohwan (herbal anti-diarrhoea pills)',{ing:'Wood creosote, herbal extracts (check label)',ic:['pillbottle','box']}],
+];
+PF.push(
+['CJ','햇반 작은공기 130g','햇반','CJ Hetbahn Small (Instant Cooked Rice 130 g)'],
+['CJ','햇반 큰공기 300g','햇반','CJ Hetbahn Large (Instant Cooked Rice 300 g)'],
+['CJ','햇반 흑미밥','햇반','CJ Hetbahn Black Rice (Instant Cooked Rice)',{ing:'Rice, black rice, water'}],
+['CJ','햇반 현미밥','햇반','CJ Hetbahn Brown Rice (Instant Cooked Rice)',{ing:'Brown rice, rice, water'}],
+['CJ','햇반 매일잡곡밥','햇반','CJ Hetbahn Mixed Grain Rice (Instant Cooked Rice)',{ing:'Rice, mixed grains (barley, millet, beans), water'}],
+['CJ','햇반 발아현미밥','햇반','CJ Hetbahn Sprouted Brown Rice (Instant Cooked Rice)',{ing:'Sprouted brown rice, rice, water'}],
+['CJ','햇반 오곡밥','햇반','CJ Hetbahn Five-Grain Rice (Instant Cooked Rice)',{ing:'Glutinous rice, beans, millet, sorghum, water'}],
+['오뚜기','맛있는 오뚜기밥 작은밥','햇반','Ottogi Instant Cooked Rice Small (130 g)'],
+['오뚜기','오뚜기 흑미밥','햇반','Ottogi Black Rice (Instant Cooked Rice)',{ing:'Rice, black rice, water'}],
+['오뚜기','오뚜기 발아현미밥','햇반','Ottogi Sprouted Brown Rice (Instant Cooked Rice)',{ing:'Sprouted brown rice, rice, water'}],
+['오뚜기','오뚜기 잡곡밥','햇반','Ottogi Mixed Grain Rice (Instant Cooked Rice)',{ing:'Rice, mixed grains, water'}],
+['동원','쎈쿡 백미밥','햇반','Dongwon Ssen Cook (Instant Cooked Rice)'],
+['농심','신라면 건면','라면','Nongshim Shin Ramyun Light (non-fried Instant Noodles)'],
+['농심','신라면 큰사발','컵라면','Nongshim Shin Ramyun Big Bowl (Cup Noodles)'],
+['농심','신라면 블랙 컵','컵라면','Nongshim Shin Ramyun Black Cup (beef bone broth)',{st:'check',tip:'사골 육수 성분이 있어 검사 대상이 될 수 있어요.'}],
+['농심','짜파게티 큰사발','컵라면','Nongshim Chapagetti Big Bowl (Black Bean Sauce Cup Noodles)'],
+['농심','너구리 큰사발','컵라면','Nongshim Neoguri Big Bowl (Seafood Udon Cup Noodles)'],
+['농심','튀김우동 큰사발','컵라면','Nongshim Tempura Udon Big Bowl (Cup Noodles)'],
+['농심','김치사발면','컵라면','Nongshim Kimchi Cup Noodles'],
+['농심','오징어짬뽕','라면','Nongshim Squid Jjambbong (Spicy Seafood Instant Noodles)'],
+['농심','사리곰탕면','라면','Nongshim Sari Gomtang (Beef Bone Soup Instant Noodles)',{st:'check',tip:'사골 육수 성분이 있어 검사 대상이 될 수 있어요.'}],
+['농심','감자면','라면','Nongshim Potato Instant Noodles'],
+['오뚜기','진라면 매운맛 컵','컵라면','Ottogi Jin Ramen Spicy Cup Noodles'],
+['오뚜기','진라면 순한맛 컵','컵라면','Ottogi Jin Ramen Mild Cup Noodles'],
+['오뚜기','열라면','라면','Ottogi Yeul Ramen (Extra Spicy Instant Noodles)'],
+['오뚜기','스낵면','라면','Ottogi Snack Ramen (quick-cook Instant Noodles)'],
+['오뚜기','컵누들 매콤한맛','컵라면','Ottogi Cup Noodle Spicy (Glass Noodle Soup)'],
+['오뚜기','컵누들 우동맛','컵라면','Ottogi Cup Noodle Udon flavour (Glass Noodle Soup)'],
+['삼양','까르보 불닭볶음면','라면','Samyang Carbo Buldak (Creamy Hot Chicken Flavour Noodles)',{ing:'Wheat noodles, sauce (chili, milk powder, cheese powder), chicken flavour seasoning'}],
+['삼양','핵불닭볶음면','라면','Samyang 2x Spicy Buldak (Hot Chicken Flavour Noodles)'],
+['삼양','짜장 불닭볶음면','라면','Samyang Jjajang Buldak (Black Bean Hot Chicken Flavour Noodles)'],
+['삼양','맛있는라면','라면','Samyang Delicious Ramen (non-fried Instant Noodles)'],
+['팔도','틈새라면','라면','Paldo Teumsae Ramen (Extra Spicy Instant Noodles)'],
+['팔도','꼬꼬면','라면','Paldo Kko Kko Myun (Chicken flavour Instant Noodles)',{st:'check',tip:'닭고기 성분이 있어 검사 대상이 될 수 있어요.'}],
+['팔도','일품해물라면','라면','Paldo Ilpoom Seafood Ramen'],
+['오뚜기','컵밥 김치참치덮밥','미역국밥','Ottogi Cupbap Kimchi Tuna Rice Bowl',{cat:'Instant Rice Meal',ing:'Cooked rice, kimchi, tuna, sauce',desc:'Commercially packaged instant rice meal.'}],
+['오뚜기','컵밥 제육덮밥','미역국밥','Ottogi Cupbap Spicy Pork Rice Bowl',{cat:'Instant Rice Meal',ing:'Cooked rice, pork, chili sauce',desc:'Commercially packaged instant rice meal.',st:'ban',tip:'돼지고기 건더기가 있어 압수될 가능성이 커요.'}],
+['오뚜기','컵밥 진짬뽕밥','미역국밥','Ottogi Cupbap Jjambbong Rice Soup',{ing:'Cooked rice, seafood flavour soup base, dried vegetables'}],
+['CJ','비비고 사골곰탕','즉석국','CJ Bibigo Beef Bone Broth (retort pouch)',{cat:'Ready-to-eat Soup',ing:'Beef bone broth, salt',st:'ban',tip:'소고기 육수 제품은 압수될 가능성이 커요.',ic:['pouch']}],
+['CJ','비비고 육개장','즉석국','CJ Bibigo Spicy Beef Soup Yukgaejang (retort pouch)',{cat:'Ready-to-eat Soup',ing:'Beef, vegetables, chili oil, broth',st:'ban',tip:'소고기 건더기가 있어 압수될 가능성이 커요.',ic:['pouch']}],
+['오뚜기','3분 쇠고기 카레','3분카레','Ottogi 3-Minute Beef Curry (retort pouch)',{st:'ban',tip:'소고기가 들어 있어 압수될 가능성이 커요.'}],
+['오뚜기','3분 미트볼','3분카레','Ottogi 3-Minute Meatballs (retort pouch)',{cat:'Ready Meal',ing:'Pork and chicken meatballs, sauce',st:'ban',tip:'고기 제품이라 압수될 가능성이 커요.'}],
+['동원','동원 고추참치','참치캔','Dongwon Spicy Tuna (canned, in chili sauce)',{ing:'Tuna, chili pepper sauce, vegetables, oil'}],
+['동원','동원 야채참치','참치캔','Dongwon Vegetable Tuna (canned)',{ing:'Tuna, carrot, onion, sauce, oil'}],
+['사조','사조 고추참치','참치캔','Sajo Spicy Tuna (canned, in chili sauce)',{ing:'Tuna, chili pepper sauce, vegetables, oil'}],
+['오뚜기','오뚜기 참치','참치캔','Ottogi Canned Tuna'],
+['CJ','스팸 25% 라이트','스팸','CJ Spam 25% Less Sodium (canned pork luncheon meat)'],
+['동원','양반 들기름김','김','Dongwon Yangban Perilla Oil Seasoned Seaweed'],
+['','대천김','김','Daecheon Seasoned Seaweed (Laver)'],
+['CJ','비비고 썰은배추김치','김치','CJ Bibigo Sliced Cabbage Kimchi (sealed pack)'],
+['대상','종가 맛김치','김치','Jongga Mat Kimchi (sliced, sealed pack)'],
+['CJ','비비고 볶음김치','김치 통조림','CJ Bibigo Stir-fried Kimchi (sealed)'],
+['대상','청정원 순창 쌈장','된장','Chungjungone Sunchang Ssamjang (Soybean Dipping Paste)'],
+['CJ','해찬들 재래식 된장','된장','CJ Haechandle Traditional Doenjang (Soybean Paste)'],
+['CJ','백설 참기름','참기름','CJ Beksul Sesame Oil'],
+['오리온','포카칩','과자','Orion Poca Chip (potato chips)'],
+['오리온','오징어땅콩','과자','Orion Squid Peanut Balls (snack)'],
+['롯데','빼빼로','초코파이','Lotte Pepero (chocolate-coated biscuit sticks)'],
+['롯데','칸쵸','초코파이','Lotte Kancho (chocolate-filled biscuits)'],
+['롯데','꼬깔콘','과자','Lotte Kokkal Corn (corn snack)'],
+['농심','꿀꽈배기','과자','Nongshim Honey Twist Snack',{tip:'꿀이 조금 들어간 가공 과자라 보통 괜찮지만 신고하세요.'}],
+['농심','바나나킥','과자','Nongshim Banana Kick (corn snack)'],
+['해태','홈런볼','초코파이','Haitai Homerun Ball (choux snack)'],
+['해태','오예스','초코파이','Haitai Oh Yes (chocolate cake)'],
+['해태','맛동산','과자','Haitai Matdongsan (fried snack with peanuts)'],
+['동서','맥심 화이트골드','믹스커피','Maxim White Gold Coffee Mix (3-in-1 sticks)'],
+['동서','카누 아메리카노','믹스커피','Maxim KANU Americano (instant coffee sticks)',{ing:'Instant coffee'}],
+['담터','담터 유자차','녹차','Damtuh Citron (Yuja) Tea',{ing:'Citron peel, sugar (check label for honey)',ic:['jar']}],
+['동서','동서 보리차','녹차','Dongsuh Roasted Barley Tea (tea bags)'],
+['광동제약','옥수수수염차','녹차','Kwangdong Corn Silk Tea'],
+['정관장','홍삼진액','홍삼','CheongKwanJang Red Ginseng Liquid Extract (pouches)',{ic:['pouch','box']}],
+['정관장','홍삼톤','홍삼','CheongKwanJang Hongsam Tonic (red ginseng drink)',{ic:['shot','box']}],
+['','하루견과','견과류','Daily Mixed Nuts (individual packs)'],
+);
+PM.push(
+['한국얀센','어린이 타이레놀 현탁액','타이레놀',"Children's Tylenol Suspension (Paracetamol 32 mg/mL)",{ing:'Acetaminophen 32 mg/mL',ic:['syrup','box']}],
+['한국얀센','어린이 타이레놀 80mg','타이레놀',"Children's Tylenol Chewable (Paracetamol 80 mg)",{ing:'Acetaminophen 80 mg'}],
+['종근당','펜잘큐','타이레놀','Penzal Q (pain reliever tablets)',{ing:'Acetaminophen, ethenzamide, caffeine (check label)'}],
+['대웅제약','이지엔6 애니','이부프로펜','EZN6 Any (Ibuprofen soft capsules)'],
+['대웅제약','이지엔6 프로','이부프로펜','EZN6 Pro (Dexibuprofen soft capsules)',{ing:'Dexibuprofen (check strength)'}],
+['','애드빌','이부프로펜','Advil (Ibuprofen 200 mg)'],
+['대원제약','콜대원','종합감기약','Coldaewon (cold syrup)'],
+['','테라플루','종합감기약','Theraflu (cold & flu)'],
+['','개비스콘','위장약','Gaviscon (heartburn relief liquid)',{ing:'Sodium alginate, sodium bicarbonate, calcium carbonate'}],
+['','박트로반','후시딘','Bactroban (Mupirocin 2% ointment)',{ing:'Mupirocin 2%'}],
+['','쎄레스톤지 크림','후시딘','Celestone-G Cream (Betamethasone / Gentamicin)',{ing:'Betamethasone valerate, gentamicin sulfate'}],
+['일동제약','아로나민 골드','종합비타민','Aronamin Gold (vitamin B complex tablets)',{ing:'Vitamin B1 derivative, B2, B6, B12, vitamin E, C (check label)',ic:['pillbottle','blister']}],
+['녹십자','비맥스','종합비타민','Bemax (high-dose vitamin B complex)',{ing:'Vitamin B complex, minerals (check label)',ic:['pillbottle','blister']}],
+['','얼라이브 원스데일리','종합비타민','Alive! Once Daily Multivitamin',{ic:['pillbottle']}],
+['종근당건강','프로메가 오메가3','오메가3','Promega Omega-3 (fish oil)'],
+['종근당건강','루테인 지아잔틴','루테인','Chong Kun Dang Lutein Zeaxanthin'],
+['동국제약','인사돌','소화제','Insadol (gum health tablets)',{cat:'Herbal Medicine',ing:'Corn unsaponifiable extract, magnolia bark extract (check label)',desc:'Gum health medicine for personal use.'}],
+['','스멕타','지사제','Smecta (Diosmectite powder)',{ing:'Diosmectite 3 g per sachet'}],
+);
+function mkProd(kind,[b,n,t,en,o={}]){const base=D[kind].find(e=>e.k===t);return {...base,...o,kind,b,k:n,en,a:[t,...(base.a||[])],ic:o.ic||base.ic,brand:true}}
+D.food.push(...PF.map(p=>mkProd('food',p)));D.med.push(...PM.map(p=>mkProd('med',p)));
+[...D.food,...D.med].forEach((e,i)=>{e.uid='d'+i;e.b=e.b||''});
+
+/* ---------- state ---------- */
+const KEY='au-declare-v1';
+let S=load()||seed();
+let TAB='food', EDIT=null, ORIG=new Map(), TOLS=new Map(), ROTS=new Map(), CAMT=null, SAMPLE=null, IMG_OK=false, DL=null;
+function uid(){return Math.random().toString(36).slice(2,10)}
+function fromDict(e,extra={}){return {id:uid(),kind:e.kind,b:e.b||'',ko:e.k,en:e.en,cat:e.cat,ing:e.ing,desc:e.desc,st:e.st,tip:e.tip,qty:'',icon:e.ic[0],icons:e.ic,photo:null,rx:false,...extra}}
+function find(k){return [...D.food,...D.med].find(e=>e.k===k||e.uid===k)}
+function seed(){
+  const fb=(b,k)=>[...D.food,...D.med].find(e=>e.b===b&&e.k===k)||find(k);
+  const f=[['CJ','햇반','4 packs'],['팔도','팔도비빔면','2 cups'],['오뚜기','컵밥 미역국밥','1'],['농심','너구리','2 cups'],['CJ','햇반 컵반 황태국밥','1'],['오뚜기','컵밥 황태콩나물해장국밥','1'],['동원','양반 김치','2 cans'],['샘표','우리엄마 깻잎','1 can'],['','김','1 pack'],['샘표','우리엄마 도라지','1 can'],['사조','사조참치 살코기','3 cans'],['샘표','우리엄마 명이절임','1 can']];
+  const m=[['','종합비타민','10 bottles'],['','피임약','1 box'],['','남성 비타민','1 box'],['오타이산','오타이산','1 pack'],['','여성 비타민','1 box'],['','인공눈물','30 vials'],['','루테인','1 box']];
+  return {food:f.map(([b,k,q])=>fromDict(fb(b,k),{sample:true,qty:q})),med:m.map(([b,k,q])=>fromDict(fb(b,k),{sample:true,qty:q})),trav:{name:'',flight:'',date:'',port:''}};
+}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));return s&&s.food?s:null}catch(e){return null}}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('브라우저 저장 공간이 부족해 마지막 변경이 저장되지 않았어요')}},250)}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pic=it=>it.photo||svgURL(it.icon);
+const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
+/* units: korean, english singular, plural */
+const UNITS=[['개','piece','pieces'],['봉','pack','packs'],['컵','cup','cups'],['캔','can','cans'],['박스','box','boxes'],['병','bottle','bottles'],['통','jar','jars'],['파우치','pouch','pouches'],['포','sachet','sachets'],['장','sheet','sheets'],['튜브','tube','tubes'],['정','tablet','tablets'],['봉지','bag','bags']];
+const ICON_UNIT={tray:'개',bowl:'개',cup:'컵',soupcup:'컵',packet:'봉',can:'캔',tincan:'캔',jar:'통',tub:'통',seaweed:'봉',bottle:'병',snack:'봉지',pouch:'파우치',fish:'봉',meat:'봉',nut:'봉',fruit:'개',egg:'개',honey:'병',ginseng:'박스',tteok:'봉',coffee:'박스',teabag:'박스',box:'박스',blister:'박스',capsule:'박스',softgel:'통',pillbottle:'병',ampoule:'개',drops:'병',tube:'튜브',sachet:'포',patch:'박스',shot:'병',syrup:'병',herbpill:'박스',pack:'봉',bandage:'박스',syringe:'개'};
+const unitOf=k=>UNITS.find(u=>u[0]===k)||UNITS[0];
+const qtyEn=it=>{const n=+it.n||0;if(!n)return '—';const u=unitOf(it.u);return `${n} ${n===1?u[1]:u[2]}`};
+function parseQty(s,icon){const m=String(s||'').match(/(\d+)/);const n=m?+m[1]:1;const w=String(s||'').toLowerCase();
+  const u=UNITS.find(u=>w.includes(u[1])||w.includes(u[0]))?.[0]||ICON_UNIT[icon]||'개';return {n,u}}
+function normItem(it){if(it.n==null){const p=parseQty(it.qty,it.icon);it.n=p.n;it.u=p.u}if(!it.u)it.u=ICON_UNIT[it.icon]||'개';return it}
+S.food.forEach(normItem);S.med.forEach(normItem);
+
+/* ---------- Claude ---------- */
+let SSTATE='wait';
+/* ---------- Claude API client (calls this app's own /api/claude) ---------- */
+const API_URL='/api/claude';
+const getPass=()=>{try{return localStorage.getItem('au-declare-pass')||''}catch(e){return ''}};
+async function blobToJpeg(blob,max=1400){const url=URL.createObjectURL(blob);try{const i=await loadImg(url);const s=Math.min(1,max/Math.max(i.width,i.height));
+  const c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);
+  return {media_type:'image/jpeg',data:c.toDataURL('image/jpeg',.85).split(',')[1]}}finally{URL.revokeObjectURL(url)}}
+function makeApi(){
+  const call=async(input,opts={})=>{
+    const body={prompt:typeof input==='string'?input:input.map(m=>m.content).join('\n\n'),tier:opts.modelTier||'default'};
+    if(opts.images){const list=opts.images instanceof Blob?[opts.images]:[...opts.images];body.images=await Promise.all(list.slice(0,5).map(b=>blobToJpeg(b)))}
+    let r;
+    try{r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json','x-app-passcode':getPass()},body:JSON.stringify(body),signal:opts.signal})}
+    catch(e){if(e&&e.name==='AbortError')throw {code:'cancelled'};throw {code:'offline',message:String(e)}}
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw {code:j.code||(r.status===429?'rate_limited':'upstream_error'),message:j.error||('HTTP '+r.status)};
+    const text=String(j.text||'');if(!text.trim())throw {code:'empty_completion',message:'empty'};
+    if(opts.onText)opts.onText({text,delta:text});
+    return {text,truncated:!!j.truncated,modelTierApplied:opts.modelTier||'default'};
+  };
+  const f=(i,o)=>call(i,o);
+  f.json=async(i,o)=>{const r=await call(i,o);const v=tolerantJSON(r.text);if(v==null)throw {code:'invalid_json',text:r.text,message:'parse failed'};return v};
+  f.limits=async()=>({maxPromptBytes:262144,images:{maxCount:5,maxInputBytes:20e6,mediaTypes:['image/jpeg','image/png','image/webp']},tools:null});
+  return f;
+}
+/* native file save (works in normal mobile browsers) */
+const NATIVE_DL={save:async({filename,data})=>{const blob=data instanceof Blob?data:new Blob([data]);
+  if(navigator.canShare&&/Android|iPhone|iPad/i.test(navigator.userAgent)){try{const file=new File([blob],filename,{type:blob.type||'application/octet-stream'});if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:filename});return {status:'saved'}}}catch(e){if(e&&e.name==='AbortError')throw {code:'declined'}}}
+  const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return {status:'saved'}}};
+
+let API_READY=null;
+const SAMPLE_P=(async()=>{try{const r=await fetch(API_URL,{method:'GET'});const j=await r.json();API_READY=!!j.ready;return j.ready?makeApi():null}catch(e){API_READY=false;return null}})();
+SAMPLE_P.then(s=>{SAMPLE=s;SSTATE=s?'ok':'none';if(s&&s.limits)Promise.resolve(s.limits()).then(l=>{IMG_OK=!!(l&&l.images)}).catch(()=>{});render()});
+DL=NATIVE_DL;
+
+async function aiFill(it,{image}={}){
+  if(!SAMPLE)return false;
+  const sts=it.kind==='food'?'"ok" (commercially packaged, usually passes), "check" (inspection likely), "ban" (likely prohibited)':'"ok" (OTC / supplement), "rx" (prescription-only in Australia, bring English prescription), "ctrl" (controlled substance, check rules first), "ban" (prohibited e.g. animal-derived ingredients like musk)';
+  const icons=(it.kind==='food'?FOOD_ICONS:MED_ICONS).join(', ');
+  const p=`You help a Korean traveller prepare an English list of ${it.kind==='food'?'FOOD':'MEDICINES / SUPPLEMENTS'} to declare at Australian biosecurity and customs. The list is shown to an Australian officer.
+${image?'The attached photo shows the product. Read the Korean label carefully (name, ingredients/active ingredients, strength).':''}
+Korean name typed by traveller: "${it.ko||'(none — read from photo)'}"
+Reply with ONLY one JSON object:
+{"ko": Korean product name (short, as on the label), "en": clear English name an officer understands (add a short explanation in brackets for Korean-specific foods), "cat": English category, 1-3 words, "ing": main ingredients in English${it.kind==='med'?' — for medicine give active ingredients with strength if visible, else "See label"':''}, "desc": one short English sentence saying what it is and that it is for personal use, "st": one of ${sts}, "tip": one short Korean sentence of practical advice about Australian rules for this item, "icon": one of [${icons}]}
+Be conservative: if it may contain meat, egg, dairy, seeds, honey, or animal parts, choose the stricter status.`;
+  it.pending=true;render();
+  try{
+    const r=await SAMPLE.json(p,image?{images:image}:{});
+    if(r&&typeof r==='object'){
+      ['ko','en','cat','ing','desc','tip'].forEach(k=>{if(typeof r[k]==='string'&&r[k].trim()&&(!it[k]||k!=='ko'||!it.ko))it[k]=r[k].trim()});
+      const okSt=Object.keys(ST[it.kind]);if(okSt.includes(r.st))it.st=r.st;
+      const icl=it.kind==='food'?FOOD_ICONS:MED_ICONS;if(icl.includes(r.icon)){it.icon=r.icon;it.icons=[...new Set([r.icon,...(it.icons||[])])]}
+    }
+    it.pending=false;save();render();if(EDIT===it.id)openEdit(it.id);return true;
+  }catch(e){
+    it.pending=false;render();
+    const m={not_granted:'Claude 사용이 허용되지 않아 직접 입력해야 해요',rate_limited:'요청이 많아요. 잠시 후 다시 시도해 주세요',refused:'이 항목은 자동 작성할 수 없어요',invalid_json:'답변을 읽지 못했어요. 다시 시도해 주세요',images_unavailable:'이 화면에서는 사진 인식을 쓸 수 없어요'};
+    if(e?.code!=='cancelled')toast(m[e?.code]||'자동 작성에 실패했어요. 다시 시도해 주세요');
+    if(e?.code==='not_granted')SAMPLE=null;
+    return false;
+  }
+}
+
+/* ---------- photo: background to white + auto crop ---------- */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
+function fileToURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)})}
+async function downscale(src,max=900){const i=await loadImg(src);const s=Math.min(1,max/Math.max(i.width,i.height));const c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.9)}
+/* ---------- AI background removal (U2-Net small, runs on the phone) ---------- */
+let SEG_P=null, SEG_STATE='idle';
+function getSeg(){
+  if(SEG_P)return SEG_P;
+  SEG_STATE='loading';
+  SEG_P=(async()=>{
+    if(!window.ort)throw new Error('ort missing');
+    ort.env.wasm.numThreads=1;ort.env.wasm.proxy=false;
+    const base=new URL('.',location.href).href;
+    ort.env.wasm.wasmPaths={'ort-wasm-simd.wasm':base+'ort-wasm-simd.wasm','ort-wasm.wasm':base+'ort-wasm.wasm'};
+    const r=await fetch('u2netp.onnx');if(!r.ok)throw new Error('model '+r.status);const bin=new Uint8Array(await r.arrayBuffer());
+    const s=await ort.InferenceSession.create(bin,{executionProviders:['wasm'],graphOptimizationLevel:'all'});
+    SEG_STATE='ready';return s;
+  })();
+  SEG_P.catch(e=>{SEG_STATE='failed';SEG_ERR=String(e&&e.message||e).slice(0,80);console.warn('segmentation unavailable',e)});
+  return SEG_P;
+}
+/* returns Float32Array mask (0..1) at canvas size, or null */
+async function mlMask(canvas){
+  let s;try{s=await getSeg()}catch(e){return null}
+  const S0=320,t=document.createElement('canvas');t.width=t.height=S0;const tx=t.getContext('2d');tx.drawImage(canvas,0,0,S0,S0);
+  const d=tx.getImageData(0,0,S0,S0).data;const N=S0*S0;const inp=new Float32Array(3*N);
+  let mx=0;for(let p=0;p<N;p++){const o=p*4;mx=Math.max(mx,d[o],d[o+1],d[o+2])}mx=mx||255;
+  const mean=[.485,.456,.406],sd=[.229,.224,.225];
+  for(let p=0;p<N;p++){const o=p*4;for(let c=0;c<3;c++)inp[c*N+p]=(d[o+c]/mx-mean[c])/sd[c]}
+  let out;try{const res=await s.run({[s.inputNames[0]]:new ort.Tensor('float32',inp,[1,3,S0,S0])});out=res[s.outputNames[0]].data}catch(e){console.warn(e);return null}
+  let lo=Infinity,hi=-Infinity;for(let i=0;i<N;i++){const v=out[i];if(v<lo)lo=v;if(v>hi)hi=v}const rg=hi-lo||1;
+  const m=document.createElement('canvas');m.width=m.height=S0;const mxC=m.getContext('2d');const md=mxC.createImageData(S0,S0);
+  for(let i=0;i<N;i++){const v=Math.round((out[i]-lo)/rg*255);md.data[i*4]=md.data[i*4+1]=md.data[i*4+2]=v;md.data[i*4+3]=255}
+  mxC.putImageData(md,0,0);
+  const W=canvas.width,H=canvas.height,u=document.createElement('canvas');u.width=W;u.height=H;const ux=u.getContext('2d');ux.imageSmoothingQuality='high';ux.drawImage(m,0,0,W,H);
+  const ud=ux.getImageData(0,0,W,H).data;const mask=new Float32Array(W*H);for(let i=0;i<W*H;i++)mask[i]=ud[i*4]/255;return mask;
+}
+const smooth=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+
+const TOL0=34;
+async function whiten(src,tol=TOL0,on=true,rot=0,minFg=0){
+  const i=await loadImg(src);const sw=i.width,sh=i.height;const r=((rot%4)+4)%4;
+  const W=r%2?sh:sw,H=r%2?sw:sh;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.translate(W/2,H/2);x.rotate(r*Math.PI/2);x.drawImage(i,-sw/2,-sh/2);x.setTransform(1,0,0,1,0,0);
+  let bx0=0,by0=0,bx1=W-1,by1=H-1;
+  let mlDone=false;
+  if(on&&SEG_STATE!=='failed'){
+    const mask=await Promise.race([mlMask(c),new Promise(r=>setTimeout(()=>r(null),SEG_STATE==='ready'?20000:6000))]);
+    if(mask){const im=x.getImageData(0,0,W,H),d=im.data,N=W*H;const lo=tol/140,hi=lo+.3;let fg=0;const rowC=new Int32Array(H),colC=new Int32Array(W);
+      for(let p=0;p<N;p++){const a=smooth(lo,hi,mask[p]),o=p*4;d[o]=255-(255-d[o])*a;d[o+1]=255-(255-d[o+1])*a;d[o+2]=255-(255-d[o+2])*a;if(a>.5){fg++;rowC[(p/W)|0]++;colC[p%W]++}}
+      if(minFg&&fg<N*minFg){return whiten(src,tol,false,rot)}
+      if(fg>N*0.01){const tr=Math.max(2,W*.004),tc=Math.max(2,H*.004);
+        by0=0;while(by0<H-1&&rowC[by0]<tr)by0++;by1=H-1;while(by1>by0&&rowC[by1]<tr)by1--;bx0=0;while(bx0<W-1&&colC[bx0]<tc)bx0++;bx1=W-1;while(bx1>bx0&&colC[bx1]<tc)bx1--;
+        x.putImageData(im,0,0);mlDone=true}}
+  }
+  if(on&&!mlDone){
+    const im=x.getImageData(0,0,W,H),d=im.data,N=W*H;
+    /* YCbCr with brightness down-weighted, so soft shadows on the paper count as background */
+    const Yc=new Float32Array(N),Cb=new Float32Array(N),Cr=new Float32Array(N);
+    for(let p=0;p<N;p++){const o=p*4,R=d[o],G2=d[o+1],B=d[o+2];Yc[p]=(.299*R+.587*G2+.114*B)*.7;Cb[p]=-.169*R-.331*G2+.5*B;Cr[p]=.5*R-.419*G2-.081*B}
+    const ys=[],bs=[],rs=[];const push=p=>{ys.push(Yc[p]);bs.push(Cb[p]);rs.push(Cr[p])};
+    for(let X=0;X<W;X+=2){push(X);push((H-1)*W+X)}for(let Y=0;Y<H;Y+=2){push(Y*W);push(Y*W+W-1)}
+    const med=a=>a.sort((p,q)=>p-q)[a.length>>1];const Y0=med(ys),B0=med(bs),R0=med(rs);
+    const dBg=p=>{const a=Yc[p]-Y0,b=Cb[p]-B0,c2=Cr[p]-R0;return a*a+b*b+c2*c2};
+    const dPP=(p,q)=>{const a=Yc[p]-Yc[q],b=Cb[p]-Cb[q],c2=Cr[p]-Cr[q];return a*a+b*b+c2*c2};
+    const t2=tol*tol,loc2=(tol*.18)**2,far2=(tol*1.4)**2;
+    const bg=new Uint8Array(N),q=new Int32Array(N);let h=0,tl=0;
+    const seed=p=>{if(!bg[p]&&dBg(p)<t2){bg[p]=1;q[tl++]=p}};
+    const grow=(p,n)=>{if(bg[n])return;const db=dBg(n);if(db<t2||(db<far2&&dPP(p,n)<loc2)){bg[n]=1;q[tl++]=n}};
+    for(let X=0;X<W;X++){seed(X);seed((H-1)*W+X)}for(let Y=0;Y<H;Y++){seed(Y*W);seed(Y*W+W-1)}
+    while(h<tl){const p=q[h++],X=p%W;if(X>0)grow(p,p-1);if(X<W-1)grow(p,p+1);if(p>=W)grow(p,p-W);if(p<N-W)grow(p,p+W)}
+    /* fill tiny holes left inside the background (dust, paper texture) */
+    for(let p=W;p<N-W;p++){if(!bg[p]){const s=bg[p-1]+bg[p+1]+bg[p-W]+bg[p+W];if(s>=4)bg[p]=1}}
+    let fg=0;const rowC=new Int32Array(H),colC=new Int32Array(W);
+    for(let p=0;p<N;p++){const o=p*4;if(bg[p]){d[o]=d[o+1]=d[o+2]=255}else{fg++;const X=p%W,Y=(p/W)|0;rowC[Y]++;colC[X]++;
+      const e=(X>0&&bg[p-1])+(X<W-1&&bg[p+1])+(p>=W&&bg[p-W])+(p<N-W&&bg[p+W]);if(e){const k=e>=2?.35:.6;d[o]=255-(255-d[o])*k;d[o+1]=255-(255-d[o+1])*k;d[o+2]=255-(255-d[o+2])*k}}}
+    if(fg<N*Math.max(.02,minFg)||fg>N*0.97){return whiten(src,tol,false,rot)}
+    const tr=Math.max(2,W*.006),tc=Math.max(2,H*.006);
+    by0=0;while(by0<H-1&&rowC[by0]<tr)by0++;by1=H-1;while(by1>by0&&rowC[by1]<tr)by1--;
+    bx0=0;while(bx0<W-1&&colC[bx0]<tc)bx0++;bx1=W-1;while(bx1>bx0&&colC[bx1]<tc)bx1--;
+    x.putImageData(im,0,0);
+  }
+  const bw=bx1-bx0+1,bh=by1-by0+1,S2=520,pad=.07;const out=document.createElement('canvas');out.width=out.height=S2;const o=out.getContext('2d');
+  o.fillStyle='#fff';o.fillRect(0,0,S2,S2);const sc=Math.min(S2*(1-2*pad)/bw,S2*(1-2*pad)/bh);
+  o.imageSmoothingQuality='high';o.drawImage(c,bx0,by0,bw,bh,(S2-bw*sc)/2,(S2-bh*sc)/2,bw*sc,bh*sc);
+  return out.toDataURL('image/jpeg',.86);
+}
+function dataURLtoBlob(u){const [h,b]=u.split(',');const m=h.match(/:(.*?);/)[1];const s=atob(b);const a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a],{type:m})}
+
+/* ---------- render ---------- */
+const SVG_CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+const SVG_PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+const SVG_GRID='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
+const SVG_CART='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>';
+const SVG_LIST='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>';
+let BULK=false, BUSY=null, BUSYCTL=null, MORE={q:'',kind:'',list:[],loading:false};
+const AI_PHOTO=()=>!!SAMPLE;
+function render(){
+  const tabs=[['food','음식',S.food.length],['med','약품 · 영양제',S.med.length],['sheet','제출용 영문 시트','EN'],['card','입국카드 작성 예시','IPC']];
+  document.getElementById('tabs').innerHTML=tabs.map(([k,l,n])=>`<button class="tab" role="tab" id="tab-${k}" aria-selected="${TAB===k}" data-tab="${k}">${l}<span class="n">${n}</span></button>`).join('');
+  const M=document.getElementById('main');
+  if(TAB==='sheet'){M.innerHTML=sheetView();return}
+  if(TAB==='card'){M.innerHTML=cardView();return}
+  const kind=TAB,list=S[kind];
+  const pop=kind==='food'?['신라면','진라면 매운맛','햇반','동원참치 라이트스탠다드','동원 고추참치','팔도비빔면','양반김','고추장','맥심 모카골드','초코파이']:['타이레놀 500mg','판콜에이','베아제','인공눈물','센트룸','이지엔6 이브','후시딘','신신파스 아렉스','키미테','지르텍'];
+  const hasSample=list.some(i=>i.sample);const ap=AI_PHOTO();
+  M.innerHTML=`
+  <div class="ipc"><div style="min-width:0;flex:1"><div class="q">${kind==='food'?'Incoming Passenger Card · Q. Food':'Incoming Passenger Card · Q. Medicines'}</div>
+   <b>${kind==='food'?'음식을 하나라도 가져가면 입국카드 음식 질문에 YES':'약·영양제는 원래 포장 그대로, 개인용 3개월분 이내'}</b>
+   <p>${kind==='food'?'라면 한 봉지, 과자, 김도 해당돼요. 신고만 하면 반입이 안 되는 물건이라도 벌금은 없어요.':'처방약은 영문 처방전이나 의사 소견서를 함께 챙기세요. 성분이 애매하면 신고하세요.'}</p></div>
+   <div class="yes"><i>✓</i>YES</div></div>
+  <section class="card adder">
+    <div class="ways">
+      <label class="way main" for="grpCam"><span class="ico">${SVG_GRID}</span><span style="min-width:0"><b>모아서 한 번에 찍기</b><span>챙긴 음식·약을 밝은 바닥에 조금씩 띄워 펼치고 한 장 찍으면 제품별로 잘라 이름·성분·수량까지 채워요</span></span></label>
+      <label class="way" for="grpShot"><span class="ico">${SVG_CART}</span><span style="min-width:0"><b>장바구니·주문내역 캡처</b><span>쿠팡·마켓컬리 등 주문 화면 캡처를 올리면 제품 사진과 수량을 그대로 가져와요</span></span></label>
+      <button class="way" data-bulk><span class="ico">${SVG_LIST}</span><span style="min-width:0"><b>목록 붙여넣기</b><span>"신라면 5, 햇반 3, 타이레놀 1통"처럼 적으면 음식·약을 나눠 한 번에 추가해요</span></span></button>
+    </div>
+    <input type="file" id="grpCam" accept="image/*" capture="environment" hidden><input type="file" id="grpShot" accept="image/*" hidden>
+    ${SSTATE==='wait'?`<div class="shoot"><span class="spin"></span> Claude 연결 확인 중…</div>`:SSTATE==='none'?`<div class="shoot"><b>사진 자동 인식 꺼짐</b> · 서버에 Claude API 키가 없어서, 사진은 제품별로 잘라 넣고 이름은 검색으로 골라요. 검색·붙여넣기·영문 시트는 그대로 쓸 수 있어요.</div>`:''}
+    ${LASTERR?`<div class="notice" style="background:var(--warn-soft);border-color:transparent;color:var(--ink)"><span><b>자동 인식 실패</b> · ${esc(ERRKO[LASTERR.code]||LASTERR.msg||'알 수 없는 오류')} <span class="mono" style="font-size:11px;color:var(--muted)">(${esc(LASTERR.code||'error')})</span></span>${LASTERR.code==='passcode'?`<span class="camrow"><input id="pcIn" type="password" placeholder="앱 비밀번호" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)"><button class="btn sm primary" data-pcsave>저장</button></span>`:''}<span class="camrow"><button class="btn sm" data-diag>연결 테스트</button><button class="btn sm ghost" data-errx>닫기</button></span></div>`:''}
+    ${DIAG?`<div class="notice" style="display:block"><b>인식 상태 확인</b><ul style="margin:6px 0 0;padding-left:18px">${DIAG.map(d=>`<li>${esc(d)}</li>`).join('')}</ul><button class="btn sm ghost" data-diagx style="margin-top:6px">닫기</button></div>`:''}
+    ${BUSY?`<div class="busy"><span><span class="spin"></span> ${esc(BUSY)}</span><button class="btn sm" data-stop>중지</button></div>`:''}
+    ${BULK?`<div class="bulk"><label class="lbl" for="bulkText">한 줄에 하나씩, 또는 쉼표로 구분해서 적어 주세요. 숫자는 수량이에요.</label>
+      <textarea id="bulkText" placeholder="신라면 5봉&#10;햇반 흑미밥 3개&#10;동원 고추참치 4캔&#10;타이레놀 500mg 1박스&#10;종합비타민 2병">${esc(S.bulkDraft||'')}</textarea>
+      <div class="camrow"><button class="btn primary" data-bulkgo>목록에 추가</button><button class="btn ghost" data-bulk>닫기</button></div></div>`:''}
+    ${!LASTERR&&!DIAG?`<div class="shoot">사진 인식이 안 되면 <button class="btn sm ghost" data-diag style="padding:2px 6px">연결 테스트</button>를 눌러 원인을 확인하세요.</div>`:''}
+    <label class="lbl" for="q">하나씩 검색해서 추가</label>
+    <div class="search"><input id="q" autocomplete="off" placeholder="${kind==='food'?'제조사·제품명 (예: 오뚜기 진비빔면, 햇반 흑미)':'제품명·성분 (예: 판콜에이, 타이레놀, 루테인)'}"><div class="sugg" id="sugg" hidden></div></div>
+    <div class="chips">${pop.map(k=>{const e=[...D[kind]].find(x=>x.k===k);return e?`<button class="chip" data-add="${e.uid}">+ ${esc(e.b&&!e.k.includes(e.b)?e.b+' ':'')}${esc(e.k)}</button>`:''}).join('')}</div>
+  </section>
+  ${hasSample?`<div class="notice"><span>지금 보이는 항목은 한국 여행자들이 흔히 챙기는 <b>예시</b>예요. 그대로 고치거나 지우고 시작하세요.</span><button class="btn sm" data-clear-sample>예시 모두 지우기</button></div>`:''}
+  ${list.length?`<div class="shoot" style="margin:0 0 8px">글자를 <b>두 번 누르면</b> 바로 고칠 수 있어요. 연필은 전체 수정, 카메라는 사진 다시 찍기예요.</div>`:''}
+  <div class="list">${list.length?list.map(rowHTML).join(''):`<div class="empty">아직 항목이 없어요. 위에서 한 번에 찍거나, 목록을 붙여넣거나, 검색해서 추가하세요.</div>`}</div>`;
+  bindAdder(kind);
+}
+function rowHTML(it){
+  const [lab,cls]=ST[it.kind][it.st]||['확인 필요','warn'];const ie=(f,html,ph)=>`<span data-ie="${f}" data-id="${it.id}">${html||`<span style="color:var(--muted)">${ph}</span>`}</span>`;
+  return `<article class="row" data-id="${it.id}">
+   <div class="phw"><button class="ph" data-edit="${it.id}" aria-label="${esc(it.ko)} 사진 조정"><img alt="" src="${pic(it)}"></button><button class="cam" data-shoot="${it.id}" aria-label="사진 찍어 바꾸기">${SVG_CAM}</button></div>
+   <div class="nm"><div class="nmh"><button class="pen" data-edit="${it.id}" aria-label="전체 수정">${SVG_PEN}</button><div style="min-width:0">
+     ${it.b?`<div class="br">${ie('b',esc(it.b))}</div>`:''}<div class="ko">${!it.ko?`<button class="btn sm primary" data-name="${it.id}">이름 정하기</button>`:ie('ko',esc(it.ko),'제품명')}${it.sample?'<span class="tag">예시</span>':''}${it.photo?'':'<span class="tag">그림</span>'}</div>
+     <div class="en">${it.pending?'<span class="spin"></span> 영문 작성 중…':ie('en',esc(it.en),'영문명 없음')}</div>
+     <div class="cat">${ie('cat',esc(it.cat),'CATEGORY')}</div></div></div></div>
+   <div class="dt"><div><b>${it.kind==='med'?'Active':'Ingred.'}</b>${ie('ing',esc(it.ing),'—')}</div><div><b>Note</b>${ie('desc',esc(it.desc),'—')}</div>${it.tip?`<div class="tip">${esc(it.tip)}</div>`:''}</div>
+   <div class="side"><span class="pill ${cls}">${lab}</span>
+     <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
+     <select class="unit" data-unit="${it.id}" aria-label="단위">${UNITS.map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]}</option>`).join('')}</select></div>
+     <button class="xdel" data-del="${it.id}">삭제</button></div>
+  </article>`;
+}
+function search(q,kind){
+  const n=norm(q);if(!n)return[];
+  const toks=String(q).toLowerCase().split(/\s+/).filter(Boolean);
+  const sc=e=>{const k=norm(e.k),b=norm(e.b),full=b+k,hay=norm([e.b,e.k,...e.a,e.en].join(' '));
+    let s=0;
+    if(full===n||k===n)s=100;else if(k.startsWith(n)||full.startsWith(n))s=85;else if(k.includes(n)||full.includes(n))s=72;
+    else if(e.a.some(a=>norm(a)===n))s=e.brand?58:90;else if(e.a.some(a=>norm(a).includes(n)))s=e.brand?50:60;
+    else if(toks.length>1&&toks.every(t=>hay.includes(t)))s=78;
+    else if(norm(e.en).includes(n))s=40;else if(n.length>1&&n.includes(k))s=55;
+    if(s&&b&&n.includes(b))s+=6;if(s&&e.brand)s+=1;return s};
+  return D[kind].map(e=>[sc(e),e]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,12).map(x=>x[1]);
+}
+function newItem(kind,o={}){return normItem({id:uid(),kind,b:'',ko:'',en:'',cat:'',ing:'',desc:'',st:kind==='food'?'check':'ok',tip:'',icon:kind==='food'?'pack':'box',icons:[],photo:null,rx:false,n:1,...o})}
+function bindAdder(kind){
+  const q=document.getElementById('q'),sg=document.getElementById('sugg');let sel=0;
+  const draw=()=>{const v=q.value.trim();if(!v){sg.hidden=true;return}
+    const res=search(v,kind);const more=MORE.q===v&&MORE.kind===kind?MORE.list:[];
+    const all=[...res,...more.filter(m=>!res.some(r=>norm(r.b+r.k)===norm(m.b+m.k)))];
+    let html=all.map((e,i)=>{const [l]=ST[kind][e.st]||['',''];return `<button class="sg ${i===sel?'on':''}" data-pick="${e.uid}"><img alt="" src="${svgURL(e.ic[0])}"><span class="t"><b>${e.b&&!e.k.includes(e.b)?`<small>${esc(e.b)}</small>`:''}${esc(e.k)}${e.ai?'<span class="tag">Claude</span>':''}</b><span>${esc(e.en)} · ${l}</span></span></button>`}).join('');
+    if(SAMPLE&&!(MORE.q===v&&MORE.kind===kind&&!MORE.loading&&more.length))html+=`<button class="sg new" data-more="1"><img alt="" src="${svgURL(kind==='food'?'snack':'box')}"><span class="t"><b>${MORE.loading&&MORE.q===v?'<span class="spin"></span> 찾는 중…':`"${esc(v)}" 다른 제품 더 찾기`}</b><span>Claude가 맛·용량·종류별 시판 제품을 찾아 영문 정보까지 채워요</span></span></button>`;
+    html+=`<button class="sg new" data-new="1"><img alt="" src="${svgURL(kind==='food'?'pack':'box')}"><span class="t"><b>"${esc(v)}" 이름 그대로 추가</b><span>${SAMPLE?'영문명·성분은 Claude가 자동으로 써요':'영문 정보는 직접 입력해요'}</span></span></button>`;
+    sg.innerHTML=html;sg.hidden=false};
+  q.addEventListener('input',()=>{sel=0;draw()});
+  q.addEventListener('keydown',e=>{const n=sg.querySelectorAll('.sg').length;if(e.key==='ArrowDown'){sel=Math.min(n-1,sel+1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){sel=Math.max(0,sel-1);draw();e.preventDefault()}else if(e.key==='Enter'){e.preventDefault();const b=sg.querySelectorAll('.sg')[sel];b&&b.click()}else if(e.key==='Escape'){sg.hidden=true}});
+  q.addEventListener('blur',()=>setTimeout(()=>{sg.hidden=true},200));
+  q.addEventListener('focus',()=>{if(q.value.trim())draw()});
+  sg.addEventListener('mousedown',e=>e.preventDefault());
+  sg.addEventListener('click',async e=>{const b=e.target.closest('.sg');if(!b)return;
+    if(b.dataset.pick){addDict(b.dataset.pick);q.value='';sg.hidden=true}
+    else if(b.dataset.more){const p=findMore(q.value.trim(),kind);draw();await p;if(q.isConnected&&q.value.trim())draw()}
+    else{addNew(q.value.trim(),kind);q.value='';sg.hidden=true}});
+  const ta=document.getElementById('bulkText');if(ta)ta.addEventListener('input',()=>{S.bulkDraft=ta.value;save()});
+  document.getElementById('grpCam').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)analyzePhoto(f,'photo')});
+  document.getElementById('grpShot').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)analyzePhoto(f,'shot')});
+}
+function allDict(){return [...D.food,...D.med,...MORE.list]}
+function addDict(k,extra={}){const e=allDict().find(x=>x.uid===k)||find(k);const it=normItem(fromDict(e,extra));S[e.kind].unshift(it);save();render();toast(`${e.b&&!e.k.includes(e.b)?e.b+' ':''}${e.k} 추가됨`,{label:'사진 찍기',fn:()=>shootFor(it.id)})}
+async function addNew(v,kind){if(!v)return;const it=newItem(kind,{ko:v});
+  S[kind].unshift(it);save();render();
+  if(SAMPLE){const ok=await aiFill(it);if(!ok)openEdit(it.id)}else{openEdit(it.id);toast('영문명과 정보를 직접 입력해 주세요')}}
+function shootFor(id){CAMT=id;const rc=document.getElementById('rowcam');rc.value='';rc.click()}
+
+/* ---------- Claude: more products, bulk text, photo of everything ---------- */
+const STS_ALL='for food: "ok" (commercially packaged, usually passes), "check" (inspection likely), "ban" (likely prohibited e.g. meat, egg, honey, fresh produce); for medicine: "ok" (OTC / supplement), "rx" (prescription-only in Australia), "ctrl" (controlled substance), "ban" (prohibited e.g. musk, deer antler)';
+const FIELDS=`"kind": "food" or "med", "b": manufacturer in Korean (e.g. 농심, 오뚜기, CJ, 동원; "" if unknown), "ko": exact Korean product name including flavour/variant/size, "en": clear English name with brand, add a short explanation in brackets for Korean-specific foods, "cat": English category 1-3 words, "ing": main ingredients in English (medicine: active ingredients with strength if known), "desc": one short English sentence for a customs officer, "st": status, "tip": one short Korean sentence of advice about Australian rules, "icon": one of [${[...new Set([...FOOD_ICONS,...MED_ICONS])].join(', ')}]`;
+function cleanAI(r,kindHint){const kind=r.kind==='med'||r.kind==='food'?r.kind:kindHint;const st=Object.keys(ST[kind]).includes(r.st)?r.st:(kind==='food'?'check':'ok');
+  const icl=kind==='food'?FOOD_ICONS:MED_ICONS;const icon=icl.includes(r.icon)?r.icon:(kind==='food'?'pack':'box');
+  const s=v=>typeof v==='string'?v.trim():'';return {kind,b:s(r.b),k:s(r.ko)||s(r.k),en:s(r.en),cat:s(r.cat),ing:s(r.ing),desc:s(r.desc),st,tip:s(r.tip),ic:[icon],a:[],ai:true}}
+async function findMore(v,kind){if(!SAMPLE||!v||MORE.loading)return;MORE={q:v,kind,list:[],loading:true};
+  try{const r=await SAMPLE.json(`A Korean traveller is listing ${kind==='food'?'FOOD':'MEDICINES or SUPPLEMENTS'} to declare at Australian customs and searched: "${v}".
+List up to 10 real products sold in Korea that match this search, covering distinct variants (flavours, sizes, rice types, cup vs packet, strengths). Only real products you are confident exist.
+Reply with only JSON: {"items":[{${FIELDS}}]}. Status ${STS_ALL}.`,{modelTier:'quick'});
+    const items=(r&&Array.isArray(r.items)?r.items:Array.isArray(r)?r:[]).map(x=>cleanAI(x,kind)).filter(x=>x.k&&x.kind===kind);
+    items.forEach((x,i)=>x.uid='m'+Date.now()+i);MORE={q:v,kind,list:items,loading:false};
+    if(!items.length)toast('더 찾은 제품이 없어요. 이름 그대로 추가해 보세요');
+  }catch(e){MORE={q:'',kind:'',list:[],loading:false};aiErr(e)}
+}
+function aiErr(e){if(['passcode','no_key','offline'].includes(e?.code)){LASTERR={code:e.code,msg:e.message};render()}
+const m={not_granted:'Claude 사용이 허용되지 않았어요',rate_limited:'요청이 많아요. 잠시 후 다시 시도해 주세요',refused:'이 요청은 처리할 수 없어요',invalid_json:'답변을 읽지 못했어요. 다시 시도해 주세요',images_unavailable:'이 화면에서는 사진 인식을 쓸 수 없어요',image_rejected:'사진을 읽을 수 없어요. 다른 사진으로 시도해 주세요'};
+  if(e?.code==='cancelled')return;toast(m[e?.code]||'처리에 실패했어요. 다시 시도해 주세요');if(e?.code==='not_granted')SAMPLE=null}
+function parseLine(s){s=s.trim();if(!s)return null;
+  const re=/(\d+)\s*(개입|개|봉지|봉|컵|캔|박스|상자|병|통|파우치|포|장|튜브|정|팩|갑|box|pack|can|cup|ea)?/gi;let m,last=null;while((m=re.exec(s)))last=m;
+  let n=1,u=null,name=s;if(last){n=+last[1]||1;const w=(last[2]||'').toLowerCase();u={'팩':'봉','갑':'박스','상자':'박스','개입':'개','box':'박스','pack':'봉','can':'캔','cup':'컵','ea':'개'}[w]||(w||null);name=(s.slice(0,last.index)+s.slice(last.index+last[0].length)).replace(/[x×*]\s*$/i,'').trim()}
+  if(!name)return null;return {name,n,u}}
+async function bulkAdd(){
+  const txt=(document.getElementById('bulkText')?.value||'').trim();if(!txt)return toast('추가할 제품을 적어 주세요');
+  const lines=txt.split(/[\n,，;]+/).map(parseLine).filter(Boolean);const unknown=[];let added={food:0,med:0};
+  for(const L of lines){const cand=[...search(L.name,'food').map(e=>[e,'food']),...search(L.name,'med').map(e=>[e,'med'])];
+    const best=cand.map(([e])=>{const k=norm(e.b+e.k),n=norm(L.name);return [e,k===n||norm(e.k)===n?100:k.includes(n)||n.includes(norm(e.k))?80:L.name.split(/\s+/).every(t=>norm([e.b,e.k,...e.a].join('')).includes(t.toLowerCase()))?75:0]}).sort((a,b)=>b[1]-a[1])[0];
+    if(best&&best[1]>=75){const e=best[0];const it=normItem(fromDict(e,{n:L.n,u:L.u||ICON_UNIT[e.ic[0]]}));S[e.kind].unshift(it);added[e.kind]++}else unknown.push(L)}
+  S.bulkDraft='';BULK=false;save();render();
+  if(unknown.length){
+    if(!SAMPLE){unknown.forEach(L=>{S.food.unshift(newItem('food',{ko:L.name,n:L.n,u:L.u||'개'}))});save();render();toast(`${lines.length-unknown.length}개 추가 · ${unknown.length}개는 영문 정보를 직접 입력해 주세요`);return}
+    BUSY=`목록에 없는 ${unknown.length}개를 Claude가 찾는 중…`;BUSYCTL=new AbortController();render();
+    try{const r=await SAMPLE.json(`A Korean traveller typed these items they are packing for Australia (one per line, Korean, may include brand):
+${unknown.map((L,i)=>`${i+1}. ${L.name}`).join('\n')}
+For each line in the same order, identify the most likely real product sold in Korea and decide whether it is food or medicine/supplement.
+Reply with only JSON: {"items":[{${FIELDS}}]}. Status ${STS_ALL}.`,{signal:BUSYCTL.signal});
+      const items=(r&&Array.isArray(r.items)?r.items:[]);
+      unknown.forEach((L,i)=>{const x=items[i]?cleanAI(items[i],'food'):null;const it=x?normItem(fromDict({...x,k:x.k||L.name},{n:L.n,u:L.u||ICON_UNIT[x.ic[0]]})):newItem('food',{ko:L.name,n:L.n,u:L.u||'개'});S[it.kind].unshift(it);added[it.kind]++});
+      toast(`음식 ${added.food}개 · 약품 ${added.med}개를 추가했어요`);
+    }catch(e){unknown.forEach(L=>S.food.unshift(newItem('food',{ko:L.name,n:L.n,u:L.u||'개'})));aiErr(e)}
+    BUSY=null;save();render();
+  }else toast(`음식 ${added.food}개 · 약품 ${added.med}개를 추가했어요`);
+}
+async function cropBox(src,box){const i=await loadImg(src);const W=i.width,H=i.height;
+  let [x0,y0,x1,y1]=box.map(Number);if(![x0,y0,x1,y1].every(Number.isFinite))return null;
+  if(x1<x0)[x0,x1]=[x1,x0];if(y1<y0)[y0,y1]=[y1,y0];if(x1-x0<8||y1-y0<8)return null;
+  const px=(x1-x0)*.06,py=(y1-y0)*.06;const sx=Math.max(0,(x0-px)/1000*W),sy=Math.max(0,(y0-py)/1000*H),ex=Math.min(W,(x1+px)/1000*W),ey=Math.min(H,(y1+py)/1000*H);
+  const c=document.createElement('canvas');c.width=Math.round(ex-sx);c.height=Math.round(ey-sy);if(c.width<10||c.height<10)return null;c.getContext('2d').drawImage(i,sx,sy,ex-sx,ey-sy,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.92)}
+/* local fallback: split one photo into product crops using the background mask */
+async function fgBoxes(src){
+  const i=await loadImg(src);const sc=Math.min(1,640/Math.max(i.width,i.height));const W=Math.round(i.width*sc),H=Math.round(i.height*sc),N=W*H;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.drawImage(i,0,0,W,H);const d=x.getImageData(0,0,W,H).data;
+  const mm=await mlMask(c);let bgML=null;if(mm){bgML=new Uint8Array(N);for(let p=0;p<N;p++)bgML[p]=mm[p]<.5?1:0}
+  const Yc=new Float32Array(N),Cb=new Float32Array(N),Cr=new Float32Array(N);
+  for(let p=0;p<N;p++){const o=p*4,R=d[o],G2=d[o+1],B=d[o+2];Yc[p]=(.299*R+.587*G2+.114*B)*.7;Cb[p]=-.169*R-.331*G2+.5*B;Cr[p]=.5*R-.419*G2-.081*B}
+  const ys=[],bs=[],rs=[];for(let X=0;X<W;X+=2){for(const p of [X,(H-1)*W+X]){ys.push(Yc[p]);bs.push(Cb[p]);rs.push(Cr[p])}}for(let Y=0;Y<H;Y+=2){for(const p of [Y*W,Y*W+W-1]){ys.push(Yc[p]);bs.push(Cb[p]);rs.push(Cr[p])}}
+  const med=a=>a.sort((p,q)=>p-q)[a.length>>1];const Y0=med(ys),B0=med(bs),R0=med(rs);const tol=TOL0+4;
+  const dBg=p=>{const a=Yc[p]-Y0,b=Cb[p]-B0,c2=Cr[p]-R0;return a*a+b*b+c2*c2};const dPP=(p,q)=>{const a=Yc[p]-Yc[q],b=Cb[p]-Cb[q],c2=Cr[p]-Cr[q];return a*a+b*b+c2*c2};
+  const t2=tol*tol,loc2=(tol*.18)**2,far2=(tol*1.4)**2;const bg=new Uint8Array(N),q=new Int32Array(N);let h=0,tl=0;
+  const seed=p=>{if(!bg[p]&&dBg(p)<t2){bg[p]=1;q[tl++]=p}};const grow=(p,n)=>{if(bg[n])return;const db=dBg(n);if(db<t2||(db<far2&&dPP(p,n)<loc2)){bg[n]=1;q[tl++]=n}};
+  for(let X=0;X<W;X++){seed(X);seed((H-1)*W+X)}for(let Y=0;Y<H;Y++){seed(Y*W);seed(Y*W+W-1)}
+  while(h<tl){const p=q[h++],X=p%W;if(X>0)grow(p,p-1);if(X<W-1)grow(p,p+1);if(p>=W)grow(p,p-W);if(p<N-W)grow(p,p+W)}
+  if(bgML)bg.set(bgML);
+  const lab=new Int32Array(N);let boxes=[];
+  for(let s=0;s<N;s++){if(bg[s]||lab[s])continue;let x0=W,y0=H,x1=0,y1=0,area=0;h=0;tl=0;q[tl++]=s;lab[s]=1;
+    while(h<tl){const p=q[h++],X=p%W,Y=(p/W)|0;area++;if(X<x0)x0=X;if(X>x1)x1=X;if(Y<y0)y0=Y;if(Y>y1)y1=Y;
+      for(const n of [X>0?p-1:-1,X<W-1?p+1:-1,p>=W?p-W:-1,p<N-W?p+W:-1])if(n>=0&&!bg[n]&&!lab[n]){lab[n]=1;q[tl++]=n}}
+    if(area>N*0.012)boxes.push([x0,y0,x1,y1])}
+  /* merge boxes that overlap (labels split by glare etc.) */
+  let merged=true;const pad=Math.max(W,H)*.035;
+  while(merged){merged=false;for(let a=0;a<boxes.length&&!merged;a++)for(let b=a+1;b<boxes.length;b++){const A=boxes[a],B=boxes[b];
+    const ox=Math.min(A[2],B[2])-Math.max(A[0],B[0]),oy=Math.min(A[3],B[3])-Math.max(A[1],B[1]);
+    const stackV=ox>.75*Math.min(A[2]-A[0],B[2]-B[0])&&-oy<H*.14,stackH=oy>.75*Math.min(A[3]-A[1],B[3]-B[1])&&-ox<W*.04;
+    if(stackV||stackH||(A[0]-pad<=B[2]+pad&&B[0]-pad<=A[2]+pad&&A[1]-pad<=B[3]+pad&&B[1]-pad<=A[3]+pad)){boxes[a]=[Math.min(A[0],B[0]),Math.min(A[1],B[1]),Math.max(A[2],B[2]),Math.max(A[3],B[3])];boxes.splice(b,1);merged=true;break}}}
+  boxes.sort((A,B)=>(Math.round(A[1]/(H/4))-Math.round(B[1]/(H/4)))||A[0]-B[0]);
+  return boxes.slice(0,30).map(b=>[b[0]/W*1000,b[1]/H*1000,(b[2]+1)/W*1000,(b[3]+1)/H*1000]);
+}
+/* ---------- diagnostics ---------- */
+let LASTERR=null, DIAG=null, SEG_ERR='';
+const ERRKO={images_unavailable:'사진을 보낼 수 없어요',passcode:'앱 비밀번호가 필요해요. 아래에 입력해 주세요',no_key:'서버에 API 키가 설정되지 않았어요 (배포 설정 확인)',offline:'인터넷에 연결되지 않았어요',empty_completion:'Claude 답변이 비어 있어요',not_granted:'Claude 사용 허락이 거절됐어요. 페이지를 새로고침하고 허락 창에서 허용을 눌러 주세요',sampling_disabled:'이 계정에서는 페이지가 Claude를 쓸 수 없어요',capability_disabled:'이 화면에서는 Claude 연결이 꺼져 있어요',rate_limited:'사용량 한도에 걸렸어요. 잠시 후 다시 해 주세요',invalid_json:'Claude 답변 형식을 읽지 못했어요',image_rejected:'사진 파일을 읽지 못했어요',upstream_error:'일시적인 연결 오류예요',no_items:'사진에서 제품 이름을 읽지 못했어요',refused:'Claude가 이 요청을 처리하지 않았어요'};
+async function runDiag(){
+  DIAG=['확인 중…'];render();const out=[];
+  out.push(`인터넷 연결: ${navigator.onLine?'있음':'없음'}`);
+  if(SSTATE==='wait')await SAMPLE_P;
+  out.push(`Claude 호출: ${SAMPLE?'가능':API_READY===false?'꺼짐 (서버에 API 키 없음)':'불가'}`);
+  if(SAMPLE){
+    try{const l=await SAMPLE.limits();out.push(`사진 전송 지원: ${l&&l.images?'예':'아니오'}`)}catch(e){out.push(`사진 전송 지원: 확인 실패 (${e?.code||e})`)}
+    try{await SAMPLE('Reply with the single word OK.',{modelTier:'quick',cache:false});out.push('글자 요청 테스트: 성공')}catch(e){out.push(`글자 요청 테스트: 실패 (${e?.code||'오류'})`)}
+    try{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');x.fillStyle='#d22';x.fillRect(0,0,64,64);
+      const bl=await new Promise(r=>c.toBlob(r,'image/png'));const r=await SAMPLE('What is the main colour of this image? One word.',{modelTier:'quick',cache:false,images:bl});out.push(`사진 요청 테스트: 성공 ("${String(r.text).trim().slice(0,20)}")`)}
+    catch(e){out.push(`사진 요청 테스트: 실패 (${e?.code||'오류'})`)}
+  }
+  try{await getSeg();out.push('AI 배경 제거: 사용 가능')}catch(e){out.push(`AI 배경 제거: 사용 불가 (${SEG_ERR||String(e).slice(0,60)}) · 기본 방식으로 동작`)}
+  DIAG=out;render();
+}
+/* ---------- manual cropper: drag a box around each product ---------- */
+let CROP=null;
+async function openCropper(src,why){
+  const img=await loadImg(src);CROP={src,img,boxes:[],why};
+  const root=document.getElementById('modalRoot');
+  root.innerHTML=`<div class="ov" id="cov"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ct" style="width:min(900px,100%)">
+   <div class="mhead"><h2 id="ct">제품마다 네모로 감싸 주세요</h2><button class="btn sm ghost" data-cclose>닫기</button></div>
+   <div style="padding:12px 16px;display:grid;gap:10px">
+    <div class="shoot">${why?esc(why)+' ':''}자동으로 나누지 못했어요. 사진 위를 손가락으로 끌어서 제품 하나씩 네모를 그려 주세요. 네모를 누르면 지워져요.</div>
+    <div style="position:relative;touch-action:none;user-select:none;-webkit-user-select:none" id="cwrap"><canvas id="ccv" style="width:100%;display:block;border-radius:8px;background:#fff"></canvas></div>
+   </div>
+   <div class="mfoot"><button class="btn" data-cundo>하나 지우기</button><button class="btn primary" data-cgo>0개로 추가</button></div></div></div>`;
+  const cv=document.getElementById('ccv'),W=img.width,H=img.height;cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  let drag=null;
+  const draw=()=>{x.drawImage(img,0,0);x.lineWidth=Math.max(3,W/250);x.font=`bold ${Math.max(18,W/30)}px sans-serif`;
+    const all=[...CROP.boxes,...(drag?[drag]:[])];
+    all.forEach((b,i)=>{const [x0,y0,x1,y1]=[Math.min(b[0],b[2]),Math.min(b[1],b[3]),Math.max(b[0],b[2]),Math.max(b[1],b[3])];
+      x.fillStyle='rgba(226,98,27,.15)';x.fillRect(x0,y0,x1-x0,y1-y0);x.strokeStyle='#E2621B';x.strokeRect(x0,y0,x1-x0,y1-y0);
+      if(i<CROP.boxes.length){x.fillStyle='#E2621B';const s=Math.max(26,W/22);x.fillRect(x0,y0,s,s);x.fillStyle='#fff';x.fillText(String(i+1),x0+s*.28,y0+s*.75)}});
+    document.querySelector('[data-cgo]').textContent=`${CROP.boxes.length}개로 추가`};
+  const pt=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]};
+  cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);const [a,b]=pt(e);drag=[a,b,a,b];draw()});
+  cv.addEventListener('pointermove',e=>{if(!drag)return;const [a,b]=pt(e);drag[2]=a;drag[3]=b;draw()});
+  cv.addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;const w=Math.abs(d[2]-d[0]),h=Math.abs(d[3]-d[1]);
+    if(w<W*.03&&h<H*.03){/* tap: remove box under finger */const [a,b]=[d[0],d[1]];const i=CROP.boxes.findIndex(B=>a>=Math.min(B[0],B[2])&&a<=Math.max(B[0],B[2])&&b>=Math.min(B[1],B[3])&&b<=Math.max(B[1],B[3]));if(i>=0)CROP.boxes.splice(i,1)}
+    else CROP.boxes.push(d);draw()});
+  draw();
+  document.getElementById('cov').addEventListener('click',async e=>{
+    if(e.target.closest('[data-cclose]')){root.innerHTML='';CROP=null;return}
+    if(e.target.closest('[data-cundo]')){CROP.boxes.pop();draw();return}
+    if(e.target.closest('[data-cgo]')){if(!CROP.boxes.length)return toast('제품을 네모로 감싸 주세요');
+      const boxes=CROP.boxes.map(b=>[Math.min(b[0],b[2])/W*1000,Math.min(b[1],b[3])/H*1000,Math.max(b[0],b[2])/W*1000,Math.max(b[1],b[3])/H*1000]);
+      root.innerHTML='';const s2=CROP.src;CROP=null;await addCrops(s2,boxes)}
+  });
+}
+async function addCrops(src,boxes){
+  BUSY=`사진 ${boxes.length}장을 흰 배경으로 정리하는 중…`;render();const kind=TAB==='med'?'med':'food';let n=0;
+  for(const bx of [...boxes].reverse()){const crop=await cropBox(src,bx);if(!crop)continue;const it=newItem(kind,{ko:'',needName:true});ORIG.set(it.id,crop);it.photo=await whiten(crop,TOL0,true,0,.45);S[kind].unshift(it);n++}
+  BUSY=null;save();render();const first=[...S.food,...S.med].find(z=>!z.ko);if(first){openEdit(first.id);toast(`${n}개를 넣었어요. 사진을 보고 제품 이름을 차례로 골라 주세요`)}
+}
+
+async function localSplit(src,why){
+  BUSY='사진을 제품별로 자르는 중…';render();
+  const boxes=await fgBoxes(src);
+  if(boxes.length<2){BUSY=null;render();return openCropper(src,why)}const kind=TAB==='med'?'med':'food';let n=0;
+  const list=boxes.length?boxes:[[0,0,1000,1000]];
+  for(const bx of list.reverse()){const crop=await cropBox(src,bx);if(!crop)continue;const it=newItem(kind,{ko:'',needName:true});ORIG.set(it.id,crop);it.photo=await whiten(crop,TOL0,true,0,.45);S[kind].unshift(it);n++}
+  BUSY=null;save();render();
+  toast(`${why} 사진 ${n}장을 잘라 넣었어요. 각 항목의 '이름 정하기'를 눌러 검색으로 골라 주세요`);
+}
+
+function tolerantJSON(t){if(!t)return null;try{return JSON.parse(t)}catch(_){}
+  const m=String(t).match(/\{[\s\S]*\}/);if(m){try{return JSON.parse(m[0])}catch(_){}}
+  /* cut-off reply: keep complete objects inside "items":[ ... */
+  const k=String(t).indexOf('[');if(k<0)return null;const body=t.slice(k+1);const objs=[];let depth=0,st=-1,inStr=false,esc2=false;
+  for(let i=0;i<body.length;i++){const ch=body[i];if(inStr){if(esc2)esc2=false;else if(ch==='\\')esc2=true;else if(ch==='"')inStr=false;continue}
+    if(ch==='"')inStr=true;else if(ch==='{'){if(!depth)st=i;depth++}else if(ch==='}'){depth--;if(!depth&&st>=0){try{objs.push(JSON.parse(body.slice(st,i+1)))}catch(_){}st=-1}}}
+  return objs.length?{items:objs}:null}
+function dictMatch(b,k){const q=((b||'')+' '+(k||'')).trim();if(!q)return null;
+  let best=null,bs=0;for(const kind of ['food','med'])for(const e of search(q,kind).slice(0,3)){const s2=norm(e.b+e.k)===norm(q)||norm(e.k)===norm(k)?100:norm(e.b+e.k).includes(norm(k))?80:0;if(s2>bs){bs=s2;best=e}}
+  return bs>=80?best:null}
+async function analyzePhoto(file,mode){
+  if(SSTATE==='wait'){BUSY='Claude 연결 확인 중…';render();await SAMPLE_P}
+  if(!SAMPLE){BUSY=null;if(mode==='shot'){render();toast(API_READY===false?'캡처 인식은 API 키를 설정해야 쓸 수 있어요. 목록 붙여넣기를 써 주세요':'캡처 인식은 Claude 연결이 필요해요. 목록 붙여넣기를 써 주세요');return}
+    if(API_READY!==false)LASTERR={code:'no_claude',msg:'Claude에 연결되지 않았어요'};const src0=await downscale(await fileToURL(file),1600);return localSplit(src0,API_READY===false?'':'Claude 연결 없이')}
+  LASTERR=null;BUSY=mode==='shot'?'캡처에서 제품과 수량을 읽는 중… (30초~1분)':'사진에서 제품을 하나씩 찾는 중… (30초~1분)';BUSYCTL=new AbortController();render();getSeg();
+  let src;
+  try{
+    src=await downscale(await fileToURL(file),1400);
+    const what=mode==='shot'?'This image is a screenshot of a Korean online shopping cart or order history (e.g. Coupang, Kurly, Naver). Each product row has a thumbnail, a product name and a quantity. Use the order quantity; if the name says e.g. "5개입" and quantity is 1, n = 5.':'This photo shows items a Korean traveller packed for Australia, laid out together. Read each package label (Korean). Group identical products into one entry and count them.';
+    const prompt=`${what}
+List every distinct product. Keep each entry short. Reply with ONLY this JSON, no other text:
+{"items":[{"kind":"food" or "med","b":"manufacturer in Korean or empty","ko":"Korean product name with variant, as printed","n":quantity,"u":"one of ${UNITS.map(u=>u[0]).join('/')}","box":[x0,y0,x1,y1]}]}
+"box" is a tight bounding box of ONE unit of that product${mode==='shot'?"'s thumbnail picture":''}, integers 0-1000 relative to image width and height.`;
+    let r=null;
+    try{r=await SAMPLE.json(prompt,{images:dataURLtoBlob(src),signal:BUSYCTL.signal})}
+    catch(e){if(e?.code==='invalid_json'&&e.text)r=tolerantJSON(e.text);else throw e}
+    const items=r&&Array.isArray(r.items)?r.items:Array.isArray(r)?r:[];
+    if(!items.length){BUSY=null;LASTERR={code:'no_items'};render();if(mode==='photo')return localSplit(src,'제품 이름을 읽지 못해');toast('캡처에서 제품을 찾지 못했어요. 제품 목록이 보이게 다시 캡처해 주세요');return}
+    BUSY=`제품 ${items.length}개를 정리하는 중…`;render();
+    const made=[],unknown=[];
+    for(const raw of items){const ko=String(raw.ko||'').trim();if(!ko)continue;const b=String(raw.b||'').trim();
+      const kind=raw.kind==='med'?'med':'food';const n=Math.max(1,parseInt(raw.n)||1);
+      const dm=dictMatch(b,ko);let it;
+      if(dm)it=normItem(fromDict(dm,{n,u:UNITS.some(u=>u[0]===raw.u)?raw.u:ICON_UNIT[dm.ic[0]]}));
+      else{it=newItem(kind,{b,ko,n,u:UNITS.some(u=>u[0]===raw.u)?raw.u:'개'});unknown.push(it)}
+      if(Array.isArray(raw.box)&&raw.box.length===4){const crop=await cropBox(src,raw.box);if(crop){ORIG.set(it.id,crop);it.photo=await whiten(crop,TOL0,true,0,.45)}}
+      made.push(it)}
+    made.reverse().forEach(it=>S[it.kind].unshift(it));BUSY=null;save();render();
+    if(unknown.length){BUSY=`사전에 없는 ${unknown.length}개의 영문 정보를 쓰는 중…`;render();
+      try{const r2=await SAMPLE.json(`Korean products a traveller is bringing to Australia:
+${unknown.map((it,i)=>`${i+1}. ${it.b} ${it.ko}`).join('\n')}
+For each line in order reply with ONLY JSON {"items":[{${FIELDS}}]}. Status ${STS_ALL}.`,{signal:BUSYCTL.signal});
+        const arr=r2&&Array.isArray(r2.items)?r2.items:[];
+        unknown.forEach((it,i)=>{const x=arr[i]?cleanAI(arr[i],it.kind):null;if(!x)return;const old=it.kind;
+          Object.assign(it,{en:x.en,cat:x.cat,ing:x.ing,desc:x.desc,st:x.st,tip:x.tip,icon:it.photo?it.icon:x.ic[0]});
+          if(x.kind!==old){S[old]=S[old].filter(z=>z.id!==it.id);it.kind=x.kind;if(!Object.keys(ST[it.kind]).includes(it.st))it.st=it.kind==='food'?'check':'ok';S[it.kind].unshift(it)}});
+      }catch(e){aiErr(e)}
+      BUSY=null;save();render()}
+    const cf=made.filter(i=>i.kind==='food').length;toast(`음식 ${cf}개 · 약품 ${made.length-cf}개를 추가했어요. 사진이 어긋나면 카메라 버튼으로 바꾸세요`);
+  }catch(e){BUSY=null;if(e?.code!=='cancelled')LASTERR={code:e?.code||'error',msg:e?.message};render();
+    if(e?.code==='cancelled')return;
+    if(mode==='photo'&&src){return localSplit(src,`자동 인식 실패(${e?.code||'오류'})로`)}
+    toast(`캡처 인식에 실패했어요 (${e?.code||'오류'}). 다시 시도하거나 목록 붙여넣기를 써 주세요`)}
+}
+
+/* ---------- edit modal ---------- */
+function getIt(id){return S.food.find(i=>i.id===id)||S.med.find(i=>i.id===id)}
+function openEdit(id){
+  const it=getIt(id);if(!it)return;EDIT=id;
+  const base=it.kind==='food'?FOOD_ICONS:MED_ICONS;
+  const opts=[...new Set([...(it.icons||[]),it.icon,...base])].slice(0,8);
+  const hasOrig=ORIG.has(id);
+  document.getElementById('modalRoot').innerHTML=`<div class="ov" id="ov"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+   <div class="mhead"><h2 id="mt">${esc(it.ko||'새 항목')}</h2><button class="btn sm ghost" data-close>닫기</button></div>
+   <div class="mbody">
+    <div class="photo">
+     <div class="bigph"><img id="bigimg" alt="" src="${pic(it)}"></div>
+     <div class="upl">
+      <label class="btn sm" for="cam">사진 촬영</label><input type="file" id="cam" accept="image/*" capture="environment">
+      <label class="btn sm" for="upf">사진 업로드</label><input type="file" id="upf" accept="image/*">
+     </div>
+     ${it.photo?`<div class="proc"><div class="r"><span>배경 하얗게 (누끼)</span><input type="checkbox" id="bgon" ${hasOrig?'checked':'disabled'}></div>
+       ${hasOrig?`<div class="r"><span>배경 인식 강도</span><span class="mono" id="tolv">${TOLS.get(id)??TOL0}</span></div><input type="range" id="tol" min="10" max="80" value="${TOLS.get(id)??TOL0}">
+       <div class="r"><span>제품이 지워지면 낮추고, 배경이 남으면 높이세요</span></div>
+       <button class="btn sm" data-rot>90° 회전</button>`:'<span>다시 조정하려면 사진을 한 번 더 찍어 주세요</span>'}
+       <button class="btn sm ghost" data-rmphoto>내 사진 지우고 그림으로</button></div>`:''}
+     <div style="font-size:12px;color:var(--muted)">기본 그림 고르기</div>
+     <div class="opts">${opts.map(k=>`<button class="opt ${!it.photo&&it.icon===k?'on':''}" data-icon="${k}" aria-label="${k}"><img alt="" src="${svgURL(k)}"></button>`).join('')}</div>
+    </div>
+    <div class="fields">
+     <div class="f" style="position:relative"><span>사전에서 찾아 한 번에 채우기</span><input id="x-find" autocomplete="off" placeholder="제품명 검색 (예: 신라면, 햇반 흑미)"><div class="sugg" id="x-sugg" hidden></div></div>
+     <div class="f2">
+      <label class="f"><span>제조사</span><input id="e-b" value="${esc(it.b)}" placeholder="예: 팔도, 오뚜기"></label>
+      <label class="f"><span>제품명</span><input id="e-ko" value="${esc(it.ko)}"></label>
+     </div>
+     <div>
+      <div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${UNITS.map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]} · ${u[2]}</option>`).join('')}</select></div></div>
+     </div>
+     <label class="f"><span>영문 이름 <i>ITEM</i></span><input id="e-en" value="${esc(it.en)}"></label>
+     <label class="f"><span>분류 <i>CATEGORY</i></span><input id="e-cat" value="${esc(it.cat)}"></label>
+     <label class="f"><span>${it.kind==='med'?'주요 성분 · 함량':'원재료'} <i>${it.kind==='med'?'ACTIVE INGREDIENTS':'INGREDIENTS'}</i></span><textarea id="e-ing">${esc(it.ing)}</textarea></label>
+     <label class="f"><span>설명 <i>NOTE FOR OFFICER</i></span><textarea id="e-desc">${esc(it.desc)}</textarea></label>
+     <div class="f2">
+      <label class="f"><span>예상 판정</span><select id="e-st">${Object.entries(ST[it.kind]).map(([k,[l]])=>`<option value="${k}" ${it.st===k?'selected':''}>${l}</option>`).join('')}</select></label>
+      ${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 있음</label>`:'<span></span>'}
+     </div>
+     <label class="f"><span>메모 (나만 보기)</span><input id="e-tip" value="${esc(it.tip)}"></label>
+     <div class="aibar">${SAMPLE?`<button class="btn sm" data-ai>${it.pending?'<span class="spin"></span> 작성 중…':'한글 이름으로 영문 자동 작성'}</button>${it.photo?`<button class="btn sm" data-aiimg>사진 라벨 읽어서 채우기</button>`:''}`:`<span class="aimsg">API 키를 설정하면 Claude 자동 작성을 쓸 수 있어요. 지금은 위 '사전에서 찾아 채우기'를 써 주세요.</span>`}</div>
+    </div>
+   </div>
+   <div class="mfoot"><button class="btn danger" data-del>삭제</button><button class="btn primary" data-close>완료</button></div>
+  </div></div>`;
+  const ov=document.getElementById('ov');
+  const sync=()=>{const g=k=>document.getElementById('e-'+k);if(!g('ko'))return;['b','ko','en','cat','ing','desc','tip'].forEach(k=>it[k]=g(k).value);it.u=g('u').value;it.st=g('st').value;if(g('rx'))it.rx=g('rx').checked;if(it.sample)it.sample=false;save()};
+  ov.addEventListener('input',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
+  ov.addEventListener('change',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
+  ov.addEventListener('click',async e=>{
+    if(e.target===ov||e.target.closest('[data-close]')){sync();closeEdit();return}
+    const ic=e.target.closest('[data-icon]');if(ic){it.icon=ic.dataset.icon;it.photo=null;ORIG.delete(id);save();openEdit(id);return}
+    if(e.target.closest('[data-rmphoto]')){it.photo=null;ORIG.delete(id);save();openEdit(id);return}
+    if(e.target.closest('[data-del]')){const b=e.target.closest('[data-del]');if(b.dataset.sure){S[it.kind]=S[it.kind].filter(i=>i.id!==id);save();closeEdit();toast('삭제됨')}else{b.dataset.sure=1;b.textContent='한 번 더 누르면 삭제'};return}
+    if(e.target.closest('[data-minc]')||e.target.closest('[data-mdec]')){it.n=Math.max(1,(+it.n||1)+(e.target.closest('[data-minc]')?1:-1));document.getElementById('e-n').textContent=it.n;save();return}
+    if(e.target.closest('[data-ai]')){sync();await aiFill(it);return}
+    if(e.target.closest('[data-aiimg]')){sync();await aiFill(it,{image:dataURLtoBlob(ORIG.get(id)||it.photo)});return}
+  });
+  const fi=document.getElementById('x-find'),fs=document.getElementById('x-sugg');
+  fi.addEventListener('input',()=>{const v=fi.value.trim();if(!v){fs.hidden=true;return}const res=[...search(v,it.kind),...search(v,it.kind==='food'?'med':'food')].slice(0,10);
+    fs.innerHTML=res.length?res.map(e=>`<button class="sg" data-fill="${e.uid}"><img alt="" src="${svgURL(e.ic[0])}"><span class="t"><b>${e.b&&!e.k.includes(e.b)?`<small>${esc(e.b)}</small>`:''}${esc(e.k)}</b><span>${esc(e.en)}</span></span></button>`).join(''):`<div class="sg"><span class="t"><span>사전에 없어요. 아래 칸에 이름을 적고 '영문 자동 작성'을 눌러 주세요</span></span></div>`;fs.hidden=false});
+  fs.addEventListener('mousedown',e=>e.preventDefault());
+  fs.addEventListener('click',e=>{const b=e.target.closest('[data-fill]');if(!b)return;const d=allDict().find(x=>x.uid===b.dataset.fill);if(!d)return;
+    Object.assign(it,{b:d.b||'',ko:d.k,en:d.en,cat:d.cat,ing:d.ing,desc:d.desc,st:d.st,tip:d.tip,icon:d.ic[0],icons:d.ic,needName:false,sample:false});
+    if(d.kind!==it.kind){S[it.kind]=S[it.kind].filter(x=>x.id!==it.id);it.kind=d.kind;S[d.kind].unshift(it)}
+    if(!it.photo)it.u=ICON_UNIT[d.ic[0]]||it.u;save();
+    const next=[...S.food,...S.med].find(z=>!z.ko&&z.id!==it.id);
+    if(next){openEdit(next.id);toast(`${d.k} 완료 · 다음 제품 이름을 골라 주세요`)}else{closeEdit();toast(`${d.k}(으)로 채웠어요`)}});
+  if(!it.ko)setTimeout(()=>fi.focus(),50);
+  const onFile=async f=>{if(!f)return;sync();TOLS.delete(id);ROTS.delete(id);const o=await downscale(await fileToURL(f));ORIG.set(id,o);it.photo=await whiten(o,TOL0,true);if(it.sample)it.sample=false;save();openEdit(id);toast('배경을 하얗게 정리했어요. 결과가 이상하면 강도를 조절하세요')};
+  document.getElementById('cam').addEventListener('change',e=>onFile(e.target.files[0]));
+  document.getElementById('upf').addEventListener('change',e=>onFile(e.target.files[0]));
+  const tol=document.getElementById('tol'),bgon=document.getElementById('bgon');
+  let tt;const reproc=()=>{clearTimeout(tt);tt=setTimeout(async()=>{const o=ORIG.get(id);if(!o)return;it.photo=await whiten(o,+(tol?.value||TOL0),bgon.checked,ROTS.get(id)||0);document.getElementById('bigimg').src=it.photo;save()},120)};
+  if(tol)tol.addEventListener('input',()=>{TOLS.set(id,+tol.value);document.getElementById('tolv').textContent=tol.value;reproc()});
+  ov.querySelector('[data-rot]')?.addEventListener('click',()=>{ROTS.set(id,((ROTS.get(id)||0)+1)%4);reproc()});
+  if(bgon)bgon.addEventListener('change',reproc);
+}
+function closeEdit(){EDIT=null;document.getElementById('modalRoot').innerHTML='';render()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&EDIT){document.querySelector('#ov [data-close]')?.click()}});
+
+/* ---------- sheet ---------- */
+function sheetTable(kind){
+  const L=S[kind];const t=S.trav;
+  const title=kind==='food'?'Food Items to Declare':'Medicines & Supplements to Declare';
+  const rows=L.map((it,i)=>`<tr><td class="num">${i+1}</td><td class="p"><img alt="" src="${pic(it)}"></td>
+   <td><div class="ien">${esc(it.en||it.ko)}</div><div class="ico">${esc(it.cat)}</div><div class="iko">${esc(it.ko)}</div></td>
+   <td><div class="lb">${kind==='med'?'Active ingredients':'Ingredients'}</div>${esc(it.ing)||'—'}<div class="lb" style="margin-top:6px">Note</div>${esc(it.desc)||'—'}${kind==='med'?`<div class="lb" style="margin-top:6px">Prescription / doctor's letter</div>${it.rx?'Yes, attached':'—'}`:''}</td>
+   <td class="num">${qtyEn(it)}</td></tr>`).join('');
+  return `<div class="sheet" id="sheet-${kind}">
+   <h3>${title}</h3>
+   <div class="sub"><span>Passenger <b>${esc(t.name)||'________________'}</b></span><span>Flight <b>${esc(t.flight)||'________'}</b></span><span>Arrival <b>${esc(t.date)||'________'}</b></span>${t.port?`<span>Port <b>${esc(t.port)}</b></span>`:''}</div>
+   <div class="stmt">All items below are for my personal use. I have declared them on my arrival declaration.<span>아래 물품은 모두 개인용이며 입국 신고서에 신고했습니다.</span></div>
+   ${L.length?`<table><colgroup><col style="width:34px"><col style="width:112px"><col style="width:32%"><col><col style="width:78px"></colgroup>
+    <thead><tr><th>#</th><th>Photo</th><th>Item</th><th>Details</th><th>Qty</th></tr></thead><tbody>${rows}</tbody></table>`:`<div class="none">No ${kind==='food'?'food':'medicine'} items.</div>`}
+   <div class="foot"><span>${L.length} item${L.length===1?'':'s'}</span><span>Prepared ${new Date().toISOString().slice(0,10)}</span></div>
+  </div>`;
+}
+const PHR=[
+ ['I have food to declare.','신고할 음식이 있어요.'],
+ ['These are for personal use only.','모두 개인용이에요.'],
+ ['It is commercially packaged and sealed.','공장에서 포장된 밀봉 제품이에요.'],
+ ['It does not contain meat or eggs.','고기나 계란은 들어있지 않아요.'],
+ ['This is my prescription medicine. Here is my doctor\'s letter.','제 처방약이고, 이건 의사 소견서예요.'],
+ ['Please dispose of it if it is not allowed.','반입이 안 되면 폐기해 주세요.'],
+];
+function sheetView(){
+  const t=S.trav;
+  const canDL=!!DL&&!!window.html2canvas;
+  setTimeout(bindSheet,0);
+  return `<section class="card sheettools">
+   <div class="f3">
+    <label class="f"><span>영문 이름 (여권과 동일)</span><input id="t-name" value="${esc(t.name)}" placeholder="HONG GILDONG"></label>
+    <label class="f"><span>항공편</span><input id="t-flight" value="${esc(t.flight)}" placeholder="KE121"></label>
+    <label class="f"><span>도착일</span><input id="t-date" value="${esc(t.date)}" placeholder="2026-10-20"></label>
+    <label class="f"><span>도착 공항</span><input id="t-port" value="${esc(t.port)}" placeholder="Sydney"></label>
+   </div>
+   <div class="exp">
+    ${canDL?`<button class="btn primary" data-exp="pdf">PDF 저장 (음식·약품 2페이지)</button><button class="btn" data-exp="food">음식 시트 이미지</button><button class="btn" data-exp="med">약품 시트 이미지</button>`:`<span class="aimsg">화면을 캡처해 보관하세요.</span>`}
+    <span class="aimsg" id="expmsg"></span>
+   </div>
+  </section>
+  <div class="sheetscroll">${sheetTable('food')}${sheetTable('med')}</div>
+  <section class="card phr"><h4>검사관에게 쓸 수 있는 한 줄 영어</h4>
+   ${PHR.map(([en,ko],i)=>`<div class="ph-i"><div class="t"><b>${esc(en)}</b><span>${esc(ko)}</span></div><button class="btn sm" data-copy="${i}">복사</button></div>`).join('')}
+  </section>`;
+}
+function bindSheet(){
+  ['name','flight','date','port'].forEach(k=>{const el=document.getElementById('t-'+k);if(!el)return;el.addEventListener('input',()=>{S.trav[k]=el.value;save();
+    document.querySelectorAll('.sheet').forEach(s=>{const kind=s.id.split('-')[1];const tmp=document.createElement('div');tmp.innerHTML=sheetTable(kind);s.querySelector('.sub').replaceWith(tmp.querySelector('.sub'))})})});
+}
+async function snap(kind){const el=document.getElementById('sheet-'+kind);return html2canvas(el,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false})}
+async function exportSheet(what){
+  const msg=document.getElementById('expmsg');msg.innerHTML='<span class="spin"></span> 만드는 중…';
+  try{
+    let blob,name;
+    if(what==='pdf'){
+      const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:'a4'});const PW=210,PH=297,M=10,CW=PW-2*M,CH=PH-2*M;let first=true;
+      for(const k of ['food','med']){const c=await snap(k);const pxPerMm=c.width/CW;const sliceH=Math.floor(CH*pxPerMm);
+        for(let y=0;y<c.height;y+=sliceH){const h=Math.min(sliceH,c.height-y);const s=document.createElement('canvas');s.width=c.width;s.height=h;s.getContext('2d').drawImage(c,0,y,c.width,h,0,0,c.width,h);
+          if(!first)pdf.addPage();first=false;pdf.addImage(s.toDataURL('image/jpeg',.92),'JPEG',M,M,CW,h/pxPerMm)}}
+      blob=pdf.output('blob');name='australia-declaration-list.pdf';
+    }else{const c=await snap(what);blob=await new Promise(r=>c.toBlob(r,'image/png'));name=`australia-declaration-${what}.png`}
+    await DL.save({filename:name,data:blob});msg.textContent='저장했어요';
+  }catch(e){msg.textContent=e?.code==='declined'?'저장을 취소했어요':(e?.code==='unavailable'||e?.code==='not_granted')?'이 화면에서는 파일 저장을 쓸 수 없어요':'저장에 실패했어요. 다시 시도해 주세요'}
+}
+
+/* ---------- incoming passenger card (sample) ---------- */
+const QS=[
+ ['의약품, 스테로이드, 불법 포르노, 총기, 무기 혹은 불법 약품 등 금지되거나 제한된 물품','Medicines, steroids, illegal pornography, firearms, weapons or illicit drugs'],
+ ['2250mL를 초과하는 알코올 음료, 25개비를 초과하는 담배 또는 25g을 초과하는 담배 제품','More than 2250mL of alcohol, or more than 25 cigarettes or 25g of tobacco'],
+ ['선물을 포함하여 합계 금액이 호주달러 $900 이상인 물건으로, 해외에서 샀거나 호주 내에서 관세·세금을 면제하여 구매한 물건','Goods over AUD 900 bought overseas or duty/tax free in Australia, incl. gifts'],
+ ['사업/상업 용도의 상품/견본','Goods/samples for business or commercial use'],
+ ['호주달러 $10,000 상당 혹은 그 이상의 호주 혹은 외국 화폐','AUD 10,000 or more in Australian or foreign currency',"주의: 세관원이나 경찰이 요청하면 여행자 수표, 수표 등 양도 가능한 증서도 보고해야 합니다."],
+ ['육류, 가금류, 생선, 해물류, 계란, 유제품, 열매, 채소','Meat, poultry, fish, seafood, eggs, dairy, fruit, vegetables'],
+ ['곡류, 씨앗, 구근, 짚, 견과류, 식물, 식물의 일부분, 전통 의약품 혹은 약초, 목각 제품','Grains, seeds, bulbs, straw, nuts, plants, traditional medicines or herbs, wooden articles'],
+ ['동물, 동물의 일부, 장비를 포함한 동물 제품, 애완동물 음식, 알, 생물제제, 생물 표본, 새, 물고기, 곤충, 조개류, 양봉 제품','Animals, animal products, pet food, eggs, biologicals, specimens, birds, fish, insects, shells, bee products'],
+ ['흙 또는 흙이 묻었거나 담수 지역에서 사용된 물품 (스포츠/레크리에이션 장비, 신발 등)','Soil, or articles with soil or used in freshwater areas (sports equipment, shoes)'],
+ ['지난 30일 동안 농장, 농장의 가축, 황야 혹은 강물/호수 등에 접촉한 적이 있습니까?','Have you been in contact with farms, farm animals, wilderness or freshwater in the past 30 days?'],
+ ['지난 6일 이내에 아프리카, 중남미 혹은 카리브해에 체류하였습니까?','Were you in Africa, South or Central America or the Caribbean in the last 6 days?'],
+];
+const OCC=[['STUDENT','학생'],['OFFICE WORKER','회사원'],['SELF-EMPLOYED','자영업'],['HOMEMAKER','주부'],['PUBLIC SERVANT','공무원'],['TEACHER','교사'],['NURSE','간호사'],['ENGINEER','엔지니어'],['DESIGNER','디자이너'],['RETIRED','은퇴'],['UNEMPLOYED','무직']];
+const STATES=[['NSW','뉴사우스웨일스 (시드니)'],['VIC','빅토리아 (멜버른)'],['QLD','퀸즐랜드 (브리즈번·골드코스트·케언즈)'],['WA','서호주 (퍼스)'],['SA','남호주 (애들레이드)'],['TAS','태즈메이니아 (호바트)'],['ACT','수도특별구 (캔버라)'],['NT','노던준주 (다윈)']];
+const REASONS=[['1','대회/회의'],['2','사업'],['3','친구나 친척 방문'],['4','고용'],['5','교육'],['6','전람회'],['7','휴가'],['8','기타']];
+const CARD0={surname:'',given:'',passport:'',flight:'',addr:'',state:'NSW',stay12:'no',tb:'no',crime:'no',q:{},
+ phone:'',email:'',caddr:'',cstate:'',emName:'',emContact:'',boarded:'KOREA',occ:'',nat:'REPUBLIC OF KOREA',dob:'',sec:'B',sy:'',sm:'',sd:'',res:'KOREA',reason:'7',date:''};
+if(!S.card)S.card={...CARD0};else S.card={...CARD0,...S.card};
+function autoQ(){
+  const f=S.food.length,m=S.med.length,all=[...S.food,...S.med];
+  const herbal=S.med.filter(i=>/herbal|ginseng/i.test(i.cat+i.en)).length;
+  const animal=all.filter(i=>/\b(bee products?|honey|eggs?|animal|deer antler|musk|bezoar)\b/i.test(i.cat+' '+i.ing)||(i.kind==='med'&&i.st==='ban')).length;
+  return {1:m?`약·영양제 ${m}개`:'',6:f?`음식 ${f}개 (라면 수프·김·참치 등 포함)`:'',7:(f||herbal)?(herbal?`음식·한약재 등 ${f+herbal}개`:`음식 ${f}개 (곡류·견과·채소 성분)`):'',8:animal?`동물성 성분 의심 ${animal}개`:''};
+}
+const qv=n=>S.card.q[n]??(autoQ()[n]?'yes':'no');
+const up=s=>String(s||'').toUpperCase();
+function bxs(val,n,ghost,w){const g=!val;const s=up(val||ghost||'').replace(/\s+/g,' ').slice(0,n).padEnd(n,' ');
+  return `<div class="bxs">${[...s].map(ch=>`<span class="bx" ${w?`style="width:${w}px"`:''}><span class="ink ${g?'ghost':''}">${ch===' '?'':esc(ch)}</span></span>`).join('')}</div>`}
+function lnv(val,ghost,st=''){return `<div class="ln" style="${st}"><span class="ink ${val?'':'ghost'}">${esc(up(val||ghost||''))}</span></div>`}
+const X='<span class="ink">X</span>';
+function cbx(on){return `<span class="cb">${on?X:''}</span>`}
+function yn(v){return `<div class="yn"><span>네 ${cbx(v==='yes')}</span><span>아니오 ${cbx(v==='no')}</span></div>`}
+function dmy(iso){const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?m[3]+m[2]+m[1]:''}
+function cardFront(){const c=S.card;const d=dmy(c.date);
+  return `<div class="ipcard" id="ipFront"><div class="wm">SAMPLE</div>
+  <span class="sq" style="left:8px;top:8px"></span><span class="sq" style="right:8px;top:8px"></span><span class="sq" style="left:8px;bottom:8px"></span><span class="sq" style="right:8px;bottom:8px"></span>
+  <div class="cols"><div>
+   <div class="ttl">입국여객용 카드 <span>•</span> 호주</div>
+   <div class="note">푸른색 또는 검정색 펜을 사용하여 영어로 작성하십시오.</div>
+   <div class="fl"><div class="lb">성</div>${bxs(c.surname,20,'HONG')}</div>
+   <div class="fl"><div class="lb">이름</div>${bxs(c.given,20,'GILDONG')}</div>
+   <div class="fl"><div class="lb">여권번호</div>${bxs(c.passport,12,'M12345678')}</div>
+   <div class="fl dia"><div class="lb">비행기편 번호 혹은 선박 이름</div>${bxs(c.flight,8,'KE121')}</div>
+   <div class="fl"><div class="lb">호주 내에서 체류할 주소</div>${lnv(c.addr,'123 GEORGE ST, SYDNEY')}
+     <div style="display:grid;grid-template-columns:1fr 26px 70px;gap:6px;align-items:center;margin-top:3px">${lnv('', '')}<span style="text-align:right">주</span>${lnv(c.state,'NSW')}</div></div>
+   <div class="fl"><div class="row2"><span class="lb" style="display:flex;gap:5px"><span style="font-size:8px">&#9654;</span>다음 12개월 동안 호주에 머물 계획입니까?</span>${yn(c.stay12)}</div></div>
+   <div class="fl dia"><div class="lb"><b>당신이 호주 시민이 아니라면:</b></div>
+     <div class="row2" style="padding-left:14px"><span>결핵을 앓고 있습니까?</span>${yn(c.tb)}</div>
+     <div class="row2" style="padding-left:14px;margin-top:3px"><span>범죄 전과가 있습니까?</span>${yn(c.crime)}</div></div>
+  </div><div>
+   <div class="row2" style="font-weight:700;margin-bottom:2px"><span>모든 질문에 X로 대답하십시오 – 확실치 않으면 '네'에 X 표시하십시오</span></div>
+   <div class="qh">다음과 같은 물건을 호주에 갖고 들어오고 있습니까?:</div>
+   ${QS.map((q,i)=>`<div class="q" ${i>=9?'style="margin-top:2px"':''}><span class="n">${i+1}.</span><span class="t">${q[0]}${q[2]?`<small>${q[2]}</small>`:''}</span>${yn(qv(i+1))}</div>`).join('')}
+  </div></div>
+  <div class="foot"><div class="oath"><b>선서</b><p>내가 제공한 정보는 진실되고, 정확하며, 완전한 것입니다. 나는 질문 중 어느 것이라도 답하지 않으면 심각한 결과를 초래할 수 있다는 것을 이해하고 있습니다.</p></div>
+   <div class="sig"><div><div class="lbx">서명</div><div class="ln" style="height:34px"><span class="ink ghost">(본인 서명 · 여권 서명과 동일하게)</span></div></div>
+    <div><div class="lbx" style="display:flex;justify-content:space-around"><span>일</span><span>월</span><span>년</span></div>${bxs(d,8,'20102026',16)}</div></div>
+   <div class="flip">이 카드를<br>뒤집으세요</div></div>
+  </div>`}
+function cardBack(){const c=S.card;const db=dmy(c.dob);
+  return `<div class="ipcard" id="ipBack"><div class="wm">SAMPLE</div>
+  <span class="sq" style="left:8px;top:8px"></span><span class="sq" style="right:8px;top:8px"></span><span class="sq" style="left:8px;bottom:8px"></span><span class="sq" style="right:8px;bottom:8px"></span>
+  <div class="bcols" style="margin-top:6px">
+   <div><div class="hdr">호주 국내의 연락처</div>
+    <div class="kv"><span>전화</span>${lnv(c.phone,'+82 10-1234-5678')}</div>
+    <div class="kv"><span>이메일</span>${lnv(c.email?c.email:'','GILDONG@EMAIL.COM')}</div>
+    <div class="kv"><span>또는 주소</span>${lnv(c.caddr,c.addr||'123 GEORGE ST, SYDNEY')}</div>
+    <div class="kv"><span>주</span>${lnv(c.cstate||c.state,'NSW','width:90px')}</div></div>
+   <div><div class="hdr">비상 연락처 (가족 또는 친구)</div>
+    <div class="kv"><span>이름</span>${lnv(c.emName,'HONG MINJI')}</div>
+    <div class="kv"><span>이메일 전화 또는 우편주소</span>${lnv(c.emContact,'+82 10-9876-5432')}</div></div>
+  </div>
+  <div class="lower"><div>
+    <div style="font-weight:700;margin-bottom:6px">영어로 작성하십시오</div>
+    <div class="fl"><div class="lb">어느 나라에서 이 비행기 혹은 선박에 탑승하였습니까?</div>${lnv(c.boarded,'KOREA')}</div>
+    <div class="fl dia"><div class="lb">당신의 평소 직업은 무엇입니까?</div>${lnv(c.occ,'STUDENT')}</div>
+    <div class="fl"><div class="lb">여권에 기재된 국적</div>${lnv(c.nat,'REPUBLIC OF KOREA')}</div>
+    <div class="fl"><div class="lb">생년월일 <span style="margin-left:auto;display:flex;gap:22px;font-size:10px"><span>일</span><span>월</span><span>년</span></span></div>${bxs(db,8,'01011995',17)}</div>
+    <div style="font-size:10px;margin-top:8px;border:1px solid var(--c-ln);padding:6px;border-radius:6px;background:rgba(255,255,255,.4)">이 카드의 양면을 모두 기재했는지 확인하십시오. 이 카드를 세관 입국대에 여권과 함께 제시하십시오.</div>
+   </div><div>
+    <div style="text-align:center;font-weight:700;margin-bottom:6px">&#9654; X 표시를 하시고 A 또는 B 또는 C항에 답을 하십시오</div>
+    <div class="abc">
+     <div class="abcb"><div class="h"><i>A</i>호주로의 영구이민</div>${cbx(c.sec==='A')}</div>
+     <div class="abcb"><div class="h"><i>B</i>방문자 혹은 임시 거주자</div>${cbx(c.sec==='B')}
+       <div style="margin-top:6px">호주에서의 예상 체류기간</div>
+       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:3px;align-items:center">
+        <span style="display:flex;gap:3px;align-items:center">${lnv(c.sec==='B'?c.sy:'',c.sec==='B'&&!(c.sy||c.sm||c.sd)?'':'','width:34px')}년</span>
+        <span style="display:flex;gap:3px;align-items:center">${lnv(c.sec==='B'?c.sm:'','','width:34px')}개월</span>
+        <span style="display:flex;gap:3px;align-items:center">${lnv(c.sec==='B'?c.sd:'',c.sec==='B'&&!(c.sy||c.sm||c.sd)?'7':'','width:34px')}일</span></div>
+       <div style="margin-top:6px">영구거주 국가명</div>${lnv(c.sec==='B'?c.res:'',c.sec==='B'?'KOREA':'')}</div>
+     <div class="abcb"><div class="h"><i>C</i>호주로 귀국하는 영주자</div>${cbx(c.sec==='C')}<div style="margin-top:6px">해외에서 주로 체류한 국가</div>${lnv(c.sec==='C'?c.res:'','')}</div>
+    </div>
+    <div style="margin-top:10px">&#9654; 여행을 하는 주된 이유 (한 항목에만 X 표시)</div>
+    <div class="rs">${['1','3','5','7','2','4','6','8'].map(k=>{const r=REASONS.find(x=>x[0]===k);return `<span>${r[1]} ${k} ${cbx(c.sec==='B'&&c.reason===k)}</span>`}).join('')}</div>
+   </div></div>
+  <div style="display:flex;justify-content:flex-end;margin-top:10px"><span class="serial">SAMPLE</span></div>
+  </div>`}
+function cardView(){
+  const c=S.card,aq=autoQ();
+  const inp=(k,l,ph,cls='')=>`<label class="f"><span>${l}</span><input id="c-${k}" data-c="${k}" class="${cls}" value="${esc(c[k])}" placeholder="${esc(ph)}"></label>`;
+  const seg=(k,v,yes='네',no='아니오')=>`<span class="seg" data-seg="${k}"><button class="yes" aria-pressed="${v==='yes'}" data-v="yes">${yes}</button><button aria-pressed="${v==='no'}" data-v="no">${no}</button></span>`;
+  setTimeout(()=>{bindCard();fitCards()},0);
+  return `
+  <div class="ipc"><div style="min-width:0;flex:1"><div class="q">Incoming Passenger Card · 작성 예시</div>
+   <b>입국카드는 비행기 안에서 받아요. 아래 내용을 채우면 똑같은 모양으로 예시가 만들어져요.</b>
+   <p>모두 영어 대문자로, 체크는 X로 표시하세요. 일부 콴타스 항공편은 종이 카드 대신 디지털 입국신고(ATD)를 쓰는데 질문 내용은 같아요.</p></div></div>
+  <section class="card cardform">
+   <h3>앞면 · 인적사항</h3>
+   <div class="g">
+    ${inp('surname','성 (여권 영문)','HONG')}
+    ${inp('given','이름 (여권 영문)','GILDONG')}
+    ${inp('passport','여권번호','M12345678')}
+    ${inp('flight','항공편 번호','KE121')}
+    ${inp('addr','호주 숙소 주소 (호텔명 + 주소)','123 GEORGE ST, SYDNEY')}
+    <label class="f"><span>숙소가 있는 주</span><select id="c-state" data-c="state">${STATES.map(([k,l])=>`<option value="${k}" ${c.state===k?'selected':''}>${k} · ${l}</option>`).join('')}</select></label>
+    <label class="f"><span>작성일 (도착일)</span><input type="date" id="c-date" data-c="date" class="nu" value="${esc(c.date)}"></label>
+   </div>
+   <div class="qlist">
+    <div class="qi"><span class="no">·</span><span>다음 12개월 동안 호주에 머물 계획입니까? <span class="why" style="color:var(--muted)">여행이면 아니오</span></span>${seg('stay12',c.stay12)}</div>
+    <div class="qi"><span class="no">·</span><span>결핵을 앓고 있습니까?</span>${seg('tb',c.tb)}</div>
+    <div class="qi"><span class="no">·</span><span>범죄 전과가 있습니까?</span>${seg('crime',c.crime)}</div>
+   </div>
+   <h3>앞면 · 반입 물품 질문</h3>
+   <div class="cardhint"><span>음식·약품 리스트를 보고 <b>자동으로</b> 체크했어요. 확실하지 않으면 <b>네</b>가 안전해요.</span></div>
+   <div class="qlist">${QS.map((q,i)=>{const n=i+1,v=qv(n),why=aq[n];return `<div class="qi"><span class="no">${n}</span><span>${q[0]}${why?`<span class="why">자동 '네' · ${why}</span>`:''}${S.card.q[n]?`<span class="why" style="color:var(--muted)">직접 바꿈 · <button class="btn sm ghost" style="padding:0 4px" data-qreset="${n}">자동으로 되돌리기</button></span>`:''}</span>${seg('q'+n,v)}</div>`}).join('')}</div>
+   <h3>뒷면 · 연락처와 여행 정보</h3>
+   <div class="g">
+    ${inp('phone','내 전화번호','+82 10-1234-5678','nu')}
+    ${inp('email','이메일','gildong@email.com','nu')}
+    ${inp('caddr','연락 주소 (비우면 숙소 주소)','123 GEORGE ST, SYDNEY')}
+    ${inp('emName','비상 연락처 이름 (영문)','HONG MINJI')}
+    ${inp('emContact','비상 연락처 전화 또는 이메일','+82 10-9876-5432','nu')}
+    ${inp('boarded','탑승한 나라','KOREA')}
+    <label class="f"><span>평소 직업</span><select id="c-occsel" data-occ="1"><option value="">선택하세요</option>${OCC.map(([e,k])=>`<option value="${e}" ${c.occ===e?'selected':''}>${k} · ${e}</option>`).join('')}<option value="__" ${c.occ&&!OCC.some(o=>o[0]===c.occ)?'selected':''}>직접 입력</option></select></label>
+    ${c.occ&&!OCC.some(o=>o[0]===c.occ)||c._occCustom?inp('occ','직업 (영문)','e.g. CHEF'):''}
+    ${inp('nat','여권에 기재된 국적','REPUBLIC OF KOREA')}
+    <label class="f"><span>생년월일</span><input type="date" id="c-dob" data-c="dob" class="nu" value="${esc(c.dob)}"></label>
+    <label class="f"><span>구분</span><select id="c-sec" data-c="sec"><option value="B" ${c.sec==='B'?'selected':''}>B · 방문자 (여행·출장·유학)</option><option value="A" ${c.sec==='A'?'selected':''}>A · 영구 이민</option><option value="C" ${c.sec==='C'?'selected':''}>C · 귀국하는 호주 영주권자</option></select></label>
+    <label class="f"><span>여행 목적</span><select id="c-reason" data-c="reason">${REASONS.map(([k,l])=>`<option value="${k}" ${c.reason===k?'selected':''}>${k} · ${l}</option>`).join('')}</select></label>
+    <div class="f"><span>호주 체류 예정 기간</span><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px"><input id="c-sy" data-c="sy" class="nu" inputmode="numeric" placeholder="년" value="${esc(c.sy)}"><input id="c-sm" data-c="sm" class="nu" inputmode="numeric" placeholder="개월" value="${esc(c.sm)}"><input id="c-sd" data-c="sd" class="nu" inputmode="numeric" placeholder="일 (예: 7)" value="${esc(c.sd)}"></div></div>
+    ${inp('res','영구 거주 국가','KOREA')}
+   </div>
+   <div class="exp">${DL&&window.html2canvas?`<button class="btn primary" data-cardsave>작성 예시 이미지로 저장</button>`:`<span class="aimsg">화면을 캡처해 기내에서 보고 따라 쓰세요.</span>`}<span class="aimsg" id="cardmsg"></span></div>
+  </section>
+  <h3 style="font-size:15px;margin:0 0 8px">앞면</h3><div class="ipfit" id="fitF">${cardFront()}</div>
+  <h3 style="font-size:15px;margin:0 0 8px">뒷면</h3><div class="ipfit" id="fitB">${cardBack()}</div>
+  <p class="shoot">흐리게 보이는 글씨는 예시예요. 위 칸을 채우면 진한 파란 글씨로 바뀌어요. 서명은 기내에서 직접 하세요.</p>`;
+}
+function refreshCard(){const f=document.getElementById('fitF'),b=document.getElementById('fitB');if(!f)return;f.innerHTML=cardFront();b.innerHTML=cardBack();fitCards()}
+function fitCards(){document.querySelectorAll('.ipfit').forEach(w=>{const c=w.firstElementChild;if(!c)return;c.style.transform='none';const s=Math.min(1,w.clientWidth/960);c.style.transform=`scale(${s})`;w.style.height=Math.ceil(c.offsetHeight*s)+'px'})}
+addEventListener('resize',()=>{if(TAB==='card')fitCards()});
+function bindCard(){
+  document.querySelectorAll('[data-c]').forEach(el=>{const k=el.dataset.c;const h=()=>{const v=el.classList.contains('nu')||el.tagName==='SELECT'||el.type==='date'?el.value:el.value.toUpperCase();S.card[k]=v;save();refreshCard()};el.addEventListener('input',h);el.addEventListener('change',h)});
+  const os=document.getElementById('c-occsel');if(os)os.addEventListener('change',()=>{if(os.value==='__'){S.card._occCustom=true;S.card.occ='';save();render()}else{S.card._occCustom=false;S.card.occ=os.value;save();render()}});
+}
+async function saveCard(){
+  const msg=document.getElementById('cardmsg');msg.innerHTML='<span class="spin"></span> 만드는 중…';
+  try{const els=[document.getElementById('ipFront'),document.getElementById('ipBack')];const cs=[];
+    for(const el of els){const t=el.style.transform;el.style.transform='none';cs.push(await html2canvas(el,{scale:2,backgroundColor:'#FBF0D6',logging:false}));el.style.transform=t}
+    const out=document.createElement('canvas');out.width=Math.max(...cs.map(c=>c.width));out.height=cs.reduce((a,c)=>a+c.height,0)+40;const o=out.getContext('2d');o.fillStyle='#ffffff';o.fillRect(0,0,out.width,out.height);
+    let y=0;cs.forEach(c=>{o.drawImage(c,0,y);y+=c.height+40});
+    const blob=await new Promise(r=>out.toBlob(r,'image/png'));await DL.save({filename:'australia-passenger-card-sample.png',data:blob});msg.textContent='저장했어요';
+  }catch(e){msg.textContent=e?.code==='declined'?'저장을 취소했어요':'저장에 실패했어요. 다시 시도해 주세요'}
+}
+
+/* ---------- global events ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab]');if(t){TAB=t.dataset.tab;try{localStorage.setItem(KEY+'-tab',TAB)}catch(_){}render();window.scrollTo({top:0});return}
+  const nb=e.target.closest('[data-name]');if(nb){openEdit(nb.dataset.name);return}
+  const ed=e.target.closest('[data-edit]');if(ed){openEdit(ed.dataset.edit);return}
+  const ad=e.target.closest('[data-add]');if(ad){addDict(ad.dataset.add);return}
+  if(e.target.closest('[data-clear-sample]')){S[TAB]=S[TAB].filter(i=>!i.sample);save();render();return}
+  const ex=e.target.closest('[data-exp]');if(ex){exportSheet(ex.dataset.exp);return}
+  const inc=e.target.closest('[data-inc],[data-dec]');if(inc){const it=getIt(inc.dataset.inc||inc.dataset.dec);it.n=Math.max(1,(+it.n||1)+(inc.dataset.inc?1:-1));it.sample=false;save();inc.parentElement.querySelector('b').textContent=it.n;return}
+  const dl=e.target.closest('[data-del]');if(dl&&!dl.closest('.modal')){const it=getIt(dl.dataset.del);const arr=S[it.kind],idx=arr.indexOf(it);arr.splice(idx,1);save();render();toast(`${it.ko} 삭제됨`,{label:'되돌리기',fn:()=>{arr.splice(idx,0,it);save();render()}});return}
+  if(e.target.closest('[data-pcsave]')){try{localStorage.setItem('au-declare-pass',document.getElementById('pcIn').value.trim())}catch(_){}LASTERR=null;render();toast('저장했어요. 다시 시도해 주세요');return}
+  if(e.target.closest('[data-diag]')){runDiag();return}
+  if(e.target.closest('[data-diagx]')){DIAG=null;render();return}
+  if(e.target.closest('[data-errx]')){LASTERR=null;render();return}
+  if(e.target.closest('[data-bulkgo]')){bulkAdd();return}
+  if(e.target.closest('[data-bulk]')){BULK=!BULK;render();if(BULK)setTimeout(()=>document.getElementById('bulkText')?.focus(),0);return}
+  if(e.target.closest('[data-stop]')){BUSYCTL?.abort();BUSY=null;render();return}
+  const sh=e.target.closest('[data-shoot]');if(sh){CAMT=sh.dataset.shoot;const rc=document.getElementById('rowcam');rc.value='';rc.click();return}
+  const sgb=e.target.closest('[data-seg] button');if(sgb){const k=sgb.closest('[data-seg]').dataset.seg,v=sgb.dataset.v;
+    if(k[0]==='q'&&/^q\d+$/.test(k)){const n=+k.slice(1);const auto=autoQ()[n]?'yes':'no';if(v===auto)delete S.card.q[n];else S.card.q[n]=v}else S.card[k]=v;save();render();return}
+  const qr=e.target.closest('[data-qreset]');if(qr){delete S.card.q[qr.dataset.qreset];save();render();return}
+  if(e.target.closest('[data-cardsave]')){saveCard();return}
+  const cp=e.target.closest('[data-copy]');if(cp){const txt=PHR[+cp.dataset.copy][0];
+    try{navigator.clipboard.writeText(txt).then(()=>toast('복사했어요'),()=>selectText(cp))}catch(_){selectText(cp)}return}
+});
+document.addEventListener('change',e=>{const u=e.target.closest('[data-unit]');if(u){const it=getIt(u.dataset.unit);it.u=u.value;it.sample=false;save()}});
+document.addEventListener('dblclick',e=>{const el=e.target.closest('[data-ie]');if(!el||el.isContentEditable)return;const it=getIt(el.dataset.id);if(!it)return;const f=el.dataset.ie;
+  el.textContent=it[f]||'';el.contentEditable='true';el.focus();const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);let done=false;
+  const fin=keep=>{if(done)return;done=true;el.contentEditable='false';if(keep){it[f]=el.textContent.replace(/\s+/g,' ').trim();it.sample=false;save()}render()};
+  el.addEventListener('blur',()=>fin(true),{once:true});
+  el.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();el.blur()}else if(ev.key==='Escape'){ev.preventDefault();done=false;fin(false)}});
+});
+let lastTap={el:null,t:0};
+document.addEventListener('touchend',e=>{const el=e.target.closest('[data-ie]');if(!el||el.isContentEditable)return;const now=Date.now();
+  if(lastTap.el===el&&now-lastTap.t<380){e.preventDefault();lastTap={el:null,t:0};el.dispatchEvent(new MouseEvent('dblclick',{bubbles:true}))}else lastTap={el,t:now}},{passive:false});
+function selectText(btn){const b=btn.parentElement.querySelector('b');const r=document.createRange();r.selectNodeContents(b);const s=getSelection();s.removeAllRanges();s.addRange(r);toast('선택됐어요. 길게 눌러 복사하세요')}
+let tT;function toast(m,act){const r=document.getElementById('toastRoot');r.innerHTML=`<div class="toast" role="status">${esc(m)}${act?`<button id="tact">${esc(act.label)}</button>`:''}</div>`;if(act)document.getElementById('tact').onclick=()=>{r.innerHTML='';act.fn()};clearTimeout(tT);tT=setTimeout(()=>r.innerHTML='',act?5000:2600)}
+document.getElementById('rowcam').addEventListener('change',async e=>{const f=e.target.files[0];const it=getIt(CAMT);if(!f||!it)return;
+  toast('배경을 하얗게 정리하는 중…');TOLS.delete(it.id);ROTS.delete(it.id);
+  const o=await downscale(await fileToURL(f));ORIG.set(it.id,o);it.photo=await whiten(o,TOL0,true);it.sample=false;save();render();
+  toast('흰 배경 사진으로 바꿨어요. 사진을 누르면 강도·회전을 조절할 수 있어요')});
+try{const t=localStorage.getItem(KEY+'-tab');if(['food','med','sheet','card'].includes(t))TAB=t}catch(e){}
+render();
+</script>
+<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script>
+</body>
+</html>
