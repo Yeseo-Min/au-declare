@@ -1491,16 +1491,28 @@ function bindSheet(){fitSheets();
   ['name','flight','date','port'].forEach(k=>{const el=document.getElementById('t-'+k);if(!el)return;el.addEventListener('input',()=>{S.trav[k]=el.value;save();
     document.querySelectorAll('.sheet').forEach(s=>{const kind=s.id.split('-')[1];const tmp=document.createElement('div');tmp.innerHTML=sheetTable(kind);s.querySelector('.sub').replaceWith(tmp.querySelector('.sub'))})})});
 }
-async function snap(kind){const el=document.getElementById('sheet-'+kind);const t=el.style.transform;el.style.transform='none';try{return await html2canvas(el,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false})}finally{el.style.transform=t}}
+async function snap(kind,withBreaks){const el=document.getElementById('sheet-'+kind);const t=el.style.transform;el.style.transform='none';
+  /* drawn icons are SVG; turn them into PNG so they show up in the saved file */
+  const svgs=[...el.querySelectorAll('img')].filter(i=>i.src.startsWith('data:image/svg'));const olds=svgs.map(i=>i.src);
+  for(const i of svgs){try{const im=await loadImg(i.src);const c=document.createElement('canvas');c.width=c.height=240;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,240,240);x.drawImage(im,0,0,240,240);i.src=c.toDataURL('image/png');await i.decode().catch(()=>{})}catch(e){}}
+  try{const c=await html2canvas(el,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false});if(!withBreaks)return c;
+    /* safe places to cut a page: below each table row / group heading */
+    const top=el.getBoundingClientRect().top,k=c.width/el.offsetWidth;
+    const br=[...el.querySelectorAll('tr,.grp,.stmt,.sub,h3')].map(n=>Math.round((n.getBoundingClientRect().bottom-top)*k)).filter(v=>v>0).sort((a,b)=>a-b);
+    const starts=[...el.querySelectorAll('.grp')].map(n=>Math.round((n.getBoundingClientRect().top-top)*k));
+    return {c,br:[...new Set([...br,...starts])].sort((a,b)=>a-b)}}
+  finally{el.style.transform=t;svgs.forEach((i,n)=>i.src=olds[n])}}
 async function exportSheet(what){
   const msg=document.getElementById('expmsg');msg.innerHTML='<span class="spin"></span> 만드는 중…';
   try{
     let blob,name;
     if(what==='pdf'){
       const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:'a4'});try{pdf.setDisplayMode('fullwidth','continuous')}catch(_){}const PW=210,PH=297,M=10,CW=PW-2*M,CH=PH-2*M;let first=true;
-      for(const k of ['food','med']){const c=await snap(k);const pxPerMm=c.width/CW;const sliceH=Math.floor(CH*pxPerMm);
-        for(let y=0;y<c.height;y+=sliceH){const h=Math.min(sliceH,c.height-y);const s=document.createElement('canvas');s.width=c.width;s.height=h;s.getContext('2d').drawImage(c,0,y,c.width,h,0,0,c.width,h);
-          if(!first)pdf.addPage();first=false;pdf.addImage(s.toDataURL('image/jpeg',.92),'JPEG',M,M,CW,h/pxPerMm)}}
+      for(const k of ['food','med']){const {c,br}=await snap(k,true);const pxPerMm=c.width/CW;const pageH=Math.floor(CH*pxPerMm);
+        let y=0;while(y<c.height-2){let end=y+pageH;
+          if(end<c.height){const cut=br.filter(v=>v>y+pageH*.25&&v<=end).pop();end=cut||end}else end=c.height;
+          const h=end-y;const s=document.createElement('canvas');s.width=c.width;s.height=h;const sx=s.getContext('2d');sx.fillStyle='#fff';sx.fillRect(0,0,s.width,h);sx.drawImage(c,0,y,c.width,h,0,0,c.width,h);
+          if(!first)pdf.addPage();first=false;pdf.addImage(s.toDataURL('image/jpeg',.92),'JPEG',M,M,CW,h/pxPerMm);y=end}}
       blob=pdf.output('blob');name='australia-declaration-list.pdf';
     }else{const c=await snap(what);blob=await new Promise(r=>c.toBlob(r,'image/png'));name=`australia-declaration-${what}.png`}
     await DL.save({filename:name,data:blob});msg.textContent='저장했어요';
