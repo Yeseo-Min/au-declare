@@ -392,6 +392,7 @@ main{padding-block:18px}
 .psheet b{font-size:16px;text-align:center;margin-bottom:2px}
 .psheet .btn{justify-content:center;padding:14px;font-size:16px;gap:10px}.psheet .btn svg{width:20px;height:20px}
 .mv{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.rowft{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:2px -2px 0;padding-top:8px;border-top:1px solid var(--line)}
 .mvw{display:inline-flex;align-items:center;gap:6px}.mvl{font-size:12px;color:var(--muted)}
 .mv button{border:0;background:var(--surface);padding:0 10px;height:32px;cursor:pointer;font-size:12.5px;color:var(--ink);white-space:nowrap}
 .mv button+button{border-left:1px solid var(--line)}.mv button:active{background:var(--accent-soft)}
@@ -1137,7 +1138,8 @@ function rowHTML(it){normItem(it);
    <div class="side"><span class="pill ${cls}">${lab}</span>
      <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
      <select class="unit" data-unit="${it.id}" aria-label="단위">${unitList(it.kind).map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${(UNIT_LABEL[it.kind]||{})[u[0]]||u[0]}</option>`).join('')}</select></div>
-     <span class="mvw"><span class="mvl">순서</span><span class="mv"><button data-mv="-1" data-mid="${it.id}">▲ 위로 올리기</button><button data-mv="1" data-mid="${it.id}">▼ 아래로 내리기</button></span></span><button class="xdel" data-del="${it.id}">삭제</button>${it.kind==='med'?`<div class="medx"><span>내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span><label class="dsel">복용 <select class="unit" data-dsel="${it.id}" aria-label="복용 일수">${dayOpts(it.days)}</select></label></div>`:''}</div>
+     ${it.kind==='med'?`<div class="medx"><span>내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span><label class="dsel">복용 <select class="unit" data-dsel="${it.id}" aria-label="복용 일수">${dayOpts(it.days)}</select></label></div>`:''}</div>
+   <div class="rowft"><span class="mvw"><span class="mvl">순서</span><span class="mv"><button data-mv="-1" data-mid="${it.id}">▲ 위로 올리기</button><button data-mv="1" data-mid="${it.id}">▼ 아래로 내리기</button></span></span><button class="xdel" data-del="${it.id}">삭제</button></div>
   </article>`;
 }
 function search(q,kind){
