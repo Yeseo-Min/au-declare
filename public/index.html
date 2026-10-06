@@ -346,6 +346,7 @@ main{padding-block:18px}
 }
 @media (max-width:720px){.tab .n.nx{display:none}}
 @media (max-width:340px){nav.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cnt{font-size:12px;color:var(--muted);white-space:nowrap}.cnt [data-ie]{color:var(--ink);font-weight:500}
 .legal{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.6}
 .legal a{color:inherit}
 </style>
@@ -707,9 +708,10 @@ PM.push(
 ['','노바손 크림','후시딘','Novason Cream (Betamethasone + Gentamicin, steroid & antibiotic cream)',{cat:'Prescription Medicine',ing:'Betamethasone valerate 0.61 mg/g, Gentamicin sulfate 1 mg/g',desc:'Topical corticosteroid and antibiotic cream for skin inflammation and infection, for personal use.',st:'rx',tip:'바르는 스테로이드라 입국카드 1번(의약품·스테로이드)에 해당해요. 원래 튜브 그대로 신고하세요.',ic:['tube']}],
 ['','리도멕스 크림','후시딘','Ridomex Cream (Prednisolone valerate acetate, topical corticosteroid)',{cat:'Topical Medicine',ing:'Prednisolone valerate acetate 0.3% (check label)',desc:'Topical steroid cream for skin itching and rash, for personal use.',st:'rx',tip:'바르는 스테로이드라 신고 대상이에요. 원래 튜브 그대로 가져가세요.',ic:['tube']}],
 ['','더마톱 연고','후시딘','Dermatop Ointment (Prednicarbate 0.25%, topical corticosteroid)',{cat:'Topical Medicine',ing:'Prednicarbate 0.25% (check label)',desc:'Topical steroid ointment for eczema, for personal use.',st:'rx',tip:'바르는 스테로이드라 신고 대상이에요. 원래 튜브 그대로 가져가세요.',ic:['tube']}],
+['유한양행','엘레나 UREX 프로바이오틱스','유산균',"Yuhan Elena UREX Probiotics (women's probiotic capsules, 170 mg x 30)",{cat:'Dietary Supplement',ing:'UREX probiotics: Limosilactobacillus reuteri RC-14, Lacticaseibacillus rhamnosus GR-1 (live cultures); maltodextrin, microcrystalline cellulose, magnesium stearate; capsule: HPMC',desc:"Women's health probiotic supplement, 1 capsule daily, for personal use.",tip:'건강기능식품(유산균)이라 보통 그대로 통과해요. 원래 통 그대로 가져가세요.',ic:['pillbottle','capsule']}],
 ['제일헬스사이언스','씬 덱시부펜 연질캡슐 300mg','이부프로펜','Ssin Dexibuprofen 300 mg (pain & fever relief soft capsules)',{ing:'Dexibuprofen 300 mg',desc:'Over-the-counter pain and fever relief for personal use.'}],
 ['','덱시부펜 300mg','이부프로펜','Dexibuprofen 300 mg (pain & fever relief)',{ing:'Dexibuprofen 300 mg'}],
-['부광약품','씬지로이드정 0.1mg','혈압약','Synthroid 0.1 mg (Levothyroxine sodium 100 mcg, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium 0.1 mg (100 mcg)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 원래 병 그대로, 영문 처방전이나 소견서를 함께 챙기고 3개월분 이내로 가져가세요.',ic:['pillbottle','box']}],
+['부광약품','씬지로이드정 0.1mg','혈압약','Synthroid 0.1 mg (Levothyroxine sodium 100 mcg, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium 0.1 mg (100 mcg)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 원래 병에 여행 일수만큼만 담고 \'내용물\'에 실제 개수(예: 10정)를 적으세요. 영문 처방전이나 소견서도 함께 챙기세요.',ic:['pillbottle','box']}],
 ['','씬지로이드 (레보티록신)','혈압약','Synthroid (Levothyroxine sodium, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium (check strength)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 영문 처방전이나 소견서를 함께 챙기세요.',ic:['pillbottle','box']}],
 ['Trader Joe\'s','트레이더조 멜라토닌 3mg 츄어블','멜라토닌',"Trader Joe's Chewable Melatonin 3 mg (dietary supplement, peppermint)",{ing:'Melatonin 3 mg',desc:'Sleep supplement for personal use.',tip:'호주에선 멜라토닌이 대부분 처방 성분이에요. 원래 병 그대로 3개월분 이내로 가져가고, 가능하면 소견서를 챙기세요.',ic:['pillbottle']}],
 );
@@ -841,7 +843,10 @@ const unitOf=k=>UNITS.find(u=>u[0]===k)||UNITS[0];
 /* the same Korean unit reads differently for food and medicine: 약 1통 = 1 bottle, 고추장 1통 = 1 tub */
 const UNIT_KIND={food:{'통':['tub','tubs']},med:{'통':['bottle','bottles'],'개':['unit','units'],'봉':['packet','packets'],'봉지':['packet','packets']}};
 const unitEnOf=(kind,k)=>{const o=(UNIT_KIND[kind]||{})[k];const u=unitOf(k);return o?[u[0],o[0],o[1]]:u};
-const qtyEn=it=>{const n=+it.n||0;if(!n)return '—';const u=unitEnOf(it.kind,it.u);return `${n} ${n===1?u[1]:u[2]}`};
+/* what is actually inside, e.g. "10정" -> "10 tablets" */
+const CNT_EN=[[/(정|알|tab(let)?s?)/i,'tablet','tablets'],[/(캡슐|연질캡슐|cap(sule)?s?)/i,'capsule','capsules'],[/(포|스틱|sachets?)/i,'sachet','sachets'],[/(매|장|패치|patch(es)?)/i,'patch','patches'],[/(개|vials?)/i,'unit','units'],[/(ml|mL|밀리리터)/,'mL','mL'],[/(g|그램)$/i,'g','g']];
+function cntEn(t){t=String(t||'').trim();if(!t)return '';return t.replace(/(\d+(?:\.\d+)?)\s*([가-힣a-zA-Z]+)/g,(m,num,w)=>{const r=CNT_EN.find(([re])=>re.test(w));if(!r)return m;return `${num} ${(+num===1?r[1]:r[2])}`})}
+const qtyEn=it=>{const n=+it.n||0;if(!n)return '—';const u=unitEnOf(it.kind,it.u);const c=cntEn(it.cnt);return `${n} ${n===1?u[1]:u[2]}${c?` (${c})`:''}`};
 function parseQty(s,icon){const m=String(s||'').match(/(\d+)/);const n=m?+m[1]:1;const w=String(s||'').toLowerCase();
   const u=UNITS.find(u=>w.includes(u[1])||w.includes(u[0]))?.[0]||ICON_UNIT[icon]||'개';return {n,u}}
 function normItem(it){if(it.n==null){const p=parseQty(it.qty,it.icon);it.n=p.n;it.u=p.u}if(!it.u)it.u=ICON_UNIT[it.icon]||'개';return it}
@@ -1060,7 +1065,7 @@ function rowHTML(it){
    <div class="side"><span class="pill ${cls}">${lab}</span>
      <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
      <select class="unit" data-unit="${it.id}" aria-label="단위">${UNITS.map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]}</option>`).join('')}</select></div>
-     <button class="xdel" data-del="${it.id}">삭제</button></div>
+     ${it.kind==='med'?`<span class="cnt">내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span>`:''}<button class="xdel" data-del="${it.id}">삭제</button></div>
   </article>`;
 }
 function search(q,kind){
@@ -1380,7 +1385,7 @@ function openEdit(id){
       <label class="f"><span>제품명</span><input id="e-ko" value="${esc(it.ko)}"></label>
      </div>
      <div>
-      <div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${UNITS.map(u0=>{const u=unitEnOf(it.kind,u0[0]);return `<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]} · ${u[2]}</option>`}).join('')}</select></div></div>
+      ${it.kind==='med'?`<label class="f"><span>실제 들어 있는 양 <i>CONTENTS</i></span><input id="e-cnt" value="${esc(it.cnt||'')}" placeholder="예: 10정, 2포, 15ml"></label>`:''}<div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${UNITS.map(u0=>{const u=unitEnOf(it.kind,u0[0]);return `<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]} · ${u[2]}</option>`}).join('')}</select></div></div>
      </div>
      <label class="f"><span>영문 이름 <i>ITEM</i></span><input id="e-en" value="${esc(it.en)}"></label>
      <label class="f"><span>분류 <i>CATEGORY</i></span><input id="e-cat" value="${esc(it.cat)}"></label>
@@ -1397,7 +1402,7 @@ function openEdit(id){
    <div class="mfoot"><button class="btn danger" data-del>삭제</button><button class="btn primary" data-close>완료</button></div>
   </div></div>`;
   const ov=document.getElementById('ov');
-  const sync=()=>{const g=k=>document.getElementById('e-'+k);if(!g('ko'))return;['b','ko','en','cat','ing','desc','tip'].forEach(k=>it[k]=g(k).value);it.u=g('u').value;it.st=g('st').value;if(g('grp'))it.grp=g('grp').value;if(g('rx'))it.rx=g('rx').checked;if(it.sample)it.sample=false;save()};
+  const sync=()=>{const g=k=>document.getElementById('e-'+k);if(!g('ko'))return;['b','ko','en','cat','ing','desc','tip'].forEach(k=>it[k]=g(k).value);if(g('cnt'))it.cnt=g('cnt').value.trim();it.u=g('u').value;it.st=g('st').value;if(g('grp'))it.grp=g('grp').value;if(g('rx'))it.rx=g('rx').checked;if(it.sample)it.sample=false;save()};
   ov.addEventListener('input',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
   ov.addEventListener('change',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
   ov.addEventListener('click',async e=>{
