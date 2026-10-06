@@ -387,6 +387,14 @@ main{padding-block:18px}
 .listh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:18px 0 8px;padding-top:12px;border-top:1px solid var(--line)}
 .listh b{font-size:17px}.listh span{font-family:var(--f-mono);font-size:13px;color:var(--muted)}.listh em{font-style:normal;font-size:11.5px;color:var(--muted);margin-left:auto}
 @media (max-width:720px){.adh b{font-size:16px}.listh em{margin-left:0;flex-basis:100%}}
+.psheet-ov{position:fixed;left:0;right:0;top:var(--vvt,0px);height:var(--vvh,100vh);background:rgba(10,14,20,.45);z-index:90;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+.psheet{width:min(420px,100%);background:var(--surface);border-radius:16px;padding:16px;display:grid;gap:10px;box-shadow:var(--shadow);padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.psheet b{font-size:16px;text-align:center;margin-bottom:2px}
+.psheet .btn{justify-content:center;padding:14px;font-size:16px;gap:10px}.psheet .btn svg{width:20px;height:20px}
+.mv{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.mv button{border:0;background:var(--surface);width:34px;height:30px;cursor:pointer;font-size:12px;color:var(--ink)}
+.mv button+button{border-left:1px solid var(--line)}.mv button:active{background:var(--accent-soft)}
+.row.moved{outline:2px solid var(--accent);transition:outline .3s}
 .legal{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.6}
 .legal a{color:inherit}
 </style>
@@ -410,6 +418,8 @@ main{padding-block:18px}
 </div>
 <div id="modalRoot"></div>
 <input type="file" id="rowcam" accept="image/*" capture="environment" hidden>
+<input type="file" id="pickCam" accept="image/*" capture="environment" hidden><input type="file" id="pickAlb" accept="image/*" hidden>
+<div id="sheetRoot"></div>
 <div id="toastRoot"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1066,6 +1076,7 @@ function dataURLtoBlob(u){const [h,b]=u.split(',');const m=h.match(/:(.*?);/)[1]
 const SVG_CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 const SVG_PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
 const SVG_SHOT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3.2l1.8-2.6h8l1.8 2.6H21v11H3z"/><circle cx="12" cy="13.2" r="3.6"/></svg>';
+const SVG_ALB='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>';
 const SVG_GRID='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
 const SVG_CART='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>';
 const SVG_LIST='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>';
@@ -1088,11 +1099,11 @@ function render(){
    <div class="yes"><i>✓</i>YES</div></div>
   <section class="card adder"><div class="adh"><span class="adn">+</span><div><b>${kind==='food'?'음식 추가하기':'약 추가하기'}</b><span>아래 셋 중 하나를 누르거나, 이름을 검색하세요</span></div></div>
     <div class="ways">
-      <label class="way main" for="grpCam"><span class="ico">${SVG_SHOT}</span><span style="min-width:0"><b>모아서 한 번에 찍기</b><span>챙긴 음식·약을 밝은 바닥에 조금씩 띄워 펼치고 한 장 찍으면 제품별로 잘라 이름·성분·수량까지 채워요</span></span></label>
-      <label class="way" for="grpShot"><span class="ico">${SVG_CART}</span><span style="min-width:0"><b>장바구니·주문내역 캡처</b><span>쿠팡·마켓컬리 등 주문 화면 캡처를 올리면 제품 사진과 수량을 그대로 가져와요</span></span></label>
+      <button class="way main" data-pickgrp><span class="ico">${SVG_SHOT}</span><span style="min-width:0"><b>모아서 한 번에 찍기</b><span>챙긴 음식·약을 밝은 바닥에 조금씩 띄워 펼치고 한 장 찍으면 제품별로 잘라 이름·성분·수량까지 채워요</span></span></button>
+      <label class="way" for="albMulti"><span class="ico">${SVG_ALB}</span><span style="min-width:0"><b>앨범에서 사진 고르기</b><span>찍어 둔 제품 사진을 여러 장 골라 한 번에 넣어요</span></span></label>
       <button class="way" data-bulk><span class="ico">${SVG_LIST}</span><span style="min-width:0"><b>목록 붙여넣기</b><span>"신라면 5, 햇반 3, 타이레놀 1통"처럼 적으면 음식·약을 나눠 한 번에 추가해요</span></span></button>
     </div>
-    <input type="file" id="grpCam" accept="image/*" capture="environment" hidden><input type="file" id="grpShot" accept="image/*" hidden>
+    <input type="file" id="grpCam" accept="image/*" capture="environment" hidden><input type="file" id="albMulti" accept="image/*" multiple hidden>
     ${SSTATE==='wait'?`<div class="shoot"><span class="spin"></span> Claude 연결 확인 중…</div>`:SSTATE==='none'?`<div class="shoot">사진은 제품별로 잘라 넣고, 이름은 검색해서 골라요.</div>`:''}
     ${LASTERR?`<div class="notice" style="background:var(--warn-soft);border-color:transparent;color:var(--ink)"><span><b>자동 인식 실패</b> · ${esc(ERRKO[LASTERR.code]||LASTERR.msg||'알 수 없는 오류')} <span class="mono" style="font-size:11px;color:var(--muted)">(${esc(LASTERR.code||'error')})</span></span>${LASTERR.code==='passcode'?`<span class="camrow"><input id="pcIn" type="password" placeholder="앱 비밀번호" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)"><button class="btn sm primary" data-pcsave>저장</button></span>`:''}<span class="camrow"><button class="btn sm" data-diag>연결 테스트</button><button class="btn sm ghost" data-errx>닫기</button></span></div>`:''}
     ${DIAG?`<div class="notice" style="display:block"><b>인식 상태 확인</b><ul style="margin:6px 0 0;padding-left:18px">${DIAG.map(d=>`<li>${esc(d)}</li>`).join('')}</ul><button class="btn sm ghost" data-diagx style="margin-top:6px">닫기</button></div>`:''}
@@ -1122,7 +1133,7 @@ function rowHTML(it){normItem(it);
    <div class="side"><span class="pill ${cls}">${lab}</span>
      <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
      <select class="unit" data-unit="${it.id}" aria-label="단위">${unitList(it.kind).map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${(UNIT_LABEL[it.kind]||{})[u[0]]||u[0]}</option>`).join('')}</select></div>
-     <button class="xdel" data-del="${it.id}">삭제</button>${it.kind==='med'?`<div class="medx"><span>내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span><label class="dsel">복용 <select class="unit" data-dsel="${it.id}" aria-label="복용 일수">${dayOpts(it.days)}</select></label></div>`:''}</div>
+     <span class="mv"><button data-mv="-1" data-mid="${it.id}" aria-label="위로">▲</button><button data-mv="1" data-mid="${it.id}" aria-label="아래로">▼</button></span><button class="xdel" data-del="${it.id}">삭제</button>${it.kind==='med'?`<div class="medx"><span>내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span><label class="dsel">복용 <select class="unit" data-dsel="${it.id}" aria-label="복용 일수">${dayOpts(it.days)}</select></label></div>`:''}</div>
   </article>`;
 }
 function search(q,kind){
@@ -1158,14 +1169,34 @@ function bindAdder(kind){
     else{addNew(q.value.trim(),kind);q.value='';sg.hidden=true}});
   const ta=document.getElementById('bulkText');if(ta)ta.addEventListener('input',()=>{S.bulkDraft=ta.value;save()});
   document.getElementById('grpCam').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f){maybeSaveShot(f);analyzePhoto(f,'photo')}});
-  document.getElementById('grpShot').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)analyzePhoto(f,'shot')});
+  document.getElementById('albMulti').addEventListener('change',e=>{const fs=[...e.target.files];e.target.value='';if(fs.length)addAlbum(fs,kind)});
 }
 function allDict(){return [...D.food,...D.med,...MORE.list]}
 function addDict(k,extra={}){const e=allDict().find(x=>x.uid===k)||find(k);const it=normItem(fromDict(e,extra));S[e.kind].unshift(it);save();render();toast(`${e.b&&!e.k.includes(e.b)?e.b+' ':''}${e.k} 추가됨`,{label:'사진 찍기',fn:()=>shootFor(it.id)})}
 async function addNew(v,kind){if(!v)return;const it=newItem(kind,{ko:v});
   S[kind].unshift(it);save();render();
   if(SAMPLE){const ok=await aiFill(it);if(!ok)openEdit(it.id)}else{openEdit(it.id);toast('영문명과 정보를 직접 입력해 주세요')}}
-function shootFor(id){CAMT=id;const rc=document.getElementById('rowcam');rc.value='';rc.click()}
+/* camera or gallery chooser */
+let PICK=null;
+function choosePhoto(title,onFile){PICK=onFile;const r=document.getElementById('sheetRoot');
+  r.innerHTML=`<div class="psheet-ov" id="psov"><div class="psheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><b>${esc(title)}</b>
+   <button class="btn primary" data-pk="cam">${SVG_SHOT}<span>카메라로 찍기</span></button>
+   <button class="btn" data-pk="alb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg><span>앨범에서 고르기</span></button>
+   <button class="btn ghost" data-pk="x">취소</button></div></div>`;
+  document.getElementById('psov').addEventListener('click',e=>{const b=e.target.closest('[data-pk]');if(e.target.id!=='psov'&&!b)return;r.innerHTML='';
+    if(!b||b.dataset.pk==='x'){PICK=null;return}const inp=document.getElementById(b.dataset.pk==='cam'?'pickCam':'pickAlb');inp.dataset.cam=b.dataset.pk==='cam'?'1':'';inp.value='';inp.click()})}
+['pickCam','pickAlb'].forEach(k=>document.getElementById(k).addEventListener('change',e=>{const f=e.target.files[0];const fn=PICK;PICK=null;if(f&&fn)fn(f,e.target.id==='pickCam')}));
+/* several gallery photos -> one item each (white background), then pick names */
+async function addAlbum(files,kind){const list=files.slice(0,30);BUSY=`사진 ${list.length}장을 흰 배경으로 정리하는 중…`;render();const made=[];
+  for(const f of list){try{const it=newItem(kind,{ko:'',needName:true});const o=await downscale(await fileToURL(f));ORIG.set(it.id,o);it.photo=await whiten(o,TOL0,true);S[kind].unshift(it);made.push([it,f])}catch(e){}}
+  BUSY=null;save();render();
+  if(SAMPLE){for(const [it,f] of made){it.ko='';const ok=await aiFill(it,{image:f});if(!ok)break;it.needName=!it.ko}save();render()}
+  const first=[...S.food,...S.med].find(z=>!z.ko);
+  if(first){openEdit(first.id);toast(`사진 ${made.length}장을 넣었어요. 제품명 칸에 검색해서 이름을 골라 주세요`)}else toast(`사진 ${made.length}장을 넣었어요`)}
+async function replacePhoto(it,f,cam){if(cam)maybeSaveShot(f);delete it.pe;toast('배경을 하얗게 정리하는 중…');
+  const o=await downscale(await fileToURL(f));ORIG.set(it.id,o);it.photo=await whiten(o,TOL0,true);it.sample=false;save();render();
+  toast('흰 배경 사진으로 바꿨어요. 사진을 누르면 크기·각도를 조절할 수 있어요')}
+function shootFor(id){const it=getIt(id);if(!it)return;choosePhoto('제품 사진 넣기',(f,cam)=>replacePhoto(it,f,cam))}
 
 /* ---------- Claude: more products, bulk text, photo of everything ---------- */
 const STS_ALL='for food: "ok" (commercially packaged, usually passes), "check" (inspection likely), "ban" (likely prohibited e.g. meat, egg, honey, fresh produce); for medicine: "ok" (OTC / supplement), "rx" (prescription-only in Australia), "ctrl" (controlled substance), "ban" (prohibited e.g. musk, deer antler)';
@@ -1788,6 +1819,12 @@ document.addEventListener('click',e=>{
   const pb=e.target.closest('[data-pedit]');if(pb){const it=getIt(pb.dataset.pedit);if(it&&(it.photo||ORIG.has(it.id)))openPhotoEditor(it.id);else openEdit(pb.dataset.pedit);return}
   if(e.target.closest('[data-trips]')){openTrips();return}
   const dyb=e.target.closest('[data-days]');if(dyb){const it=getIt(dyb.dataset.days);it.days=String(tripDays());it.sample=false;save();render();toast(`${tripDays()}일분으로 적었어요. 내용물 개수도 맞춰 주세요`);return}
+  const mvb=e.target.closest('[data-mv]');if(mvb){const it=getIt(mvb.dataset.mid);const arr=S[it.kind];
+    const vis=it.kind==='med'&&S.medSplit?MGRP.flatMap(([g])=>arr.filter(x=>medGroup(x)===g)):arr.slice();
+    const i=vis.indexOf(it),j=i+(+mvb.dataset.mv);if(j<0||j>=vis.length)return;const other=vis[j];
+    if(it.kind==='med'&&S.medSplit&&medGroup(other)!==medGroup(it))return toast('묶음이 다른 약이에요. 묶음 버튼으로 옮겨 주세요');
+    const a=arr.indexOf(it),b=arr.indexOf(other);arr[a]=other;arr[b]=it;it.sample=false;save();render();
+    const el=document.querySelector(`.row[data-id="${it.id}"]`);if(el){el.scrollIntoView({block:'center'});el.classList.add('moved');setTimeout(()=>el.classList.remove('moved'),600)}return}
   const spb=e.target.closest('[data-split] button');if(spb){S.medSplit=spb.dataset.v==='1';save();render();return}
   const gsb=e.target.closest('[data-gsel] button');if(gsb){const it=getIt(gsb.closest('[data-gsel]').dataset.gsel);it.grp=gsb.dataset.g;it.sample=false;save();render();return}
   const nb=e.target.closest('[data-name]');if(nb){openEdit(nb.dataset.name);return}
@@ -1804,7 +1841,8 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-bulkgo]')){bulkAdd();return}
   if(e.target.closest('[data-bulk]')){BULK=!BULK;render();if(BULK)setTimeout(()=>document.getElementById('bulkText')?.focus(),0);return}
   if(e.target.closest('[data-stop]')){BUSYCTL?.abort();BUSY=null;render();return}
-  const sh=e.target.closest('[data-shoot]');if(sh){CAMT=sh.dataset.shoot;const rc=document.getElementById('rowcam');rc.value='';rc.click();return}
+  const sh=e.target.closest('[data-shoot]');if(sh){shootFor(sh.dataset.shoot);return}
+  if(e.target.closest('[data-pickgrp]')){choosePhoto('여러 제품 한 번에 넣기',(f,cam)=>{if(cam)maybeSaveShot(f);analyzePhoto(f,'photo')});return}
   const sgb=e.target.closest('[data-seg] button');if(sgb){const k=sgb.closest('[data-seg]').dataset.seg,v=sgb.dataset.v;
     if(k[0]==='q'&&/^q\d+$/.test(k)){const n=+k.slice(1);const auto=autoQ()[n]?'yes':'no';if(v===auto)delete S.card.q[n];else S.card.q[n]=v}else S.card[k]=v;save();render();return}
   const qr=e.target.closest('[data-qreset]');if(qr){delete S.card.q[qr.dataset.qreset];save();render();return}
