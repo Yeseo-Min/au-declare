@@ -357,6 +357,26 @@ main{padding-block:18px}
 .parts-r{font-size:12px;color:var(--ink)}.parts-r b{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;margin-right:4px;color:var(--ink)}
 .sheet .qx2{font-size:11.5px;line-height:1.4;margin-top:1px}
 .sheet .qx{font-size:10.5px;color:var(--sheet-muted);margin-top:2px;line-height:1.3}
+:root{--act:#FFF3E3;--act-line:#F2A15E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--act:#2E2116;--act-line:#B8652B}}
+:root[data-theme="dark"]{--act:#2E2116;--act-line:#B8652B}
+.adder{background:var(--act);border:2px solid var(--act-line);box-shadow:0 6px 18px rgba(226,98,27,.12)}
+.adh{display:flex;align-items:center;gap:10px}
+.adh .adn{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:20px;font-weight:700;flex:none;line-height:1}
+.adh b{display:block;font-size:17px}.adh span{display:block;font-size:12px;color:var(--muted)}
+.adder .way{background:var(--surface);border-color:var(--act-line)}
+.adder .way.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.adder .way.main .ico{background:var(--accent-ink);color:var(--accent)}
+.adder .way.main b,.adder .way.main span span{color:var(--accent-ink);opacity:1}
+.adder .search input{background:var(--surface);border:2px solid var(--act-line);font-size:16px}
+.adder .search input:focus{border-color:var(--accent)}
+.adder .chip{background:var(--surface);border-style:solid;border-color:var(--line);color:var(--ink)}
+.adder .lbl{color:var(--ink);font-weight:600}
+.ipc{background:var(--surface-2);border-color:var(--line)}
+.ipc .q{color:var(--muted)}.ipc .yes i{border-color:var(--muted);color:var(--muted)}
+.listh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:18px 0 8px;padding-top:12px;border-top:1px solid var(--line)}
+.listh b{font-size:17px}.listh span{font-family:var(--f-mono);font-size:13px;color:var(--muted)}.listh em{font-style:normal;font-size:11.5px;color:var(--muted);margin-left:auto}
+@media (max-width:720px){.adh b{font-size:16px}.listh em{margin-left:0;flex-basis:100%}}
 .legal{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.6}
 .legal a{color:inherit}
 </style>
@@ -1035,6 +1055,7 @@ function dataURLtoBlob(u){const [h,b]=u.split(',');const m=h.match(/:(.*?);/)[1]
 /* ---------- render ---------- */
 const SVG_CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 const SVG_PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+const SVG_SHOT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3.2l1.8-2.6h8l1.8 2.6H21v11H3z"/><circle cx="12" cy="13.2" r="3.6"/></svg>';
 const SVG_GRID='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
 const SVG_CART='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>';
 const SVG_LIST='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>';
@@ -1055,14 +1076,14 @@ function render(){
    <b>${kind==='food'?'음식을 하나라도 가져가면 입국카드 음식 질문에 YES':'약·영양제는 원래 포장 그대로, 개인용 3개월분 이내'}</b>
    <p>${kind==='food'?'라면 한 봉지, 과자, 김도 해당돼요. 신고만 하면 반입이 안 되는 물건이라도 벌금은 없어요.':'처방약은 영문 처방전이나 의사 소견서를 함께 챙기세요. 성분이 애매하면 신고하세요.'}</p></div>
    <div class="yes"><i>✓</i>YES</div></div>
-  <section class="card adder">
+  <section class="card adder"><div class="adh"><span class="adn">+</span><div><b>${kind==='food'?'음식 추가하기':'약 추가하기'}</b><span>아래 셋 중 하나를 누르거나, 이름을 검색하세요</span></div></div>
     <div class="ways">
-      <label class="way main" for="grpCam"><span class="ico">${SVG_GRID}</span><span style="min-width:0"><b>모아서 한 번에 찍기</b><span>챙긴 음식·약을 밝은 바닥에 조금씩 띄워 펼치고 한 장 찍으면 제품별로 잘라 이름·성분·수량까지 채워요</span></span></label>
+      <label class="way main" for="grpCam"><span class="ico">${SVG_SHOT}</span><span style="min-width:0"><b>모아서 한 번에 찍기</b><span>챙긴 음식·약을 밝은 바닥에 조금씩 띄워 펼치고 한 장 찍으면 제품별로 잘라 이름·성분·수량까지 채워요</span></span></label>
       <label class="way" for="grpShot"><span class="ico">${SVG_CART}</span><span style="min-width:0"><b>장바구니·주문내역 캡처</b><span>쿠팡·마켓컬리 등 주문 화면 캡처를 올리면 제품 사진과 수량을 그대로 가져와요</span></span></label>
       <button class="way" data-bulk><span class="ico">${SVG_LIST}</span><span style="min-width:0"><b>목록 붙여넣기</b><span>"신라면 5, 햇반 3, 타이레놀 1통"처럼 적으면 음식·약을 나눠 한 번에 추가해요</span></span></button>
     </div>
     <input type="file" id="grpCam" accept="image/*" capture="environment" hidden><input type="file" id="grpShot" accept="image/*" hidden>
-    ${SSTATE==='wait'?`<div class="shoot"><span class="spin"></span> Claude 연결 확인 중…</div>`:SSTATE==='none'?`<div class="shoot"><b>사진 자동 인식 꺼짐</b> · 서버에 Claude API 키가 없어서, 사진은 제품별로 잘라 넣고 이름은 검색으로 골라요. 검색·붙여넣기·영문 시트는 그대로 쓸 수 있어요.</div>`:''}
+    ${SSTATE==='wait'?`<div class="shoot"><span class="spin"></span> Claude 연결 확인 중…</div>`:SSTATE==='none'?`<div class="shoot">사진은 제품별로 잘라 넣고, 이름은 검색해서 골라요.</div>`:''}
     ${LASTERR?`<div class="notice" style="background:var(--warn-soft);border-color:transparent;color:var(--ink)"><span><b>자동 인식 실패</b> · ${esc(ERRKO[LASTERR.code]||LASTERR.msg||'알 수 없는 오류')} <span class="mono" style="font-size:11px;color:var(--muted)">(${esc(LASTERR.code||'error')})</span></span>${LASTERR.code==='passcode'?`<span class="camrow"><input id="pcIn" type="password" placeholder="앱 비밀번호" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)"><button class="btn sm primary" data-pcsave>저장</button></span>`:''}<span class="camrow"><button class="btn sm" data-diag>연결 테스트</button><button class="btn sm ghost" data-errx>닫기</button></span></div>`:''}
     ${DIAG?`<div class="notice" style="display:block"><b>인식 상태 확인</b><ul style="margin:6px 0 0;padding-left:18px">${DIAG.map(d=>`<li>${esc(d)}</li>`).join('')}</ul><button class="btn sm ghost" data-diagx style="margin-top:6px">닫기</button></div>`:''}
     ${BUSY?`<div class="busy"><span><span class="spin"></span> ${esc(BUSY)}</span><button class="btn sm" data-stop>중지</button></div>`:''}
@@ -1075,7 +1096,7 @@ function render(){
     <div class="chips">${pop.map(k=>{const e=[...D[kind]].find(x=>x.k===k);return e?`<button class="chip" data-add="${e.uid}">+ ${esc(e.b&&!e.k.includes(e.b)?e.b+' ':'')}${esc(e.k)}</button>`:''}).join('')}</div>
   </section>
   ${hasSample?`<div class="notice"><span>지금 보이는 항목은 한국 여행자들이 흔히 챙기는 <b>예시</b>예요. 그대로 고치거나 지우고 시작하세요.</span><button class="btn sm" data-clear-sample>예시 모두 지우기</button></div>`:''}
-  ${list.length?`<div class="shoot" style="margin:0 0 8px">글자를 <b>두 번 누르면</b> 바로 고칠 수 있어요. 연필은 전체 수정, 카메라는 사진 다시 찍기예요.</div>`:''}
+  ${list.length?`<div class="listh"><b>내 목록</b><span>${list.length}개</span><em>글자 두 번 누르면 수정 · 사진 누르면 편집</em></div>`:''}
   <div class="list">${kind==='med'?`<div class="splitbar"><span>약품 정리 방식</span><span class="seg" data-split><button data-v="0" aria-pressed="${!S.medSplit}">한 목록</button><button data-v="1" aria-pressed="${!!S.medSplit}">상비약·영양제·처방약</button></span></div>`:''}${list.length?(kind==='med'&&S.medSplit?MGRP.map(([g,ko,en])=>{const l=list.filter(it=>medGroup(it)===g);return l.length?`<div class="lgrp"><b>${ko}</b><span>${en} · ${l.length}</span></div>`+l.map(rowHTML).join(''):''}).join(''):list.map(rowHTML).join('')):`<div class="empty">아직 항목이 없어요. 위에서 한 번에 찍거나, 목록을 붙여넣거나, 검색해서 추가하세요.</div>`}</div>`;
   bindAdder(kind);
 }
@@ -1418,7 +1439,7 @@ function bindParts(it,reopen){
 }
 
 function openEdit(id){
-  const it=getIt(id);if(!it)return;EDIT=id;
+  const it=getIt(id);if(!it)return;EDIT=id;const WAS_UNNAMED=!it.ko||!!it.needName;
   const base=it.kind==='food'?FOOD_ICONS:MED_ICONS;
   const opts=[...new Set([...(it.icons||[]),it.icon,...base])].slice(0,8);
   const hasOrig=ORIG.has(id);
@@ -1436,10 +1457,9 @@ function openEdit(id){
      <div class="opts">${opts.map(k=>`<button class="opt ${!it.photo&&it.icon===k?'on':''}" data-icon="${k}" aria-label="${k}"><img alt="" src="${svgURL(k)}"></button>`).join('')}</div>
     </div>
     <div class="fields">
-     <div class="f" style="position:relative"><span>사전에서 찾아 한 번에 채우기</span><input id="x-find" autocomplete="off" placeholder="제품명 검색 (예: 신라면, 햇반 흑미)"><div class="sugg" id="x-sugg" hidden></div></div>
      <div class="f2">
       <label class="f"><span>제조사</span><input id="e-b" value="${esc(it.b)}" placeholder="예: 팔도, 오뚜기"></label>
-      <label class="f"><span>제품명</span><input id="e-ko" value="${esc(it.ko)}"></label>
+      <div class="f" style="position:relative"><span>제품명 <i>입력하면 사전에서 찾아요</i></span><input id="e-ko" autocomplete="off" value="${esc(it.ko)}" placeholder="예: 신라면, 타이레놀"><div class="sugg" id="x-sugg" hidden></div></div>
      </div>
      <div>
       ${it.kind==='med'?`<div class="f2"><label class="f"><span>실제 들어 있는 양 <i>CONTENTS</i></span><input id="e-cnt" value="${esc(it.cnt||'')}" placeholder="예: 10정, 2포, 15ml"></label><label class="f"><span>복용 일수 <i>DAYS</i></span><select id="e-days">${dayOpts(it.days)}</select></label></div>`:''}<div class="f"><span>수량 <i>QTY</i></span><div class="qtyrow"><span class="step"><button type="button" data-mdec>−</button><b id="e-n">${+it.n||1}</b><button type="button" data-minc>+</button></span><select class="unit" id="e-u">${unitList(it.kind).map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${(UNIT_LABEL[it.kind]||{})[u[0]]||u[0]} · ${u[2]}</option>`).join('')}</select></div></div>
@@ -1474,16 +1494,17 @@ function openEdit(id){
     if(e.target.closest('[data-aiimg]')){sync();await aiFill(it,{image:dataURLtoBlob(ORIG.get(id)||it.photo)});return}
   });
   bindParts(it,()=>{sync();openEdit(id);setTimeout(()=>document.getElementById('partQ')?.focus(),30)});
-  const fi=document.getElementById('x-find'),fs=document.getElementById('x-sugg');
-  fi.addEventListener('input',()=>{const v=fi.value.trim();if(!v){fs.hidden=true;return}const res=[...search(v,it.kind),...search(v,it.kind==='food'?'med':'food')].slice(0,10);
-    fs.innerHTML=res.length?res.map(e=>`<button class="sg" data-fill="${e.uid}"><img alt="" src="${svgURL(e.ic[0])}"><span class="t"><b>${e.b&&!e.k.includes(e.b)?`<small>${esc(e.b)}</small>`:''}${esc(e.k)}</b><span>${esc(e.en)}</span></span></button>`).join(''):`<div class="sg"><span class="t"><span>사전에 없어요. 아래 칸에 이름을 적고 '영문 자동 작성'을 눌러 주세요</span></span></div>`;fs.hidden=false});
+  const fi=document.getElementById('e-ko'),fs=document.getElementById('x-sugg'),fb=document.getElementById('e-b');
+  fi.addEventListener('blur',()=>setTimeout(()=>{fs.hidden=true},200));
+  fi.addEventListener('input',()=>{const v=((fb&&fb.value.trim()&&!fi.value.includes(fb.value.trim())?fb.value.trim()+' ':'')+fi.value).trim();if(!v){fs.hidden=true;return}const res=[...search(v,it.kind),...search(v,it.kind==='food'?'med':'food')].slice(0,10);
+    fs.innerHTML=res.length?res.map(e=>`<button class="sg" data-fill="${e.uid}"><img alt="" src="${svgURL(e.ic[0])}"><span class="t"><b>${e.b&&!e.k.includes(e.b)?`<small>${esc(e.b)}</small>`:''}${esc(e.k)}</b><span>${esc(e.en)}</span></span></button>`).join(''):`<div class="sg"><span class="t"><span>사전에 없어요. 이름은 그대로 두고 영문명 칸을 직접 적어 주세요</span></span></div>`;fs.hidden=false});
   fs.addEventListener('mousedown',e=>e.preventDefault());
-  fs.addEventListener('click',e=>{const b=e.target.closest('[data-fill]');if(!b)return;const d=allDict().find(x=>x.uid===b.dataset.fill);if(!d)return;
+  fs.addEventListener('click',e=>{const b=e.target.closest('[data-fill]');if(!b)return;const wasUnnamed=WAS_UNNAMED;const d=allDict().find(x=>x.uid===b.dataset.fill);if(!d)return;fi.blur();sync();
     Object.assign(it,{b:d.b||'',ko:d.k,en:d.en,cat:d.cat,ing:d.ing,desc:d.desc,st:d.st,tip:d.tip,icon:d.ic[0],icons:d.ic,needName:false,sample:false});
     if(d.kind!==it.kind){S[it.kind]=S[it.kind].filter(x=>x.id!==it.id);it.kind=d.kind;S[d.kind].unshift(it)}
     if(!it.photo)it.u=ICON_UNIT[d.ic[0]]||it.u;save();
     const next=[...S.food,...S.med].find(z=>!z.ko&&z.id!==it.id);
-    if(next){openEdit(next.id);toast(`${d.k} 완료 · 다음 제품 이름을 골라 주세요`)}else{closeEdit();toast(`${d.k}(으)로 채웠어요`)}});
+    if(wasUnnamed&&next){openEdit(next.id);toast(`${d.k} 완료 · 다음 제품 이름을 골라 주세요`)}else if(wasUnnamed){closeEdit();toast(`${d.k}(으)로 채웠어요`)}else{openEdit(id);toast(`${d.k} 정보로 바꿨어요 · 사진과 수량은 그대로예요`)}});
   if(!it.ko)setTimeout(()=>fi.focus(),50);
   const onFile=async f=>{if(!f)return;sync();delete it.pe;TOLS.delete(id);ROTS.delete(id);const o=await downscale(await fileToURL(f));ORIG.set(id,o);it.photo=await whiten(o,TOL0,true);if(it.sample)it.sample=false;save();openEdit(id);toast('배경을 하얗게 정리했어요. 결과가 이상하면 강도를 조절하세요')};
   document.getElementById('cam').addEventListener('change',e=>{maybeSaveShot(e.target.files[0]);onFile(e.target.files[0])});
@@ -1783,6 +1804,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('change',e=>{const ds=e.target.closest('[data-dsel]');if(ds){const it=getIt(ds.dataset.dsel);it.days=ds.value;it.sample=false;save();return}const rx=e.target.closest('[data-rxt]');if(rx){const it=getIt(rx.dataset.rxt);it.rx=rx.checked;it.sample=false;save();return}const u=e.target.closest('[data-unit]');if(u){const it=getIt(u.dataset.unit);it.u=u.value;it.sample=false;save()}});
 document.addEventListener('dblclick',e=>{const el=e.target.closest('[data-ie]');if(!el||el.isContentEditable)return;const it=getIt(el.dataset.id);if(!it)return;const f=el.dataset.ie;
+  if(f==='ko'){openEdit(it.id);setTimeout(()=>{const k=document.getElementById('e-ko');if(k){k.focus();k.select()}},60);return}
   el.textContent=it[f]||'';el.contentEditable='true';el.focus();const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);let done=false;
   const fin=keep=>{if(done)return;done=true;el.contentEditable='false';if(keep){it[f]=el.textContent.replace(/\s+/g,' ').trim();if(f==='days')it.days=(it.days.match(/\d+/)||[''])[0];it.sample=false;save()}render()};
   el.addEventListener('blur',()=>fin(true),{once:true});
