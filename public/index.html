@@ -225,7 +225,10 @@ main{padding-block:18px}
 .cardform .g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 @media (max-width:720px){.cardform .g{grid-template-columns:1fr 1fr}}
 @media (max-width:440px){.cardform .g{grid-template-columns:1fr}}
-.cardform .f input{text-transform:uppercase}
+.cardform .f input,.cardform .f textarea{text-transform:uppercase}
+.cardform .f.wide{grid-column:1/-1}
+.cardform .f textarea{resize:vertical;min-height:52px;line-height:1.4}
+.act .f textarea{background:var(--surface);border:2px solid var(--act-line)}
 .cardform .f input.nu{text-transform:none}
 .qlist{display:grid;gap:0;border-top:1px solid var(--line)}
 .qi{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
@@ -254,6 +257,7 @@ main{padding-block:18px}
 .ipcard .bxs{display:flex;gap:2px}
 .ipcard .bx{width:18px;height:22px;background:#fff;border:1px solid var(--c-ln);display:grid;place-items:center;overflow:hidden}
 .ipcard .ln{background:#fff;border:1px solid var(--c-ln);min-height:23px;padding:2px 6px;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
+.ipcard .ln.wrap{white-space:normal;overflow:visible;align-items:flex-start;padding:3px 6px}.ipcard .ln.wrap .ink{font-size:18px;line-height:1.15;word-break:break-word}
 .ipcard .yn{display:flex;gap:12px;align-items:center;justify-content:flex-end;color:var(--c-red);font-size:11px;white-space:nowrap}
 .ipcard .yn span{display:flex;gap:4px;align-items:center}
 .ipcard .cb{width:17px;height:17px;background:#fff;border:1px solid var(--c-ln);display:grid;place-items:center;overflow:visible}
@@ -360,6 +364,12 @@ main{padding-block:18px}
 :root{--act:#FFF3E3;--act-line:#F2A15E}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--act:#2E2116;--act-line:#B8652B}}
 :root[data-theme="dark"]{--act:#2E2116;--act-line:#B8652B}
+.act{background:var(--act);border:2px solid var(--act-line);box-shadow:0 6px 18px rgba(226,98,27,.12)}
+.act .f input,.act .f select{background:var(--surface);border:2px solid var(--act-line)}
+.act .f input:focus,.act .f select:focus{border-color:var(--accent);outline:none}
+.act .qlist,.act .qi{border-color:color-mix(in srgb,var(--act-line) 45%,transparent)}
+.act h3{color:var(--ink)}
+.sheetout{display:flex;align-items:baseline;gap:8px;margin:18px 0 8px;padding-top:12px;border-top:1px solid var(--line)}.sheetout b{font-size:17px}.sheetout span{font-size:12px;color:var(--muted)}
 .adder{background:var(--act);border:2px solid var(--act-line);box-shadow:0 6px 18px rgba(226,98,27,.12)}
 .adh{display:flex;align-items:center;gap:10px}
 .adh .adn{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:20px;font-weight:700;flex:none;line-height:1}
@@ -1555,7 +1565,7 @@ function sheetView(){
   const t=S.trav;
   const canDL=!!DL&&!!window.html2canvas;
   setTimeout(bindSheet,0);
-  return `<section class="card sheettools">
+  return `<section class="card sheettools act"><div class="adh"><span class="adn">1</span><div><b>내 정보 입력</b><span>시트 맨 위에 들어가요 · 모두 영어로</span></div></div>
    <div class="f3">
     <label class="f"><span>영문 이름 (여권과 동일)</span><input id="t-name" value="${esc(t.name)}" placeholder="HONG GILDONG"></label>
     <label class="f"><span>항공편</span><input id="t-flight" value="${esc(t.flight)}" placeholder="KE121"></label>
@@ -1567,7 +1577,7 @@ function sheetView(){
     <span class="aimsg" id="expmsg"></span>
    </div>
   </section>
-  <div class="shoot" style="margin-bottom:8px">휴대폰 화면에 맞춰 줄여서 보여줘요. 두 손가락으로 확대할 수 있어요.</div><div class="sheetfit">${sheetTable('food')}</div><div class="sheetfit">${sheetTable('med')}</div>
+  <div class="sheetout"><b>미리보기</b><span>검사관에게 보여줄 영문 시트 · 두 손가락으로 확대</span></div><div class="sheetfit">${sheetTable('food')}</div><div class="sheetfit">${sheetTable('med')}</div>
   <section class="card phr"><h4>검사관에게 쓸 수 있는 한 줄 영어</h4>
    ${PHR.map(([en,ko],i)=>`<div class="ph-i"><div class="t"><b>${esc(en)}</b><span>${esc(ko)}</span></div><button class="btn sm" data-copy="${i}">복사</button></div>`).join('')}
   </section>`;
@@ -1634,7 +1644,7 @@ const qv=n=>S.card.q[n]??(autoQ()[n]?'yes':'no');
 const up=s=>String(s||'').toUpperCase();
 function bxs(val,n,ghost,w){const g=!val;const s=up(val||ghost||'').replace(/\s+/g,' ').slice(0,n).padEnd(n,' ');
   return `<div class="bxs">${[...s].map(ch=>`<span class="bx" ${w?`style="width:${w}px"`:''}><span class="ink ${g?'ghost':''}">${ch===' '?'':esc(ch)}</span></span>`).join('')}</div>`}
-function lnv(val,ghost,st=''){return `<div class="ln" style="${st}"><span class="ink ${val?'':'ghost'}">${esc(up(val||ghost||''))}</span></div>`}
+function lnv(val,ghost,st='',wrap){return `<div class="ln${wrap?' wrap':''}" style="${st}"><span class="ink ${val?'':'ghost'}">${esc(up(val||ghost||''))}</span></div>`}
 const X='<span class="ink">X</span>';
 function cbx(on){return `<span class="cb">${on?X:''}</span>`}
 function yn(v){return `<div class="yn"><span>네 ${cbx(v==='yes')}</span><span>아니오 ${cbx(v==='no')}</span></div>`}
@@ -1649,7 +1659,7 @@ function cardFront(){const c=S.card;const d=dmy(c.date);
    <div class="fl"><div class="lb">이름</div>${bxs(c.given,20,'GILDONG')}</div>
    <div class="fl"><div class="lb">여권번호</div>${bxs(c.passport,12,'M12345678')}</div>
    <div class="fl dia"><div class="lb">비행기편 번호 혹은 선박 이름</div>${bxs(c.flight,8,'KE121')}</div>
-   <div class="fl"><div class="lb">호주 내에서 체류할 주소</div>${lnv(c.addr,'123 GEORGE ST, SYDNEY')}
+   <div class="fl"><div class="lb">호주 내에서 체류할 주소</div>${lnv(c.addr,'123 GEORGE ST, SYDNEY','',1)}
      <div style="display:grid;grid-template-columns:1fr 26px 70px;gap:6px;align-items:center;margin-top:3px">${lnv('', '')}<span style="text-align:right">주</span>${lnv(c.state,'NSW')}</div></div>
    <div class="fl"><div class="row2"><span class="lb" style="display:flex;gap:5px"><span style="font-size:8px">&#9654;</span>다음 12개월 동안 호주에 머물 계획입니까?</span>${yn(c.stay12)}</div></div>
    <div class="fl dia"><div class="lb"><b>당신이 호주 시민이 아니라면:</b></div>
@@ -1672,11 +1682,11 @@ function cardBack(){const c=S.card;const db=dmy(c.dob);
    <div><div class="hdr">호주 국내의 연락처</div>
     <div class="kv"><span>전화</span>${lnv(c.phone,'+82 10-1234-5678')}</div>
     <div class="kv"><span>이메일</span>${lnv(c.email?c.email:'','GILDONG@EMAIL.COM')}</div>
-    <div class="kv"><span>또는 주소</span>${lnv(c.caddr,c.addr||'123 GEORGE ST, SYDNEY')}</div>
+    <div class="kv"><span>또는 주소</span>${lnv(c.caddr,c.addr||'123 GEORGE ST, SYDNEY','',1)}</div>
     <div class="kv"><span>주</span>${lnv(c.cstate||c.state,'NSW','width:90px')}</div></div>
    <div><div class="hdr">비상 연락처 (가족 또는 친구)</div>
     <div class="kv"><span>이름</span>${lnv(c.emName,'HONG MINJI')}</div>
-    <div class="kv"><span>이메일 전화 또는 우편주소</span>${lnv(c.emContact,'+82 10-9876-5432')}</div></div>
+    <div class="kv"><span>이메일 전화 또는 우편주소</span>${lnv(c.emContact,'+82 10-9876-5432','',1)}</div></div>
   </div>
   <div class="lower"><div>
     <div style="font-weight:700;margin-bottom:6px">영어로 작성하십시오</div>
@@ -1712,14 +1722,14 @@ function cardView(){
   <div class="ipc"><div style="min-width:0;flex:1"><div class="q">Incoming Passenger Card · 작성 예시</div>
    <b>입국카드는 비행기 안에서 받아요. 아래 내용을 채우면 똑같은 모양으로 예시가 만들어져요.</b>
    <p>모두 영어 대문자로, 체크는 X로 표시하세요. 일부 콴타스 항공편은 종이 카드 대신 디지털 입국신고(ATD)를 쓰는데 질문 내용은 같아요.</p></div></div>
-  <section class="card cardform">
+  <section class="card cardform act"><div class="adh"><span class="adn">✎</span><div><b>입국카드 내용 입력</b><span>채우면 아래 카드 예시에 파란 글씨로 들어가요</span></div></div>
    <h3>앞면 · 인적사항</h3>
    <div class="g">
     ${inp('surname','성 (여권 영문)','HONG')}
     ${inp('given','이름 (여권 영문)','GILDONG')}
     ${inp('passport','여권번호','M12345678')}
     ${inp('flight','항공편 번호','KE121')}
-    ${inp('addr','호주 숙소 주소 (호텔명 + 주소)','123 GEORGE ST, SYDNEY')}
+    <label class="f wide"><span>호주 숙소 주소 (호텔명 + 주소)</span><textarea id="c-addr" data-c="addr" rows="2" placeholder="HILTON SYDNEY, 488 GEORGE ST, SYDNEY NSW 2000">${esc(c.addr)}</textarea></label>
     <label class="f"><span>숙소가 있는 주</span><select id="c-state" data-c="state">${STATES.map(([k,l])=>`<option value="${k}" ${c.state===k?'selected':''}>${k} · ${l}</option>`).join('')}</select></label>
     <label class="f"><span>작성일 (도착일)</span><input type="date" id="c-date" data-c="date" class="nu" value="${esc(c.date)}"></label>
    </div>
@@ -1735,7 +1745,7 @@ function cardView(){
    <div class="g">
     ${inp('phone','내 전화번호','+82 10-1234-5678','nu')}
     ${inp('email','이메일','gildong@email.com','nu')}
-    ${inp('caddr','연락 주소 (비우면 숙소 주소)','123 GEORGE ST, SYDNEY')}
+    <label class="f wide"><span>연락 주소 (비우면 숙소 주소)</span><textarea id="c-caddr" data-c="caddr" rows="2" placeholder="비워두면 숙소 주소가 들어가요">${esc(c.caddr)}</textarea></label>
     ${inp('emName','비상 연락처 이름 (영문)','HONG MINJI')}
     ${inp('emContact','비상 연락처 전화 또는 이메일','+82 10-9876-5432','nu')}
     ${inp('boarded','탑승한 나라','KOREA')}
@@ -1750,7 +1760,7 @@ function cardView(){
    </div>
    <div class="exp">${DL&&window.html2canvas?`<button class="btn primary" data-cardsave>작성 예시 이미지로 저장</button>`:`<span class="aimsg">화면을 캡처해 기내에서 보고 따라 쓰세요.</span>`}<span class="aimsg" id="cardmsg"></span></div>
   </section>
-  <h3 style="font-size:15px;margin:0 0 8px">앞면</h3><div class="ipfit" id="fitF">${cardFront()}</div>
+  <div class="sheetout"><b>작성 예시</b><span>기내에서 이대로 따라 쓰세요</span></div><h3 style="font-size:15px;margin:0 0 8px">앞면</h3><div class="ipfit" id="fitF">${cardFront()}</div>
   <h3 style="font-size:15px;margin:0 0 8px">뒷면</h3><div class="ipfit" id="fitB">${cardBack()}</div>
   <p class="shoot">흐리게 보이는 글씨는 예시예요. 위 칸을 채우면 진한 파란 글씨로 바뀌어요. 서명은 기내에서 직접 하세요.</p>`;
 }
