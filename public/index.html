@@ -168,6 +168,12 @@ main{padding-block:18px}
 .sheet .lb{font-family:var(--f-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--sheet-muted)}
 .sheet .num{text-align:center;font-family:var(--f-mono);font-size:12px}
 .sheet .foot{margin-top:12px;font-size:10.5px;color:var(--sheet-muted);display:flex;justify-content:space-between;gap:10px}
+.sheet .grp{display:flex;align-items:center;gap:8px;margin:14px 0 6px;font-size:14px}
+.sheet .grp:first-of-type{margin-top:4px}
+.sheet .grp .gn{width:22px;height:22px;border-radius:50%;background:var(--sheet-ink);color:var(--sheet-bg);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px}
+.sheet .grp span:last-child{color:var(--sheet-muted);font-size:12px}
+.lgrp{display:flex;align-items:baseline;gap:8px;margin:14px 0 2px;font-size:15px}
+.lgrp b{font-weight:700}.lgrp span{color:var(--muted);font-size:12px;font-family:var(--f-mono)}
 .sheet .none{padding:22px;text-align:center;color:var(--sheet-muted);border:1px dashed var(--sheet-line)}
 .phr{padding:16px;display:grid;gap:8px}
 .phr h4{margin:0 0 4px;font-size:15px}
@@ -635,6 +641,9 @@ PM.push(
 ['종근당건강','루테인 지아잔틴','루테인','Chong Kun Dang Lutein Zeaxanthin'],
 ['동국제약','인사돌','소화제','Insadol (gum health tablets)',{cat:'Herbal Medicine',ing:'Corn unsaponifiable extract, magnolia bark extract (check label)',desc:'Gum health medicine for personal use.'}],
 ['','스멕타','지사제','Smecta (Diosmectite powder)',{ing:'Diosmectite 3 g per sachet'}],
+['','노바손 크림','후시딘','Novason Cream (Betamethasone + Gentamicin, steroid & antibiotic cream)',{cat:'Prescription Medicine',ing:'Betamethasone valerate 0.61 mg/g, Gentamicin sulfate 1 mg/g',desc:'Topical corticosteroid and antibiotic cream for skin inflammation and infection, for personal use.',st:'rx',tip:'바르는 스테로이드라 입국카드 1번(의약품·스테로이드)에 해당해요. 원래 튜브 그대로 신고하세요.',ic:['tube']}],
+['','리도멕스 크림','후시딘','Ridomex Cream (Prednisolone valerate acetate, topical corticosteroid)',{cat:'Topical Medicine',ing:'Prednisolone valerate acetate 0.3% (check label)',desc:'Topical steroid cream for skin itching and rash, for personal use.',st:'rx',tip:'바르는 스테로이드라 신고 대상이에요. 원래 튜브 그대로 가져가세요.',ic:['tube']}],
+['','더마톱 연고','후시딘','Dermatop Ointment (Prednicarbate 0.25%, topical corticosteroid)',{cat:'Topical Medicine',ing:'Prednicarbate 0.25% (check label)',desc:'Topical steroid ointment for eczema, for personal use.',st:'rx',tip:'바르는 스테로이드라 신고 대상이에요. 원래 튜브 그대로 가져가세요.',ic:['tube']}],
 ['제일헬스사이언스','씬 덱시부펜 연질캡슐 300mg','이부프로펜','Ssin Dexibuprofen 300 mg (pain & fever relief soft capsules)',{ing:'Dexibuprofen 300 mg',desc:'Over-the-counter pain and fever relief for personal use.'}],
 ['','덱시부펜 300mg','이부프로펜','Dexibuprofen 300 mg (pain & fever relief)',{ing:'Dexibuprofen 300 mg'}],
 ['부광약품','씬지로이드정 0.1mg','혈압약','Synthroid 0.1 mg (Levothyroxine sodium 100 mcg, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium 0.1 mg (100 mcg)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 원래 병 그대로, 영문 처방전이나 소견서를 함께 챙기고 3개월분 이내로 가져가세요.',ic:['pillbottle','box']}],
@@ -665,7 +674,7 @@ const pic=it=>it.photo||svgURL(it.icon);
 const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,'');
 /* units: korean, english singular, plural */
 const UNITS=[['개','piece','pieces'],['봉','pack','packs'],['컵','cup','cups'],['캔','can','cans'],['박스','box','boxes'],['병','bottle','bottles'],['통','jar','jars'],['파우치','pouch','pouches'],['포','sachet','sachets'],['장','sheet','sheets'],['튜브','tube','tubes'],['정','tablet','tablets'],['봉지','bag','bags']];
-const ICON_UNIT={tray:'개',bowl:'개',cup:'컵',soupcup:'컵',packet:'봉',can:'캔',tincan:'캔',jar:'통',tub:'통',seaweed:'봉',bottle:'병',snack:'봉지',pouch:'파우치',fish:'봉',meat:'봉',nut:'봉',fruit:'개',egg:'개',honey:'병',ginseng:'박스',tteok:'봉',coffee:'박스',teabag:'박스',box:'박스',blister:'박스',capsule:'박스',softgel:'통',pillbottle:'병',ampoule:'개',drops:'병',tube:'튜브',sachet:'포',patch:'박스',shot:'병',syrup:'병',herbpill:'박스',pack:'봉',bandage:'박스',syringe:'개'};
+const ICON_UNIT={tray:'개',bowl:'개',cup:'컵',soupcup:'컵',packet:'봉',can:'캔',tincan:'캔',jar:'통',tub:'통',seaweed:'봉',bottle:'병',snack:'봉지',pouch:'파우치',fish:'봉',meat:'봉',nut:'봉',fruit:'개',egg:'개',honey:'병',ginseng:'박스',tteok:'봉',coffee:'박스',teabag:'박스',box:'박스',blister:'박스',capsule:'박스',softgel:'박스',pillbottle:'병',ampoule:'개',drops:'병',tube:'튜브',sachet:'포',patch:'박스',shot:'병',syrup:'병',herbpill:'박스',pack:'봉',bandage:'박스',syringe:'개'};
 const unitOf=k=>UNITS.find(u=>u[0]===k)||UNITS[0];
 /* the same Korean unit reads differently for food and medicine: 약 1통 = 1 bottle, 고추장 1통 = 1 tub */
 const UNIT_KIND={food:{'통':['tub','tubs']},med:{'통':['bottle','bottles'],'개':['unit','units'],'봉':['packet','packets'],'봉지':['packet','packets']}};
@@ -873,7 +882,7 @@ function render(){
   </section>
   ${hasSample?`<div class="notice"><span>지금 보이는 항목은 한국 여행자들이 흔히 챙기는 <b>예시</b>예요. 그대로 고치거나 지우고 시작하세요.</span><button class="btn sm" data-clear-sample>예시 모두 지우기</button></div>`:''}
   ${list.length?`<div class="shoot" style="margin:0 0 8px">글자를 <b>두 번 누르면</b> 바로 고칠 수 있어요. 연필은 전체 수정, 카메라는 사진 다시 찍기예요.</div>`:''}
-  <div class="list">${list.length?list.map(rowHTML).join(''):`<div class="empty">아직 항목이 없어요. 위에서 한 번에 찍거나, 목록을 붙여넣거나, 검색해서 추가하세요.</div>`}</div>`;
+  <div class="list">${list.length?(kind==='med'?MGRP.map(([g,ko,en])=>{const l=list.filter(it=>medGroup(it)===g);return l.length?`<div class="lgrp"><b>${ko}</b><span>${en} · ${l.length}</span></div>`+l.map(rowHTML).join(''):''}).join(''):list.map(rowHTML).join('')):`<div class="empty">아직 항목이 없어요. 위에서 한 번에 찍거나, 목록을 붙여넣거나, 검색해서 추가하세요.</div>`}</div>`;
   bindAdder(kind);
 }
 function rowHTML(it){
@@ -1173,7 +1182,7 @@ function openEdit(id){
      <label class="f"><span>설명 <i>NOTE FOR OFFICER</i></span><textarea id="e-desc">${esc(it.desc)}</textarea></label>
      <div class="f2">
       <label class="f"><span>예상 판정</span><select id="e-st">${Object.entries(ST[it.kind]).map(([k,[l]])=>`<option value="${k}" ${it.st===k?'selected':''}>${l}</option>`).join('')}</select></label>
-      ${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 (체크하면 시트에 표시)</label>`:'<span></span>'}
+      ${it.kind==='med'?`<label class="f"><span>시트 묶음</span><select id="e-grp"><option value="auto" ${!it.grp||it.grp==='auto'?'selected':''}>자동 (지금: ${MGRP.find(g=>g[0]===medGroup({...it,grp:'auto'}))[1]})</option>${MGRP.map(([g,ko])=>`<option value="${g}" ${it.grp===g?'selected':''}>${ko}</option>`).join('')}</select></label>`:''}${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 (체크하면 시트에 표시)</label>`:'<span></span>'}
      </div>
      <label class="f"><span>메모 (나만 보기)</span><input id="e-tip" value="${esc(it.tip)}"></label>
      <div class="aibar">${SAMPLE?`<button class="btn sm" data-ai>${it.pending?'<span class="spin"></span> 작성 중…':'한글 이름으로 영문 자동 작성'}</button>${it.photo?`<button class="btn sm" data-aiimg>사진 라벨 읽어서 채우기</button>`:''}`:`<span class="aimsg">API 키를 설정하면 Claude 자동 작성을 쓸 수 있어요. 지금은 위 '사전에서 찾아 채우기'를 써 주세요.</span>`}</div>
@@ -1182,7 +1191,7 @@ function openEdit(id){
    <div class="mfoot"><button class="btn danger" data-del>삭제</button><button class="btn primary" data-close>완료</button></div>
   </div></div>`;
   const ov=document.getElementById('ov');
-  const sync=()=>{const g=k=>document.getElementById('e-'+k);if(!g('ko'))return;['b','ko','en','cat','ing','desc','tip'].forEach(k=>it[k]=g(k).value);it.u=g('u').value;it.st=g('st').value;if(g('rx'))it.rx=g('rx').checked;if(it.sample)it.sample=false;save()};
+  const sync=()=>{const g=k=>document.getElementById('e-'+k);if(!g('ko'))return;['b','ko','en','cat','ing','desc','tip'].forEach(k=>it[k]=g(k).value);it.u=g('u').value;it.st=g('st').value;if(g('grp'))it.grp=g('grp').value;if(g('rx'))it.rx=g('rx').checked;if(it.sample)it.sample=false;save()};
   ov.addEventListener('input',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
   ov.addEventListener('change',e=>{if(e.target.id&&e.target.id.startsWith('e-'))sync()});
   ov.addEventListener('click',async e=>{
@@ -1218,19 +1227,27 @@ function closeEdit(){EDIT=null;document.getElementById('modalRoot').innerHTML=''
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&EDIT){document.querySelector('#ov [data-close]')?.click()}});
 
 /* ---------- sheet ---------- */
+/* medicine groups: 상비약 / 영양제 / 처방약 */
+const MGRP=[['otc','상비약','Over-the-counter medicines'],['sup','영양제','Dietary supplements'],['rx','처방약','Prescription medicines']];
+function medGroup(it){if(it.grp&&it.grp!=='auto')return it.grp;
+  if(it.rx||it.st==='rx'||it.st==='ctrl'||/prescription|controlled/i.test(it.cat))return 'rx';
+  if(/supplement|vitamin|health food|probiotic|omega|lutein|collagen/i.test(it.cat+' '+it.en))return 'sup';return 'otc'}
 function sheetTable(kind){
   const L=S[kind];const t=S.trav;
   const title=kind==='food'?'Food Items to Declare':'Medicines & Supplements to Declare';
-  const rows=L.map((it,i)=>`<tr><td class="num">${i+1}</td><td class="p"><img alt="" src="${pic(it)}"></td>
+  const rowsOf=(list,off)=>list.map((it,i)=>`<tr><td class="num">${off+i+1}</td><td class="p"><img alt="" src="${pic(it)}"></td>
    <td><div class="ien">${esc(it.en||it.ko)}</div><div class="ico">${esc(it.cat)}</div><div class="iko">${esc(it.ko)}</div></td>
    <td><div class="lb">${kind==='med'?'Active ingredients':'Ingredients'}</div>${esc(it.ing)||'—'}<div class="lb" style="margin-top:6px">Note</div>${esc(it.desc)||'—'}${kind==='med'&&it.rx?`<div class="lb" style="margin-top:6px">Prescription</div>English prescription / doctor's letter attached`:''}</td>
    <td class="num">${qtyEn(it)}</td></tr>`).join('');
+  const head=`<table><colgroup><col style="width:34px"><col style="width:112px"><col style="width:32%"><col><col style="width:78px"></colgroup><thead><tr><th>#</th><th>Photo</th><th>Item</th><th>Details</th><th>Qty</th></tr></thead><tbody>`;
+  let body;
+  if(kind==='med'){let off=0;body=MGRP.map(([g,ko,en],gi)=>{const list=L.filter(it=>medGroup(it)===g);if(!list.length)return '';const h=`<div class="grp"><span class="gn">${gi+1}</span><b>${en}</b><span>${ko} · ${list.length}</span></div>${head}${rowsOf(list,off)}</tbody></table>`;off+=list.length;return h}).join('')}
+  else body=head+rowsOf(L,0)+'</tbody></table>';
   return `<div class="sheet" id="sheet-${kind}">
    <h3>${title}</h3>
    <div class="sub"><span>Passenger <b>${esc(t.name)||'________________'}</b></span><span>Flight <b>${esc(t.flight)||'________'}</b></span><span>Arrival <b>${esc(t.date)||'________'}</b></span>${t.port?`<span>Port <b>${esc(t.port)}</b></span>`:''}</div>
    <div class="stmt">All items below are for my personal use. I have declared them on my arrival declaration.<span>아래 물품은 모두 개인용이며 입국 신고서에 신고했습니다.</span></div>
-   ${L.length?`<table><colgroup><col style="width:34px"><col style="width:112px"><col style="width:32%"><col><col style="width:78px"></colgroup>
-    <thead><tr><th>#</th><th>Photo</th><th>Item</th><th>Details</th><th>Qty</th></tr></thead><tbody>${rows}</tbody></table>`:`<div class="none">No ${kind==='food'?'food':'medicine'} items.</div>`}
+   ${L.length?body:`<div class="none">No ${kind==='food'?'food':'medicine'} items.</div>`}
    <div class="foot"><span>${L.length} item${L.length===1?'':'s'}</span><span>Prepared ${new Date().toISOString().slice(0,10)}</span></div>
   </div>`;
 }
