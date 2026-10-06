@@ -884,7 +884,7 @@ function rowHTML(it){
      ${it.b?`<div class="br">${ie('b',esc(it.b))}</div>`:''}<div class="ko">${!it.ko?`<button class="btn sm primary" data-name="${it.id}">이름 정하기</button>`:ie('ko',esc(it.ko),'제품명')}${it.sample?'<span class="tag">예시</span>':''}${it.photo?'':'<span class="tag">그림</span>'}</div>
      <div class="en">${it.pending?'<span class="spin"></span> 영문 작성 중…':ie('en',esc(it.en),'영문명 없음')}</div>
      <div class="cat">${ie('cat',esc(it.cat),'CATEGORY')}</div></div></div></div>
-   <div class="dt"><div><b>${it.kind==='med'?'Active':'Ingred.'}</b>${ie('ing',esc(it.ing),'—')}</div><div><b>Note</b>${ie('desc',esc(it.desc),'—')}</div>${it.tip?`<div class="tip">${esc(it.tip)}</div>`:''}</div>
+   <div class="dt"><div><b>${it.kind==='med'?'Active':'Ingred.'}</b>${ie('ing',esc(it.ing),'—')}</div><div><b>Note</b>${ie('desc',esc(it.desc),'—')}</div>${it.tip?`<div class="tip">${esc(it.tip)}</div>`:''}${it.kind==='med'&&(it.st==='rx'||it.st==='ctrl'||it.rx)?`<label class="check" style="font-size:13px;margin-top:2px"><input type="checkbox" data-rxt="${it.id}" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 <span style="color:var(--muted)">(체크하면 시트에 표시)</span></label>`:''}</div>
    <div class="side"><span class="pill ${cls}">${lab}</span>
      <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
      <select class="unit" data-unit="${it.id}" aria-label="단위">${UNITS.map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${u[0]}</option>`).join('')}</select></div>
@@ -1173,7 +1173,7 @@ function openEdit(id){
      <label class="f"><span>설명 <i>NOTE FOR OFFICER</i></span><textarea id="e-desc">${esc(it.desc)}</textarea></label>
      <div class="f2">
       <label class="f"><span>예상 판정</span><select id="e-st">${Object.entries(ST[it.kind]).map(([k,[l]])=>`<option value="${k}" ${it.st===k?'selected':''}>${l}</option>`).join('')}</select></label>
-      ${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 있음</label>`:'<span></span>'}
+      ${it.kind==='med'?`<label class="check" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="e-rx" ${it.rx?'checked':''}>영문 처방전·소견서 챙김 (체크하면 시트에 표시)</label>`:'<span></span>'}
      </div>
      <label class="f"><span>메모 (나만 보기)</span><input id="e-tip" value="${esc(it.tip)}"></label>
      <div class="aibar">${SAMPLE?`<button class="btn sm" data-ai>${it.pending?'<span class="spin"></span> 작성 중…':'한글 이름으로 영문 자동 작성'}</button>${it.photo?`<button class="btn sm" data-aiimg>사진 라벨 읽어서 채우기</button>`:''}`:`<span class="aimsg">API 키를 설정하면 Claude 자동 작성을 쓸 수 있어요. 지금은 위 '사전에서 찾아 채우기'를 써 주세요.</span>`}</div>
@@ -1223,7 +1223,7 @@ function sheetTable(kind){
   const title=kind==='food'?'Food Items to Declare':'Medicines & Supplements to Declare';
   const rows=L.map((it,i)=>`<tr><td class="num">${i+1}</td><td class="p"><img alt="" src="${pic(it)}"></td>
    <td><div class="ien">${esc(it.en||it.ko)}</div><div class="ico">${esc(it.cat)}</div><div class="iko">${esc(it.ko)}</div></td>
-   <td><div class="lb">${kind==='med'?'Active ingredients':'Ingredients'}</div>${esc(it.ing)||'—'}<div class="lb" style="margin-top:6px">Note</div>${esc(it.desc)||'—'}${kind==='med'?`<div class="lb" style="margin-top:6px">Prescription / doctor's letter</div>${it.rx?'Yes, attached':'—'}`:''}</td>
+   <td><div class="lb">${kind==='med'?'Active ingredients':'Ingredients'}</div>${esc(it.ing)||'—'}<div class="lb" style="margin-top:6px">Note</div>${esc(it.desc)||'—'}${kind==='med'&&it.rx?`<div class="lb" style="margin-top:6px">Prescription</div>English prescription / doctor's letter attached`:''}</td>
    <td class="num">${qtyEn(it)}</td></tr>`).join('');
   return `<div class="sheet" id="sheet-${kind}">
    <h3>${title}</h3>
@@ -1475,7 +1475,7 @@ document.addEventListener('click',e=>{
   const cp=e.target.closest('[data-copy]');if(cp){const txt=PHR[+cp.dataset.copy][0];
     try{navigator.clipboard.writeText(txt).then(()=>toast('복사했어요'),()=>selectText(cp))}catch(_){selectText(cp)}return}
 });
-document.addEventListener('change',e=>{const u=e.target.closest('[data-unit]');if(u){const it=getIt(u.dataset.unit);it.u=u.value;it.sample=false;save()}});
+document.addEventListener('change',e=>{const rx=e.target.closest('[data-rxt]');if(rx){const it=getIt(rx.dataset.rxt);it.rx=rx.checked;it.sample=false;save();return}const u=e.target.closest('[data-unit]');if(u){const it=getIt(u.dataset.unit);it.u=u.value;it.sample=false;save()}});
 document.addEventListener('dblclick',e=>{const el=e.target.closest('[data-ie]');if(!el||el.isContentEditable)return;const it=getIt(el.dataset.id);if(!it)return;const f=el.dataset.ie;
   el.textContent=it[f]||'';el.contentEditable='true';el.focus();const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);let done=false;
   const fin=keep=>{if(done)return;done=true;el.contentEditable='false';if(keep){it[f]=el.textContent.replace(/\s+/g,' ').trim();it.sample=false;save()}render()};
