@@ -392,7 +392,8 @@ main{padding-block:18px}
 .psheet b{font-size:16px;text-align:center;margin-bottom:2px}
 .psheet .btn{justify-content:center;padding:14px;font-size:16px;gap:10px}.psheet .btn svg{width:20px;height:20px}
 .mv{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.mv button{border:0;background:var(--surface);width:34px;height:30px;cursor:pointer;font-size:12px;color:var(--ink)}
+.mvw{display:inline-flex;align-items:center;gap:6px}.mvl{font-size:12px;color:var(--muted)}
+.mv button{border:0;background:var(--surface);padding:0 10px;height:32px;cursor:pointer;font-size:12.5px;color:var(--ink);white-space:nowrap}
 .mv button+button{border-left:1px solid var(--line)}.mv button:active{background:var(--accent-soft)}
 .row.moved{outline:2px solid var(--accent);transition:outline .3s}
 .legal{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.6}
@@ -765,6 +766,9 @@ PM.push(
 ['','덱시부펜 300mg','이부프로펜','Dexibuprofen 300 mg (pain & fever relief)',{ing:'Dexibuprofen 300 mg'}],
 ['부광약품','씬지로이드정 0.1mg','혈압약','Synthroid 0.1 mg (Levothyroxine sodium 100 mcg, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium 0.1 mg (100 mcg)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 원래 병에 필요한 만큼만 담고 \'복용 ○일분\'과 \'내용물\'(예: 10정)을 적으세요. 영문 처방전이나 소견서도 함께 챙기세요.',ic:['pillbottle','box']}],
 ['','씬지로이드 (레보티록신)','혈압약','Synthroid (Levothyroxine sodium, thyroid medication)',{cat:'Prescription Medicine',ing:'Levothyroxine sodium (check strength)',desc:'Prescribed thyroid medication for personal use.',tip:'처방약이에요. 영문 처방전이나 소견서를 함께 챙기세요.',ic:['pillbottle','box']}],
+['','노량 캡슐 (멀미약)','멀미약','Noryang Capsules (oral motion sickness medicine)',{ing:'Per capsule: Chlorpheniramine maleate 1 mg, Scopolamine hydrobromide hydrate 0.1 mg, Pyridoxine hydrochloride 2.5 mg, Ethyl aminobenzoate (benzocaine) 25 mg, Caffeine anhydrous 10 mg',desc:'Over-the-counter oral motion sickness medicine (dizziness, nausea, headache) for personal use.',st:'ok',tip:'먹는 일반의약품이에요. 원래 상자 그대로 가져가고 신고하면 돼요.',ic:['blister','box']}],
+['신일제약','바이스탑 캡슐 (정장지사제)','지사제','Vistop Capsules (anti-diarrhoea / intestinal regulator)',{ing:'Per capsule: Berberine tannate 50 mg, Bismuth subnitrate 100 mg, Scopolia extract 10x powder 50 mg, Ursodeoxycholic acid 2 mg',desc:'Over-the-counter medicine for diarrhoea, abdominal pain and indigestion, for personal use.',ic:['blister','box']}],
+['한림제약','다제스 캡슐 (소화제)','소화제','Dazes Capsules (digestive enzyme medicine)',{ing:'Per capsule: Pepsin 25 mg, Papain 50 mg, Diastase 15 mg, Ursodeoxycholic acid 25 mg, Cellulase 15 mg, Pancreatin 50 mg, Pancrelipase 13 mg',desc:'Over-the-counter digestive enzyme medicine for indigestion and bloating, for personal use.',ic:['blister','box']}],
 ['Trader Joe\'s','트레이더조 멜라토닌 3mg 츄어블','멜라토닌',"Trader Joe's Chewable Melatonin 3 mg (dietary supplement, peppermint)",{ing:'Melatonin 3 mg',desc:'Sleep supplement for personal use.',tip:'호주에선 멜라토닌이 대부분 처방 성분이에요. 원래 병 그대로 3개월분 이내로 가져가고, 가능하면 소견서를 챙기세요.',ic:['pillbottle']}],
 );
 function mkProd(kind,[b,n,t,en,o={}]){const base=D[kind].find(e=>e.k===t);return {...base,...o,kind,b,k:n,en,a:[t,...(base.a||[])],ic:o.ic||base.ic,brand:true}}
@@ -1133,7 +1137,7 @@ function rowHTML(it){normItem(it);
    <div class="side"><span class="pill ${cls}">${lab}</span>
      <div class="qtyrow"><span class="step"><button data-dec="${it.id}" aria-label="수량 줄이기">−</button><b>${+it.n||1}</b><button data-inc="${it.id}" aria-label="수량 늘리기">+</button></span>
      <select class="unit" data-unit="${it.id}" aria-label="단위">${unitList(it.kind).map(u=>`<option value="${u[0]}" ${it.u===u[0]?'selected':''}>${(UNIT_LABEL[it.kind]||{})[u[0]]||u[0]}</option>`).join('')}</select></div>
-     <span class="mv"><button data-mv="-1" data-mid="${it.id}" aria-label="위로">▲</button><button data-mv="1" data-mid="${it.id}" aria-label="아래로">▼</button></span><button class="xdel" data-del="${it.id}">삭제</button>${it.kind==='med'?`<div class="medx"><span>내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span><label class="dsel">복용 <select class="unit" data-dsel="${it.id}" aria-label="복용 일수">${dayOpts(it.days)}</select></label></div>`:''}</div>
+     <span class="mvw"><span class="mvl">순서</span><span class="mv"><button data-mv="-1" data-mid="${it.id}">▲ 위로 올리기</button><button data-mv="1" data-mid="${it.id}">▼ 아래로 내리기</button></span></span><button class="xdel" data-del="${it.id}">삭제</button>${it.kind==='med'?`<div class="medx"><span>내용물 ${ie('cnt',esc(it.cnt),'예: 10정')}</span><label class="dsel">복용 <select class="unit" data-dsel="${it.id}" aria-label="복용 일수">${dayOpts(it.days)}</select></label></div>`:''}</div>
   </article>`;
 }
 function search(q,kind){
